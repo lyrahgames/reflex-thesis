@@ -3,8 +3,24 @@
 \section{Introduction} % (fold)
 \label{sec:introduction}
 
-  \autocite{zachow2003}
-  \autocite{kaplansky2009}
+  Nowadays, the majority of application domains vital to the life of humanity is supported by computer-aided systems.
+  These are typically programs that provide a set of tools to facilitate the automatic generation, transfer, manipulation, and visualization of domain-specific data by keeping user interaction at a required minimum.
+  Computer systems have enabled humanity to streamline processes and to abstract and encapsulate low-level tasks.
+  As a consequence, this resulted in the ability to solve harder problems even more efficiently.
+
+  Especially in the area of medicine, examples such as the resection of liver tumors for long-term survival \autocite{alirr2019} and osteotomy planning \autocite{zachow2003}, that involves reshaping and realigning bones to repair or fix bone-specific issues, show that the use of computer-aided systems for surgery planning reduces the duration of treatment and heavily increases the chance of long-term survival.
+  Both of the named medical applications use curves on the two-dimensional reconstructed surface of scanned medical objects, such as livers and bones, to represent and visualize surgery cuts.
+  The reconstructed surfaces will thereby be provided as triangular meshes and are often referred to as surface meshes.
+  By construction, initially chosen curves on these surfaces are jagged due to the finite precision of the underlying mesh and omit curvature noise that is not neglectable and perceivable by the human eye.
+  Hence, a smoothing process is applied to initial curves to reduce their overall curvature and attain surface cuts with well-defined properties.
+  For medical surface cutting applications, though, the shape of an initial curve is defined by domain experts, such as physicians or bioengineers, and most likely indicates relevant anatomical landmarks or surface regions.
+  Thus, under these circumstances, the smoothing additionally requires the resulting curve to be close to its original such that no essential information is lost during the process. \\
+  \autocite{zachow2003,lawonn2014,alirr2019}\footnote{In this thesis, citations concerning a whole paragraph will be given after the last sentence of the very paragraph.}
+
+  It is a matter of fact, that curves on surface meshes and algorithms for smoothing them are furthermore basic building blocks for mesh processing and segmentation \autocite{ji2006,kaplansky2009}.
+  Consequently, their fundamental role in the areas of computer-aided geometric design, computer graphics, and visualization, that are heavily based on mesh processing, is unconcealable.
+  So, curve smoothing on surface meshes is not only relevant in specific areas of medicine but is a generally applicable and important tool to many other domains of applications building on the above named research areas.
+  Further application domains, such as machine learning \autocite{benhabiles2011,park2019} and engineering, that make use of the tools named above, provide many more direct and important applications.
 
 % section introduction (end)
 \end{document}
