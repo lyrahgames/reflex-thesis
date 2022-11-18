@@ -3,24 +3,68 @@
 \section{Introduction} % (fold)
 \label{sec:introduction}
 
-  Nowadays, the majority of application domains vital to the life of humanity is supported by computer-aided systems.
-  These are typically programs that provide a set of tools to facilitate the automatic generation, transfer, manipulation, and visualization of domain-specific data by keeping user interaction at a required minimum.
-  Computer systems have enabled humanity to streamline processes and to abstract and encapsulate low-level tasks.
-  As a consequence, this resulted in the ability to solve harder problems even more efficiently.
+Nowadays, the majority of application domains vital to the life of humanity is supported by computer-aided systems.
+These are typically programs that provide a set of tools to facilitate the automatic generation, transfer, manipulation, and visualization of domain-specific data by keeping user interaction at a required minimum.
+Computer systems have enabled humanity to streamline processes and to abstract and encapsulate low-level tasks.
+As a consequence, this resulted in the ability to solve harder problems even more efficiently.
 
-  Especially in the area of medicine, examples such as the resection of liver tumors for long-term survival \autocite{alirr2019} and osteotomy planning \autocite{zachow2003}, that involves reshaping and realigning bones to repair or fix bone-specific issues, show that the use of computer-aided systems for surgery planning reduces the duration of treatment and heavily increases the chance of long-term survival.
-  Both of the named medical applications use curves on the two-dimensional reconstructed surface of scanned medical objects, such as livers and bones, to represent and visualize surgery cuts.
-  The reconstructed surfaces will thereby be provided as triangular meshes and are often referred to as surface meshes.
-  By construction, initially chosen curves on these surfaces are jagged due to the finite precision of the underlying mesh and omit curvature noise that is not neglectable and perceivable by the human eye.
-  Hence, a smoothing process is applied to initial curves to reduce their overall curvature and attain surface cuts with well-defined properties.
-  For medical surface cutting applications, though, the shape of an initial curve is defined by domain experts, such as physicians or bioengineers, and most likely indicates relevant anatomical landmarks or surface regions.
-  Thus, under these circumstances, the smoothing additionally requires the resulting curve to be close to its original such that no essential information is lost during the process. \\
-  \autocite{zachow2003,lawonn2014,alirr2019}\footnote{In this thesis, citations concerning a whole paragraph will be given after the last sentence of the very paragraph.}
+Especially in the area of medicine, examples such as the resection of liver tumors for long-term survival \autocite{alirr2019} and osteotomy planning \autocite{zachow2003}, that involves reshaping and realigning bones to repair or fix bone-specific issues, show that the use of computer-aided systems for surgery planning reduces the duration of treatment and heavily increases the chance of long-term survival.
+Both of the named medical applications use curves on the two-dimensional reconstructed surface of scanned medical objects, such as livers and bones, to represent and visualize surgery cuts.
+The reconstructed surfaces will thereby be provided as triangular meshes and are often referred to as surface meshes. \\
+\autocite{zachow2003,alirr2019}\footnote{In this thesis, citations concerning a whole paragraph will be given after the last sentence of the very paragraph.}
 
-  It is a matter of fact, that curves on surface meshes and algorithms for smoothing them are furthermore basic building blocks for mesh processing and segmentation \autocite{ji2006,kaplansky2009}.
-  Consequently, their fundamental role in the areas of computer-aided geometric design, computer graphics, and visualization, that are heavily based on mesh processing, is unconcealable.
-  So, curve smoothing on surface meshes is not only relevant in specific areas of medicine but is a generally applicable and important tool to many other domains of applications building on the above named research areas.
-  Further application domains, such as machine learning \autocite{benhabiles2011,park2019} and engineering, that make use of the tools named above, provide many more direct and important applications.
+By construction, initially chosen curves on these surfaces are jagged due to the finite precision of the underlying mesh and emit curvature noise that is not neglectable and perceivable by the human eye.
+Hence, a smoothing process is applied to initial curves to reduce their overall curvature and attain surface cuts with well-defined properties.
+In general, the result of curve smoothing might strongly deviate from the initially given curve to fulfill the given constraints.
+For medical surface cutting applications, though, the shape of an initial curve is defined by domain experts, such as physicians or bioengineers, and most likely indicates relevant anatomical landmarks or surface regions.
+Thus, under these circumstances, the smoothing additionally requires the resulting curve to be close to its original such that no essential information is lost during the process.
+\autocite{lawonn2014}
+
+Futhermore, it is a matter of fact, that curves on surface meshes and algorithms for smoothing them are basic building blocks for mesh processing and segmentation \autocite{ji2006,kaplansky2009}.
+Consequently, their fundamental role in the areas of computer-aided geometric design, computer graphics, and visualization, that are heavily based on mesh processing, is unconcealable.
+So, curve smoothing on surface meshes is not only relevant in specific areas of medicine but is a generally applicable and important tool to many other domains of applications building on the above research areas.
+Further domain areas, such as machine learning \autocite{benhabiles2011,park2019} and engineering, therefore provide many more direct and significant applications.
+
+Besides their mathematical correctness and convergence, curve smoothing algorithms should exhibit a certain level of adaptivity with respect to the given surface mesh and its initially chosen curve.
+Surface meshes are most typically an irregular grid of triangular faces that may highly vary in diameter and area.
+In addition, the initial curve might be extreme concerning its length, curvature, and overall shape.
+An algorithm to smooth curves on surface meshes needs to adapt to all these situations and still figure out the best possible result that abides to the given criteria.
+In conjunction with its correctness, this also means that such an algorithm needs to be robust for many different kinds of scenarios, such as self-intersecting curves and noisy surface geometries, that may result in wrong calculations based on the finite precision of floating-point values.
+Yet another property to take into account is the efficiency of the algorithm.
+To seamlessly integrate curve smoothing into the user interface of a computer-assisted system for domain-specific applications, it at least needs to provide an interactive up to real-time performance.
+\autocite{lawonn2014}
+
+There are a few already existing algorithms for producing smoothed curves on surface meshes \autocite{hofer2004,martinez2007,lawonn2014,mancinelli2022}.
+Still, the implementation and API design of such algorithms is assumed to be an involved task and error-prone when the programmer intends to apply the algorithm on a wide variety of cases.
+All the given references define their algorithm and explain its properties in great detail.
+They compare the quality of generated curves to alternative algorithms and describe the algorithm's programming procedures at least with respect to a high-level point of view based on pseudocode.
+However, the very low-level details about the composition of data structures, advice for an implementation in a specific programming language, or ways to handle difficult corner cases are left out.
+This makes the comparison of the performance and robustness of algorithms much harder and unreproducible, because custom implementations would need to be used.
+Furthermore, up to this point there is no widely accepted metric to compare the smoothness of two different generated curves which leads to highly subjective treatment and evaluation of different algorithms.
+
+For the design and implementation of a basic framework for curve smoothing on surfaces that allows for high-performance, reproducibility, and robustness, adequate candidates are the modern standards of the C++ programming language in conjunction with the OpenGL graphics API.
+C++ is a multi-paradigm language that integrates many different programming styles, such as object-oriented, functional, and data-oriented programming.
+It is still the de-facto standard for graphics applications and well-known to be one of the fastest languages in the world which incorporates low-level programming based on assembler routines and efficient high-level abstraction mechanisms, like template meta programming.
+The design of the whole language keeps on advancing to make programs faster and easier to develop.
+In the most common cases, C++ can be seen as a superset of the older C programming language which is typically used by other programming languages to provide the possibility of code being called from different languages.
+Therefore the users of the framework are not even restricted to use C++ but instead are able to use other languages, like Python, to communicate with a C interface to achieve similar results.
+OpenGL is the open-source graphics API that allows programs to efficiently communicate and interact with the driver of the graphics card to visualize provided data independently of the manufacturer or the operating system.
+By using them, no strong constraints are imposed on the software environment that the software framework is running on.
+Both tools allow for a sophisticated modularization of the whole framework.
+So, no user needs to pay for features that are not needed. \\
+\autocite{stroustrup2014,meyers2014,vandevoorde2018,reddy2011,cppreference,isocpp,opengl}
+
+In this thesis, precisely in sections \ref{sec:design} and \ref{sec:implementation}, we develop a new library and program, called \citetitle{reflex}\footfullcite{reflex}, using the C++ programming language in conjunction with OpenGL graphics API.
+\citetitle{reflex} implements parallelized and tweaked variants of the curve smoothing algorithm given by \textcite{lawonn2014} on the CPU and GPU which should be applicable in a wide variety of cases.
+Hereby, a special emphasis lies on the robust and fast implementation for medical purposes.
+The program and library are open-source and can be found on GitHub.
+% It is easily installable on every operating system.
+The necessary theoretical background to understand the design- and the implementation-specific aspects is given in the section \ref{sec:preliminaries}.
+Here, we will give a brief introduction to differential geometry, polyhedral manifolds, and computer architecture.
+A mathematical rigorous discussion about the algorithm will be part of section~\ref{sec:design} to properly encapsulate all the information specific to the implementations.
+Section~\ref{sec:previous_work} refers to the previous work concerning general curves, geodesics and the smoothing of curves on surfaces.
+At the end in section \ref{sec:application}, we apply the constructed algorithm to the problem of segmentation of lung lobes \autocite{park2019}.
+In the sections \ref{sec:evaluation} and \ref{sec:conclusions}, the evaluation is shown followed by a discussion dealing with further improvements.
 
 % section introduction (end)
 \end{document}
