@@ -3,6 +3,27 @@
 \section{Previous Work} % (fold)
 \label{sec:previous_work}
 
+  As marked in the introduction in section~\ref{sec:introduction}, the smoothing of curves on surface meshes is an essential operation for mesh processing and, as a consequence, for many other domain areas, like computer graphics, image-based medicine, and engineering, that rely on such tools \autocite{ji2006,kaplansky2009}.
+  In most of its applications, initial curves are either provided by means of direct user interaction or by automatic or semiautomatic feature detection algorithms \autocite{zachow2003,lawonn2014}.
+  The finite precision of the underlying surface mesh together with all the steps included to define an initial curve usually makes resulting lines contain non-smooth artifacts which may violate given constraints or expected properties and therefore degrade its quality \autocite{kaplansky2009,lawonn2014}.
+  Introducing a smoothing stage into the curve processing pipeline, the mesh segmentation is expected to be of much higher quality which greatly increases its usage for areas like machine learning \autocite{benhabiles2011} or medicine \autocite{zachow2003,alirr2019}.
+  During the last two decades, there have been multiple successful attempts for constructing algorithms to smooth curves on surfaces \autocite{hofer2004,bischoff2005,lawonn2014,mancinelli2022}.
+  In this section, a brief overview of their major contributions is given.
+
+  As stated in the previous section~\ref{sec:preliminaries}, a crucial tool for working with curves on two-dimensional manifolds is the ability to generate geodesics in the sense of the initial and boundary value problem.
+  The rigorous mathematical concepts and definitions for the discrete geodesics problems have been elaborated by \textcite{mitchell1987} and \textcite{polthier2006} first published in 1997.
+  Additionally, \textcite{mitchell1987} built an algorithm to solve the discrete boundary value problem, that used a continuous version of the algorithm of \textcite{dijkstra1959} to find the shortest path connecting two given points.
+  Furthermore, \textcite{polthier2006} provided an iterative algorithm to solve the discrete initial value problem of finding the geodesic given a starting point and a direction.
+  They also introduced the parallel translation of vectors along the surface for particle transportation.
+  This algorithm has been improved by \textcite{mancinelli2022} through the use of optimized data structures and a superior choice of initial curves.
+  Based upon the theory of \textcite{polthier2006}, \textcite{martinez2005} provided an algorithm to the discrete boundary value problem.
+  Hereby, a starting curve on the surface had to be given as initial value to iteratively improve it up to an approximated geodesic.
+  \textcite{surazhsky2005} developed exact and approximate algorithms based on \textcite{mitchell1987} for the discrete initial and boundary value problem, which could be evaluated efficiently by the use of distance fields.
+  Extending the idea of distance fields as an intermediate step to the generation of geodesics, \textcite{bommes2007} generalized the algorithm of \textcite{surazhsky2005} to not only handle isolated points for their distance fields but also general polygons on the surface.
+  Also based on the results of \textcite{mitchell1987}, \textcite{kimmel1996} introduced the so-called fast marching approach, which used the eikonal equation to build propagating fronts to more efficiently generate the distance fields.
+  Hereupon, \textcite{crane2013} also used the gradient of the heat kernel to reconstruct a distance field by solving the Poisson equation.
+
+
   Application of Cutting Curves in Mesh Processing
   \autocite{zachow2003}
   \autocite{benhabiles2011}

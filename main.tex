@@ -60,7 +60,11 @@
   \import{sections/}{conclusions.tex}
 
   \nocite{*}
-  \printbibliography[heading=bibintoc]
+  % \printbibliography[heading=bibintoc]
+  \printbibheading[heading=bibintoc]
+  \printbibliography[heading=subbibliography,title={Books},type=book]
+  \printbibliography[heading=subbibliography,title={Online},type=online]
+  \printbibliography[heading=subbibliography,title={Articles},nottype=book,nottype=online]
 
   \appendix
   \pagenumbering{roman}
