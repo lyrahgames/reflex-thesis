@@ -3,14 +3,155 @@
 \section{Preliminaries} % (fold)
 \label{sec:preliminaries}
 
-  Differential Geometry on Polyhedral Surfaces
-  \autocite{polthier2006}
+To systematically approach the design and implementation of curve smoothing algorithms for surface meshes, basic knowledge in the topic of differential geometry and its generalization to polyhedral surfaces is administrable.
+It allows to rigorously formulate the initial and boundary value problems for discrete geodesics which build the foundation of curve smoothing as geodesics can be interpreted as the class of smoothest curves.
+In the following, a brief overview of the main concepts is given.
 
-  Curvature Estimation on Surfaces
-  \autocite{rusinkiewicz2004}
+\subsection{Differential Geometry} % (fold)
+\label{sub:differential_geometry}
 
-  Generation of Surface Normals
-  \autocite{max1999,meyer2001,jin2005}
+  For the purpose of this thesis, we will provide the classical formulation of differential geometry.
+
+  \autocite{goldhorn2009}
+  \autocite{carmo2016}
+  \autocite{kuehnel2013}
+  \autocite{stahl2013}
+
+  \begin{definition}[Parameterized Curves]
+    Let $n\in\setNatural$ and $[a,b]\subset\setReal$ be a compact interval.
+    Then a continuously differentiable function $\function{γ}{[a,b]}{\setReal^n}$ is called an $n$-dimensional parameterized curve.
+    \begin{itemize}
+      \item $\text{γ is closed} :\iff γ(a) = γ(b)$
+      \item $\text{γ is simple} :\iff \forall t\in[a,b)\colon \forall s\in(t,b],(t,s)\neq(a,b)\colon\quad γ(t)\neq γ(s)$
+      \item $\text{γ is regular} :\iff \forall t\in [a,b]\colon\quad γ'(t)\neq 0$
+      \item $\text{γ is parameterized by arc length} :\iff \norm{γ'} = 1$
+    \end{itemize}
+    For brevity, a parameterized curve will be called curve and the curve's dimensionality will be left out if the context is clear about or not requiring those signifiers.
+  \end{definition}
+  Every curve that is parameterized by arc length is automatically a regular curve.
+  The statement that a curve is simple makes sure that other intersections than the first with the last points are not allowed to occur.
+  A closed curve can therefore still be simple.
+
+  \begin{definition}[Length of Curves]
+    Let $n\in\setNatural$, $[a,b]\subset\setReal$ be a compact interval, and $\function{γ}{[a,b]}{\setReal^n}$ be an $n$-dimensional parameterized curve.
+    Then the length of γ is defined as follows.
+    \[
+      L(γ) \define \integral{a}{b}{\norm{γ'(t)}}{t}
+    \]
+    For convenience, we also define the arc length of γ by the following function.
+    \[
+      \function{s}{[a,b]}{[0,L(γ)]},\quad s_γ(t) \define \integral{a}{t}{\norm{γ'(x)}}{x}
+    \]
+  \end{definition}
+  The function $\norm{γ'}$ is continuous on $[a,b]$ and, consequently, uniformly continuous.
+  This means that $L(γ)$ is well-defined for all parameterized curves.
+  According to the fundamental theorem of calculus, $s_γ$ is continuously differentiable with derivative $s_γ' = \norm{γ'}$ and surjective.
+  For curves parameterized by arc length, it holds that $L(γ)=b-a$.
+
+  \begin{lemma}[Regular curves can be parameterized by arc length]
+    Let $n\in\setNatural$, $[a,b]\subset\setReal$ be a compact interval, and $\function{γ}{[a,b]}{\setReal^n}$ be an $n$-dimensional parameterized curve that is regular.
+    Then up to a constant shift, there exists a unique continuously differentiable and bijective function $\function{u}{[c,d]}{[a,b]}$ on a compact interval $[c,d]\subset\setReal$ with strictly positive derivative, such that the composition $γ\composition u$ is a curve parameterized by arc length.
+  \end{lemma}
+  \begin{proof}
+    The regularity of γ implies that $\norm{γ'}$ and, as a direct consequence, the derivative of $s_γ$ are strictly positive.
+    Hence, $s_γ$ is bijective with differentiable inverse.
+    The derivative of $s_γ^{-1}$ must also be strictly positive and continuous as a composition of continuous functions.
+    \[
+      \roundBrackets{s_γ^{-1}}' = \frac{1}{s_γ'\composition s_γ^{-1}} = \frac{1}{\norm{γ'}\composition s_γ^{-1}} > 0
+    \]
+    Define $\tilde{γ}\define γ\composition s_γ^{-1}$.
+    Then by differential calculus, it follows, that $\tilde{γ}$ is continuously differentiable and parameterized by arc length.
+    \[
+      \norm{\tilde{γ}'}
+      = \norm{γ'\composition s_γ^{-1} \cdot \roundBrackets{s_γ^{-1}}'}
+      = \norm{\frac{γ'\composition s_γ^{-1}}{s_γ'\composition s_γ^{-1}}}
+      = \norm{\frac{γ'\composition s_γ^{-1}}{\norm{γ'}\composition s_γ^{-1}}}
+      = \frac{\norm{γ'\composition s_γ^{-1}}}{\norm{γ'\composition s_γ^{-1}}}
+      = 1
+    \]
+    This shows that $s_γ^{-1}$ fulfills the required properties and the existence of a parameterization by arc length.
+    To show its uniqueness up to a constant shift, assume an arbitrary function $u$ as given in the lemma.
+    Applying the same reasoning as for $s_γ$, it is clear that $\inverse{u}$ also is continuously differentiable with strictly positive derivative.
+    By calculation, we may then show its connection to the arc length.
+    \[
+      1
+      = \norm{(γ\composition u)'}
+      = \norm{γ'\composition u} \cdot u'
+      = \frac{\norm{γ'\composition u}}{\roundBrackets{\inverse{u}}'\composition u}
+      = \frac{\norm{γ'}}{\roundBrackets{\inverse{u}}'}
+      \quad\implies\quad
+      \norm{γ'} = \roundBrackets{\inverse{u}}'
+    \]
+    To integrate this formula, let $t\in[a,b]$ be arbitrary and use again the fundamental theorem of calculus.
+    \[
+      s_γ(t)
+      = \integral{a}{t}{\norm{γ'(x)}}{x}
+      = \integral{a}{t}{\roundBrackets{\inverse{u}}'(x)}{x}
+      = \inverse{u}(t) - \inverse{u}(a)
+      = \inverse{u}(t) - c
+    \]
+    \[
+      u = s_γ^{-1}\composition s_γ\composition u
+      = s_γ^{-1}(\cdot - c)\composition \inverse{u}\composition u
+      = s_γ^{-1}\roundBrackets{\cdot - c}
+    \]
+    This shows that, up to a constant shift, $u$ is the same as $s_γ^{-1}$ and the uniqueness of the parameterization by arc length.
+  \end{proof}
+
+  \begin{definition}[Canonical Parameterization by Arc Length]
+    Let γ be a regular curve.
+    Then its canonical parameterization by arc length $\bar{γ}$ is defined by the following expression.
+    \[
+      \bar{γ} \define γ\composition s_γ^{-1}
+    \]
+  \end{definition}
+
+  This lemma shows that, in the sense of regular curves, it is sufficient to handle curves that are parameterized by arc length.
+  Only for regular curves, it is possible to talk about their curvature.
+
+  \begin{definition}[Curvature of Regular Curves]
+    Let γ be a curve parameterized by arc length and φ be a regular curve.
+    Their respective curvatures $κ(γ)$ and $κ(φ)$ are defined by the following expressions.
+    \[
+      κ(γ)\define\norm{γ''}
+      \separate
+      κ(φ)\define κ(\bar{φ})\composition s_φ
+    \]
+  \end{definition}
+
+
+  \begin{definition}[Regular Surface with Boundary]
+    Let $S \subset \setReal^3$, such that for each $p \in S$, there exists a neighborhood $V \subset \setReal^3$ and a map $\function{x}{U}{V\cap S}$ of an open set $U\subset\setReal^2$ with the following properties.
+    $x$ is differentiable and a homeomorphism.
+  \end{definition}
+
+  \begin{definition}[Tangential and Normal Space]
+
+  \end{definition}
+
+  \begin{definition}[Orientable Regular Surface]
+
+  \end{definition}
+
+  \begin{definition}[Geodesic and Normal Curvature of Curves]
+
+  \end{definition}
+
+% subsection differential_geometry (end)
+
+\subsection{Polyhedral Surfaces} % (fold)
+\label{sub:polyhedral_surfaces}
+
+% subsection polyhedral_surfaces (end)
+
+% Differential Geometry on Polyhedral Surfaces
+% \autocite{polthier2006}
+
+% Curvature Estimation on Surfaces
+% \autocite{rusinkiewicz2004}
+
+% Generation of Surface Normals
+% \autocite{max1999,meyer2001,jin2005}
 
 % section preliminaries (end)
 \end{document}
