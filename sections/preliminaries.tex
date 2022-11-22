@@ -50,6 +50,35 @@ In the following, a brief overview of the main concepts is given.
     For $k=\infty$, it is called a smooth $n$-dimensional manifold (with boundary).
   \end{definition}
 
+  \begin{definition}[Riemannian Manifold]
+    A Riemannian manifold is a smooth manifold $M$ equipped with a positive-definite inner product $g_p$ on the tangent space $\mathrm{T}_pM$ at each point $p\in M$.
+    Thereby, for any chosen chart the coordinate functions of $g$ need to be smooth.
+  \end{definition}
+  The inner metric of a Riemannian manifold takes the place of the scalar product and measures angles.
+
+  \begin{definition}[Tangential Space]
+    Let $M$ be a smooth manifold and $p\in M$.
+    A tangential vector in $p$ is a linear and smooth functional $\function{X}{\mathrm{C}^{\infty}(M)}{\setReal}$, such that for all $f,g\in\mathrm{C}^{\infty}(M)$ the following holds.
+    \[
+      X(fg) = f(p) X(g) + g(p) X(f)
+    \]
+    The set $\mathrm{T}_pM$ of all tangential vectors in $p$ is called tangential space in $p$.
+  \end{definition}
+  The tangential space is for all points isomorphic to $\setReal^n$.
+  For a chosen chart, we can easily construct basis vectors.
+  Every tangential vector is a tangent vector of a curve running through that point.
+
+  \begin{definition}[Normal Space]
+    Let $(M,g)$ be a Riemannian manifold, $S\subset M$ a Riemannian submanifold and $p\in S$.
+    \[
+      \mathrm{N}_pS \define \set{x\in \mathrm{T}_pM}{\forall y\in\mathrm{T}_pS\colon g(x,y)=0}
+    \]
+  \end{definition}
+  The normal space is the orthogonal complement and can in general only be defined for embedded manifolds.
+  For orthogonality, we need a Riemannian manifold.
+  A more general definition is possible by using quotient spaces.
+  As a consequence, the normal space is isomorphic to $\setReal^{n-k}$.
+
   \begin{definition}[Parameterized Curves]
     Let $n\in\setNatural$ and $[a,b]\subset\setReal$ be a compact interval.
     Then a continuously differentiable function $\function{γ}{[a,b]}{\setReal^n}$ is called an $n$-dimensional parameterized curve.
@@ -62,6 +91,8 @@ In the following, a brief overview of the main concepts is given.
     For brevity, a parameterized curve will be called curve and the curve's dimensionality will be left out if the context is clear about or not requiring those signifiers.
   \end{definition}
   Every curve that is parameterized by arc length is automatically a regular curve.
+  A regular parameterized curve is by definition a $\mathrm{C}^1$-embedding into $\setReal^n$.
+  As a consequence, the image of a regular curve is a 1-manifold of class $\mathrm{C}^1$ embedded in $\setReal^n$.
   The statement that a curve is simple makes sure that other intersections than the first with the last points are not allowed to occur.
   A closed curve can therefore still be simple.
 
@@ -150,20 +181,6 @@ In the following, a brief overview of the main concepts is given.
       \separate
       κ(φ)\define κ(\bar{φ})\composition s_φ
     \]
-  \end{definition}
-
-
-  \begin{definition}[Regular Surface with Boundary]
-    Let $S \subset \setReal^3$, such that for each $p \in S$, there exists a neighborhood $V \subset \setReal^3$ and a map $\function{φ}{U}{V\cap S}$ of an open set $U\subset\setReal^2$ with the following properties.
-    φ is differentiable and a homeomorphism and for all $p\in U$, its derivative $\jacobian φ(p)$ has full rank.
-  \end{definition}
-
-  \begin{definition}[Tangential and Normal Space]
-
-  \end{definition}
-
-  \begin{definition}[Orientable Regular Surface]
-
   \end{definition}
 
   \begin{definition}[Geodesic and Normal Curvature of Curves]
