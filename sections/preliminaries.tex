@@ -17,6 +17,39 @@ In the following, a brief overview of the main concepts is given.
   \autocite{kuehnel2013}
   \autocite{stahl2013}
 
+  Topological manifolds are the basis of differentiable manifolds and describe the class polyhedral surfaces lie in.
+
+  \begin{definition}[Topological Manifold]
+    Let $n\in\setNatural$.
+    Then a topological $n$-dimensional manifold $M$ (with boundary) is a second countable Hausdorff space which is locally homeomorphic to $\mathds{H}^n$.
+
+    That is, for all $p\in M$, there exists an open neighborhood $U$ of $p$ in $M$, an open set $V\subset\mathds{H}^n$, and a homeomorphism $\function{φ}{U}{V}$, called a (coordinate) chart.
+
+    % In this case, $M$ is called a topological $n$-dimensional manifold with boundary.
+    % or topological $n$-manifold for short.
+    % For brevity, the dimension is left out if it is clear from the context or not referred to.
+  \end{definition}
+
+  For the purpose of this thesis, all spaces will be a second countable Hausdorff space.
+  The definition is given for completeness.
+  A topological manifold with boundary is generalization of the standard concept of topological manifolds without boundary.
+  A topological manifold without boundary is a topological manifold with boundary, whereby its boundary is given by the empty set.
+
+  \begin{definition}[Smooth Manifold]
+    Let $n\in\setNatural$, $k\in\setNatural_{\infty}$, and $M$ be a topological $n$-dimensional manifold.
+    Then, given two charts $(U,φ)$ and $(V,ψ)$ of $M$, their transition map, also known as coordinate transformation, is defined by the following composition.
+    \[
+      \function{φ|_{U\cap V}\composition ψ|_{U\cap V}^{-1}}{ψ(U\cap V)}{φ(U\cap V)}
+    \]
+    The charts $(U,φ)$ and $(V,ψ)$ are said to be $\mathrm{C}^k$-compatible if either $U\cap V=\emptyset$ or their transition map is a $\mathrm{C}^k$-diffeomorphism.
+
+    A $\mathrm{C}^k$-atlas of $M$ is a family of $\mathrm{C}^k$-compatible charts that covers all of $M$.
+
+    By equipping the topological manifold $M$ with a maximal $\mathrm{C}^k$-atlas, we obtain a differentiable $n$-dimensional manifold of class $\mathrm{C}^k$ (with boundary).
+
+    For $k=\infty$, it is called a smooth $n$-dimensional manifold (with boundary).
+  \end{definition}
+
   \begin{definition}[Parameterized Curves]
     Let $n\in\setNatural$ and $[a,b]\subset\setReal$ be a compact interval.
     Then a continuously differentiable function $\function{γ}{[a,b]}{\setReal^n}$ is called an $n$-dimensional parameterized curve.
@@ -121,8 +154,8 @@ In the following, a brief overview of the main concepts is given.
 
 
   \begin{definition}[Regular Surface with Boundary]
-    Let $S \subset \setReal^3$, such that for each $p \in S$, there exists a neighborhood $V \subset \setReal^3$ and a map $\function{x}{U}{V\cap S}$ of an open set $U\subset\setReal^2$ with the following properties.
-    $x$ is differentiable and a homeomorphism.
+    Let $S \subset \setReal^3$, such that for each $p \in S$, there exists a neighborhood $V \subset \setReal^3$ and a map $\function{φ}{U}{V\cap S}$ of an open set $U\subset\setReal^2$ with the following properties.
+    φ is differentiable and a homeomorphism and for all $p\in U$, its derivative $\jacobian φ(p)$ has full rank.
   \end{definition}
 
   \begin{definition}[Tangential and Normal Space]
@@ -141,6 +174,15 @@ In the following, a brief overview of the main concepts is given.
 
 \subsection{Polyhedral Surfaces} % (fold)
 \label{sub:polyhedral_surfaces}
+
+  There are definitions for manifolds with corners.
+  In the topological case, these are equivalent to manifolds with boundaries.
+  For the smooth case, it is different.
+  The half space is only homeomorphic and not diffeomorphic to the cube space.
+  so, we could generalize a polyhedral surface as a smooth manifold with corners.
+  on the definitions, there is no uniform agree.
+  So, we will not use the generalization of manifolds with corners.
+  we will use the theory of polthier which should be applicable to manifolds with corners.
 
 % subsection polyhedral_surfaces (end)
 
