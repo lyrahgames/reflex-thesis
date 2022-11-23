@@ -17,71 +17,11 @@ In the following, a brief overview of the main concepts is given.
   \autocite{kuehnel2013}
   \autocite{stahl2013}
 
-  Topological manifolds are the basis of differentiable manifolds and describe the class polyhedral surfaces lie in.
-
-  \begin{definition}[Topological Manifold]
-    Let $n\in\setNatural$.
-    Then a topological $n$-dimensional manifold $M$ (with boundary) is a second countable Hausdorff space which is locally homeomorphic to $\mathds{H}^n$.
-
-    That is, for all $p\in M$, there exists an open neighborhood $U$ of $p$ in $M$, an open set $V\subset\mathds{H}^n$, and a homeomorphism $\function{φ}{U}{V}$, called a (coordinate) chart.
-
-    % In this case, $M$ is called a topological $n$-dimensional manifold with boundary.
-    % or topological $n$-manifold for short.
-    % For brevity, the dimension is left out if it is clear from the context or not referred to.
-  \end{definition}
-
-  For the purpose of this thesis, all spaces will be a second countable Hausdorff space.
-  The definition is given for completeness.
-  A topological manifold with boundary is generalization of the standard concept of topological manifolds without boundary.
-  A topological manifold without boundary is a topological manifold with boundary, whereby its boundary is given by the empty set.
-
-  \begin{definition}[Smooth Manifold]
-    Let $n\in\setNatural$, $k\in\setNatural_{\infty}$, and $M$ be a topological $n$-dimensional manifold.
-    Then, given two charts $(U,φ)$ and $(V,ψ)$ of $M$, their transition map, also known as coordinate transformation, is defined by the following composition.
-    \[
-      \function{φ|_{U\cap V}\composition ψ|_{U\cap V}^{-1}}{ψ(U\cap V)}{φ(U\cap V)}
-    \]
-    The charts $(U,φ)$ and $(V,ψ)$ are said to be $\mathrm{C}^k$-compatible if either $U\cap V=\emptyset$ or their transition map is a $\mathrm{C}^k$-diffeomorphism.
-
-    A $\mathrm{C}^k$-atlas of $M$ is a family of $\mathrm{C}^k$-compatible charts that covers all of $M$.
-
-    By equipping the topological manifold $M$ with a maximal $\mathrm{C}^k$-atlas, we obtain a differentiable $n$-dimensional manifold of class $\mathrm{C}^k$ (with boundary).
-
-    For $k=\infty$, it is called a smooth $n$-dimensional manifold (with boundary).
-  \end{definition}
-
-  \begin{definition}[Riemannian Manifold]
-    A Riemannian manifold is a smooth manifold $M$ equipped with a positive-definite inner product $g_p$ on the tangent space $\mathrm{T}_pM$ at each point $p\in M$.
-    Thereby, for any chosen chart the coordinate functions of $g$ need to be smooth.
-  \end{definition}
-  The inner metric of a Riemannian manifold takes the place of the scalar product and measures angles.
-
-  \begin{definition}[Tangential Space]
-    Let $M$ be a smooth manifold and $p\in M$.
-    A tangential vector in $p$ is a linear and smooth functional $\function{X}{\mathrm{C}^{\infty}(M)}{\setReal}$, such that for all $f,g\in\mathrm{C}^{\infty}(M)$ the following holds.
-    \[
-      X(fg) = f(p) X(g) + g(p) X(f)
-    \]
-    The set $\mathrm{T}_pM$ of all tangential vectors in $p$ is called tangential space in $p$.
-  \end{definition}
-  The tangential space is for all points isomorphic to $\setReal^n$.
-  For a chosen chart, we can easily construct basis vectors.
-  Every tangential vector is a tangent vector of a curve running through that point.
-
-  \begin{definition}[Normal Space]
-    Let $(M,g)$ be a Riemannian manifold, $S\subset M$ a Riemannian submanifold and $p\in S$.
-    \[
-      \mathrm{N}_pS \define \set{x\in \mathrm{T}_pM}{\forall y\in\mathrm{T}_pS\colon g(x,y)=0}
-    \]
-  \end{definition}
-  The normal space is the orthogonal complement and can in general only be defined for embedded manifolds.
-  For orthogonality, we need a Riemannian manifold.
-  A more general definition is possible by using quotient spaces.
-  As a consequence, the normal space is isomorphic to $\setReal^{n-k}$.
+  The surfaces, we are looking at, are given by compact orientable Riemannian submanifolds (with boundary) of dimension two embedded in $\setReal^3$.
 
   \begin{definition}[Parameterized Curves]
-    Let $n\in\setNatural$ and $[a,b]\subset\setReal$ be a compact interval.
-    Then a continuously differentiable function $\function{γ}{[a,b]}{\setReal^n}$ is called an $n$-dimensional parameterized curve.
+    Let $n\in\setNatural$, $k\in\setNatural_{\infty}$, and $[a,b]\subset\setReal$ be a compact interval.
+    Then a $k$-times continuously differentiable function $\function{γ}{[a,b]}{\setReal^n}$ is called an $n$-dimensional parameterized curve of class $\mathrm{C}^k$.
     \begin{itemize}
       \item $\text{γ is closed} :\iff γ(a) = γ(b)$
       \item $\text{γ is simple} :\iff \forall t\in[a,b)\colon \forall s\in(t,b],(t,s)\neq(a,b)\colon\quad γ(t)\neq γ(s)$
@@ -97,7 +37,7 @@ In the following, a brief overview of the main concepts is given.
   A closed curve can therefore still be simple.
 
   \begin{definition}[Length of Curves]
-    Let $n\in\setNatural$, $[a,b]\subset\setReal$ be a compact interval, and $\function{γ}{[a,b]}{\setReal^n}$ be an $n$-dimensional parameterized curve.
+    Let $n\in\setNatural$, $k\in\setNatural_{\infty}$, $[a,b]\subset\setReal$ be a compact interval, and $\function{γ}{[a,b]}{\setReal^n}$ be an $n$-dimensional parameterized curve of class $\mathrm{C}^k$.
     Then the length of γ is defined as follows.
     \[
       L(γ) \define \integral{a}{b}{\norm{γ'(t)}}{t}
@@ -113,18 +53,19 @@ In the following, a brief overview of the main concepts is given.
   For curves parameterized by arc length, it holds that $L(γ)=b-a$.
 
   \begin{lemma}[Regular curves can be parameterized by arc length]
-    Let $n\in\setNatural$, $[a,b]\subset\setReal$ be a compact interval, and $\function{γ}{[a,b]}{\setReal^n}$ be an $n$-dimensional parameterized curve that is regular.
-    Then up to a constant shift, there exists a unique continuously differentiable and bijective function $\function{u}{[c,d]}{[a,b]}$ on a compact interval $[c,d]\subset\setReal$ with strictly positive derivative, such that the composition $γ\composition u$ is a curve parameterized by arc length.
+    Let $n\in\setNatural$, $k\in\setNatural_{\infty}$, $[a,b]\subset\setReal$ be a compact interval, and $\function{γ}{[a,b]}{\setReal^n}$ be an $n$-dimensional parameterized curve of class $\mathrm{C}^k$ that is regular.
+    Then up to a constant shift, there exists a unique $k$-times continuously differentiable and bijective function $\function{u}{[c,d]}{[a,b]}$ on a compact interval $[c,d]\subset\setReal$ with strictly positive derivative, such that the composition $γ\composition u$ is a curve parameterized by arc length.
   \end{lemma}
   \begin{proof}
+    The restriction of $\norm{\cdot}$ to $\setReal^n\setminus\set{0}{}$ is an infinitely differentiable function.
     The regularity of γ implies that $\norm{γ'}$ and, as a direct consequence, the derivative of $s_γ$ are strictly positive.
-    Hence, $s_γ$ is bijective with differentiable inverse.
+    Hence, $s_γ$ is bijective with $k$-times continuously differentiable inverse.
     The derivative of $s_γ^{-1}$ must also be strictly positive and continuous as a composition of continuous functions.
     \[
       \roundBrackets{s_γ^{-1}}' = \frac{1}{s_γ'\composition s_γ^{-1}} = \frac{1}{\norm{γ'}\composition s_γ^{-1}} > 0
     \]
     Define $\tilde{γ}\define γ\composition s_γ^{-1}$.
-    Then by differential calculus, it follows, that $\tilde{γ}$ is continuously differentiable and parameterized by arc length.
+    Then by differential calculus, it follows, that $\tilde{γ}$ is $k$-times continuously differentiable and parameterized by arc length.
     \[
       \norm{\tilde{γ}'}
       = \norm{γ'\composition s_γ^{-1} \cdot \roundBrackets{s_γ^{-1}}'}
@@ -135,7 +76,7 @@ In the following, a brief overview of the main concepts is given.
     \]
     This shows that $s_γ^{-1}$ fulfills the required properties and the existence of a parameterization by arc length.
     To show its uniqueness up to a constant shift, assume an arbitrary function $u$ as given in the lemma.
-    Applying the same reasoning as for $s_γ$, it is clear that $\inverse{u}$ also is continuously differentiable with strictly positive derivative.
+    Applying the same reasoning as for $s_γ$, it is clear that $\inverse{u}$ also is $k$-times continuously differentiable with strictly positive derivative.
     By calculation, we may then show its connection to the arc length.
     \[
       1
@@ -184,7 +125,43 @@ In the following, a brief overview of the main concepts is given.
   \end{definition}
 
   \begin{definition}[Geodesic and Normal Curvature of Curves]
+    Let $M$ be a $k$-dimensional Riemannian submanifold embedded in $\setReal^n$ and $\function{γ}{[a,b]}{M}$ a curve parameterized by arc length.
+    The geodesic curvature $κ_\mathrm{g}(γ)$ and the normal curvature $κ_\mathrm{n}$ of γ arg given by the following expressions.
+    \[
+      κ_\mathrm{g}(γ)(t) = \norm{P_{\mathrm{T}_{γ(t)}M} γ''(t)}
+      \separate
+      κ_\mathrm{n}(γ)(t) = \norm{P_{\mathrm{N}_{γ(t)}M} γ''(t)}
+    \]
+  \end{definition}
 
+  \begin{corollary}
+    Let $M$ be a $k$-dimensional Riemannian submanifold embedded in $\setReal^n$ and $\function{γ}{[a,b]}{M}$ a curve parameterized by arc length.
+    \[
+      κ^2(γ) = κ_\mathrm{g}^2(γ) + κ_\mathrm{n}^2(γ)
+    \]
+  \end{corollary}
+
+  \begin{definition}[Oriented Curvatures of Curves]
+    Let $M$ be a two-dimensional oriented Riemannian submanifold embedded in $\setReal^3$ and $\function{γ}{[a,b]}{M}$ a curve parameterized by arc length.
+    Let $N$ be a field of positively oriented unit normals on $M$ and $T$ be a field of tangent vectors such that for all $t\in[a,b]$, $(γ'(t),T(t))$ is positively oriented basis in $\mathrm{T}_{γ(t)}M$.
+    \[
+      κ_\mathrm{g}(γ) = \scalarProduct{T}{γ''}
+      \separate
+      κ_\mathrm{n}(γ) = \scalarProduct{N}{γ''}
+    \]
+  \end{definition}
+
+  \begin{definition}[Geodesics]
+    Let $M$ be a two-dimensional Riemannian submanifold embedded in $\setReal^3$ and $\function{γ}{[a,b]}{M}$ a curve parameterized by arc length.
+    The curve γ is called a geodesic if $κ_g(γ) = 0$.
+  \end{definition}
+
+  \begin{definition}[Geodesics Problems]
+    Let $M$ be a two-dimensional Riemannian submanifold embedded in $\setReal^3$.
+
+    The problem of finding a geodesic $\function{γ}{[a,b]}{M}$ for a given starting point $γ(a)$ and a given direction $γ'(a)$ is called the geodesic initial value problem.
+
+    The problem of finding a geodesic $\function{γ}{[a,b]}{M}$ for given start and end points $γ(a)$ and $γ(b)$ is called the geodesic boundary value problem.
   \end{definition}
 
 % subsection differential_geometry (end)
@@ -200,6 +177,63 @@ In the following, a brief overview of the main concepts is given.
   on the definitions, there is no uniform agree.
   So, we will not use the generalization of manifolds with corners.
   we will use the theory of polthier which should be applicable to manifolds with corners.
+
+  \begin{definition}[Triangle]
+    Let $n\in\setNatural$ with $n\geq 2$ and $A,B,C\in\setReal^n$ affinely independent points.
+    Then the (topological) triangle $\triangle$ (embedded in $\setReal^n$) is given by the following expression.
+    \[
+      \triangle \define \set{uA + vB + wC}{u,v,w\in[0,1], u+v+w=1}
+    \]
+    The triangle's vertices $\mathcal{V}(\triangle)$ and edges $\mathcal{E}(\triangle)$ are hereby defined as follows.
+    \[
+      \mathcal{V}(\triangle) \define \set{A,B,C}{}
+      \separate
+      \mathcal{E}(\triangle) \define \set{\overline{AB}, \overline{BC}, \overline{CA}}{}
+    \]
+    \[
+      ϑ_\triangle(A) = \arccos\frac{\scalarProduct{\overrightarrow{AB}}{\overrightarrow{AC}}}{\norm{\overrightarrow{AB}}\norm{\overrightarrow{AC}}}
+    \]
+  \end{definition}
+  A triangle is topological 2-manifold with boundary embedded in $\setReal^n$.
+  Triangles are planar surfaces and, hence, geodesics are given by straight lines.
+
+  \begin{definition}[Surface Mesh]
+    Let $n\in\setNatural$ with $n\geq 2$ and $\mathcal{T}\neq\emptyset$ be a finite set of triangles embedded in $\setReal^n$.
+    Let $S=\cup\mathcal{T}$ be a two-dimensional topological manifold (with boundary), such that for all $\triangle_1,\triangle_2\in\mathcal{T}$ with $\triangle_1\neq\triangle_2$ the following holds.
+    \[
+      \triangle_1\cap\triangle_2 \in \set{\emptyset}{} \cup [\mathcal{V}(\triangle_1)\cap\mathcal{V}(\triangle_2)] \cup [\mathcal{E}(\triangle_1)\cap\mathcal{E}(\triangle_2)]
+    \]
+    In this case, $S$ is called a (topological) surface mesh (embedded in $\setReal^n$).
+    With $\mathcal{V}(S)$ we denote its vertices, with $\mathcal{E}(S)$ its edges, and with $\mathcal{F}(S)$ its faces.
+    \[
+      \mathcal{V}(S) \define \bigcup_{\triangle\in\mathcal{T}} \mathcal{V}(\triangle)
+      \separate
+      \mathcal{E}(S) \define \bigcup_{\triangle\in\mathcal{T}} \mathcal{E}(\triangle)
+      \separate
+      \mathcal{F}(S) \define \mathcal{T}
+    \]
+  \end{definition}
+  A surface mesh is again a topological 2-manifold.
+
+  \begin{definition}[Piecewise Geodesic Curves]
+
+  \end{definition}
+
+  \begin{definition}[Total Vertex Angle]
+    \[
+      ϑ_S(v) \define \sum_{\triangle\in\mathcal{T}, v\in\triangle} ϑ_\triangle(v)
+    \]
+  \end{definition}
+
+  \begin{definition}[Discrete Geodesic Curvature]
+    \[
+      κ_\mathrm{g}(γ) = π - \frac{2π}{ϑ_S(γ)}β_S(γ)
+    \]
+  \end{definition}
+
+  \begin{definition}[Discrete Geodesic Problems]
+
+  \end{definition}
 
 % subsection polyhedral_surfaces (end)
 

@@ -1,0 +1,142 @@
+\documentclass{stdlocal}
+\begin{document}
+\section{Analysis on Manifolds} % (fold)
+\label{sec:analysis_on_manifolds}
+
+Topological manifolds are the basis of differentiable manifolds and describe the class polyhedral surfaces lie in.
+
+\begin{definition}[Topological Manifold]
+  Let $n\in\setNatural$.
+  Then a topological $n$-dimensional manifold $M$ (with boundary) is a second countable Hausdorff space which is locally homeomorphic to $\mathds{H}^n$.
+
+  That is, for all $p\in M$, there exists an open neighborhood $U$ of $p$ in $M$, an open set $V\subset\mathds{H}^n$, and a homeomorphism $\function{φ}{U}{V}$, called a (coordinate) chart.
+
+  % In this case, $M$ is called a topological $n$-dimensional manifold with boundary.
+  % or topological $n$-manifold for short.
+  % For brevity, the dimension is left out if it is clear from the context or not referred to.
+\end{definition}
+
+For the purpose of this thesis, all spaces will be a second countable Hausdorff space.
+The definition is given for completeness.
+A topological manifold with boundary is generalization of the standard concept of topological manifolds without boundary.
+A topological manifold without boundary is a topological manifold with boundary, whereby its boundary is given by the empty set.
+
+\begin{definition}[Smooth Manifold]
+  Let $n\in\setNatural$, $k\in\setNatural_{\infty}$, and $M$ be a topological $n$-dimensional manifold.
+  Then, given two charts $(U,φ)$ and $(V,ψ)$ of $M$, their transition map, also known as coordinate transformation, is defined by the following composition.
+  \[
+    \function{φ|_{U\cap V}\composition ψ|_{U\cap V}^{-1}}{ψ(U\cap V)}{φ(U\cap V)}
+  \]
+  The charts $(U,φ)$ and $(V,ψ)$ are said to be $\mathrm{C}^k$-compatible if either $U\cap V=\emptyset$ or their transition map is a $\mathrm{C}^k$-diffeomorphism.
+
+  A $\mathrm{C}^k$-atlas of $M$ is a family of $\mathrm{C}^k$-compatible charts that covers all of $M$.
+
+  By equipping the topological manifold $M$ with a maximal $\mathrm{C}^k$-atlas, we obtain a differentiable $n$-dimensional manifold of class $\mathrm{C}^k$ (with boundary).
+
+  For $k=\infty$, it is called a smooth $n$-dimensional manifold (with boundary).
+\end{definition}
+
+\begin{definition}[Smooth Maps]
+  Let $M$ and $N$ be two manifolds and $\function{F}{M}{N}$.
+  For two given charts $(U,φ)$ of $M$ and $(V,ψ)$ of $N$, we define the coordinate representation of $F$ by the following composition.
+  \[
+    \function{ψ\composition F\composition φ|_{U\cap F^{-1}(V)}^{-1}}{φ\roundBrackets{U\cap F^{-1}(V)}}{ψ(V)}
+  \]
+  $F$ is a differentiable map of class $\mathrm{C}^k$, if for all pairs of given charts, its coordinate representations is an element of $\mathrm{C}^k(\setReal^m, \setReal^n)$.
+
+  We call $F$ a $\mathrm{C}^k$-diffeomorphism if it is bijective and in both directions a differentiable map of class $\mathrm{C}^k$.
+  \[
+    \mathrm{C}^k(M,N) \define \set{\function{F}{M}{N}}{\text{$F$ is differentiable of class $\mathrm{C}^k$}}
+  \]
+  \[
+    \mathrm{C}^k(M) \define \mathrm{C}^k(M,\setReal)
+  \]
+\end{definition}
+
+\begin{definition}[Tangential Space]
+  Let $M$ be a smooth manifold and $p\in M$.
+  A tangential vector in $p$ is a linear and smooth functional $\function{X}{\mathrm{C}^{\infty}(M)}{\setReal}$, such that for all $f,g\in\mathrm{C}^{\infty}(M)$ the following holds.
+  \[
+    X(fg) = f(p) X(g) + g(p) X(f)
+  \]
+  The set $\mathrm{T}_pM$ of all tangential vectors in $p$ is called tangential space in $p$.
+  The tangent bundle is then as disjoint union.
+  \[
+    \mathrm{T}M \define \bigsqcup_{p\in M} \mathrm{T}_pM
+  \]
+\end{definition}
+The tangential space is for all points isomorphic to $\setReal^n$.
+For a chosen chart, we can easily construct basis vectors.
+Every tangential vector is a tangent vector of a curve running through that point.
+
+\begin{definition}[Differential]
+  \[
+    \function{\infinitesimal F(p)}{\mathrm{T}_pM}{\mathrm{T}_{F(p)}N}
+    \separate
+    \infinitesimal F(p)(X)(f) \define X(f\composition F)
+  \]
+  \[
+    \function{\infinitesimal F}{\mathrm{T}M}{\mathrm{T}N}
+  \]
+\end{definition}
+
+\begin{definition}[Smooth Embedding]
+  Let $M$ and $N$ be two manifolds and $\function{F}{M}{N}$.
+  $F$ is an immersion if for all $p\in M$ its differential $\infinitesimal F(p)$ is injective.
+  Furthermore, it is called an embedding if $\function{F}{M}{F(M)}$ is a homeomorphism.
+\end{definition}
+
+\begin{definition}[Embedded Submanifold]
+  Let $M$ be a manifold.
+  Then a subset $S\subset M$ is called an embedded submanifold of dimension $k$ if for all $p\in S$, there exists a chart $(U,φ)$ in $M$ with $p\in U$, such that the following holds.
+  \[
+    φ(U\cap S) = \set{x\in φ(U)}{\forall p\in\setNatural, k<p\leq n\colon x_p = 0}
+  \]
+\end{definition}
+
+\begin{theorem}[The image of an embedding is an embedded submanifold]
+  The image of an embedding is an embedded submanifold.
+\end{theorem}
+
+\begin{definition}[Vector Bundle]
+  Let $M$ be a manifold.
+  Then a vector bundle $E$ rank $k$ over $M$ is a manifold equipped with differentiable and surjective projection $\function{π}{E}{M}$, such that the following properties hold.
+  \begin{itemize}
+    \item For all $p\in M$, the fiber $\inverse{π}(p)\subset E$ is isomorphic to $\setReal^k$.
+    \item locally trivial: For all $p\in M$, there is a neighborhood $U$ of $p$ in $M$ and a diffeomorphism $\function{φ}{\inverse{π}(U)}{U\times\setReal^k}$, such that $π = π_1\composition φ$ and the restriction of φ to the fibers $\inverse{π}(p)$ is a linear isomorphism to $\setReal^k$.
+  \end{itemize}
+  A map $\function{σ}{M}{E}$ with $π\composition σ = \identity_M$ is called a section.
+\end{definition}
+
+\begin{definition}[Tensorbundle]
+  For a finite dimensional real vector space $V$, a $k$-tensor is a multilinear functional $\function{T}{V^k}{\setReal}$.
+  The space of all $k$-tensors over $V$ is denoted by $\mathrm{T}^k(V)$.
+  For a manifold $M$, we define the $k$-tensor bundle as follows.
+  \[
+    \mathrm{T}^kM \define \bigsqcup_{p\in M} \mathrm{T}^k(\mathrm{T}_pM)
+  \]
+\end{definition}
+
+\begin{definition}[Riemannian Manifold]
+  A Riemannian manifold is a smooth manifold $M$ equipped with a positive-definite inner product $g_p$ on the tangent space $\mathrm{T}_pM$ at each point $p\in M$.
+  Thereby, for any chosen chart the coordinate functions of $g$ need to be smooth.
+\end{definition}
+The inner metric of a Riemannian manifold takes the place of the scalar product and measures angles.
+
+\begin{theorem}[For every smooth manifold, there exists a Riemannian metric]
+  For every smooth manifold, there exists a Riemannian metric.
+\end{theorem}
+
+\begin{definition}[Normal Space]
+  Let $(M,g)$ be a Riemannian manifold, $S\subset M$ a Riemannian submanifold and $p\in S$.
+  \[
+    \mathrm{N}_pS \define \set{x\in \mathrm{T}_pM}{\forall y\in\mathrm{T}_pS\colon g(x,y)=0}
+  \]
+\end{definition}
+The normal space is the orthogonal complement and can in general only be defined for embedded manifolds.
+For orthogonality, we need a Riemannian manifold.
+A more general definition is possible by using quotient spaces.
+As a consequence, the normal space is isomorphic to $\setReal^{n-k}$.
+
+% section analysis_on_manifolds (end)
+\end{document}
