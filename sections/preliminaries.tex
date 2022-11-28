@@ -29,7 +29,7 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
     \begin{itemize}
       \item $\text{γ is closed} :\iff γ(a) = γ(b)$
       \item $\text{γ is simple} :\iff \forall t\in[a,b)\colon \forall s\in(t,b],(t,s)\neq(a,b)\colon\quad γ(t)\neq γ(s)$
-      \item $\text{γ is regular} :\iff \forall t\in [a,b]\colon\quad γ'(t)\neq 0$
+      \item $\text{γ is regular} :\iff \forall t\in (a,b)\colon\quad γ'(t)\neq 0$
       \item $\text{γ is parameterized by arc length} :\iff \norm{γ'} = 1$
     \end{itemize}
     % For brevity, a parameterized curve will be called curve and the curve's dimensionality will be left out if the context is clear about or not requiring those signifiers.
@@ -39,6 +39,119 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
   But using only the shape and neglecting its parameterization does only make sense if the shape at least fulfills the properties of a differentiable 1-manifold.
   Unfortunately, the shape of parameterized curves exhibits more general structures and, thus, does not necessarily abide to these constraints.
   As a consequence, more specialized classes of curves need to be looked at.
+
+  \begin{figure}[h]
+    \centering
+    \begin{subfigure}[t]{0.32\linewidth}
+      \center
+      \includegraphics[width=\linewidth]{plots/curve-example-1.pdf}
+      \caption{%
+        Zero-Velocity Curve
+        \[
+          \begin{aligned}[t]
+            &\function{γ}{[-1,1]}{\setReal^2} \\
+            &γ(t) \define
+            \begin{pmatrix}
+              t^3 \\
+              2t^2
+            \end{pmatrix}
+          \end{aligned}
+        \]
+      }
+    \end{subfigure}
+    \begin{subfigure}[t]{0.32\linewidth}
+      \center
+      \includegraphics[width=\linewidth]{plots/curve-example-3.pdf}
+      \caption{%
+        Lissajous Curve
+        \[
+          \begin{aligned}[t]
+            &\function{γ}{[0,2π]}{\setReal^2} \\
+            &γ(t) \define
+            \begin{pmatrix}
+              \cos t \\
+              \cos\roundBrackets{\frac{3}{2}t}
+            \end{pmatrix}
+          \end{aligned}
+        \]
+      }
+    \end{subfigure}
+    \begin{subfigure}[t]{0.32\linewidth}
+      \center
+      \includegraphics[width=\linewidth]{plots/curve-example-5.pdf}
+      \caption{%
+        Half-Circle
+        \[
+          \begin{aligned}[t]
+            &\function{γ}{[0,π]}{\setReal^2} \\
+            &γ(t) \define
+            \begin{pmatrix}
+              \cos t \\
+              \sin t
+            \end{pmatrix}
+          \end{aligned}
+        \]
+      }
+    \end{subfigure}
+
+    \begin{subfigure}[t]{0.32\linewidth}
+      \center
+      \includegraphics[width=\linewidth]{plots/curve-example-2.pdf}
+      \caption{%
+        Teardrop Curve
+        \[
+          \begin{aligned}[t]
+            &\function{γ}{[0,2π]}{\setReal^2}\\
+            &γ(t) \define
+            \begin{pmatrix}
+              \cos(t) \\
+              \sin(t)\sin^3\roundBrackets{\frac{1}{2}t}
+            \end{pmatrix}
+          \end{aligned}
+        \]
+      }
+    \end{subfigure}
+    \begin{subfigure}[t]{0.32\linewidth}
+      \center
+      \includegraphics[width=\linewidth]{plots/curve-example-4.pdf}
+      \caption{%
+        Lissajous Curve
+        \[
+          \begin{aligned}[t]
+            &\function{γ}{[0,2π]}{\setReal^2} \\
+            &γ(t)\define
+            \begin{pmatrix}
+              \cos t \\
+              \frac{1}{2} \sin 2t
+            \end{pmatrix}
+          \end{aligned}
+        \]
+      }
+    \end{subfigure}
+    \begin{subfigure}[t]{0.32\linewidth}
+      \center
+      \includegraphics[width=\linewidth]{plots/curve-example-6.pdf}
+      \caption{%
+        Circle
+        \[
+          \begin{aligned}[t]
+            &\function{γ}{[0,2π]}{\setReal^2} \\
+            &γ(t)\define
+              \begin{pmatrix}
+                \cos t \\
+                \sin t
+              \end{pmatrix}
+          \end{aligned}
+        \]
+      }
+    \end{subfigure}
+    \caption[Examples of Parameterized Curves]{%
+      \textbf{Examples of Parameterized Curves}\\
+      All the plots show a smooth two-dimensional parameterized curve γ on a compact interval with different additional properties.
+      The first row from left to right shows no special properties, a regular curve with self-intersection, and a regular and simple curve parameterized by arc length.
+      The second row shows their closed counterparts.
+    }
+  \end{figure}
 
   The derivative of a regular curve is never zero and therefore a map of full-rank at every point.
   Hence, a regular curve is an immersion into space and its shape is an immersed submanifold.
