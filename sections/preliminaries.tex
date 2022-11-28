@@ -3,33 +3,59 @@
 \section{Preliminaries} % (fold)
 \label{sec:preliminaries}
 
-To systematically approach the design and implementation of curve smoothing algorithms for surface meshes, basic knowledge in the topic of differential geometry and its generalization to polyhedral surfaces is administrable.
+To systematically approach the design and implementation of curve smoothing algorithms for surface meshes, basic knowledge in the topic of differential geometry of curves and its application and generalization to polyhedral surfaces and surface mesh curves is administrable.
 It allows to rigorously formulate the initial and boundary value problems for discrete geodesics which build the foundation of curve smoothing as geodesics can be interpreted as the class of smoothest curves.
-In the following, a brief overview of the main concepts is given.
+Alas, differential geometry heavily builds on the mathematical tools given in the topic of analysis on manifolds and, as a consequence, the reader is assumed to be familiar with its basic concepts.
+For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still provides a brief introduction to the topic to remind of and clarify notations.
+% In the following, a brief overview of the main concepts is given.
 
-\subsection{Differential Geometry} % (fold)
+\subsection{Differential Geometry of Curves} % (fold)
 \label{sub:differential_geometry}
 
-  For the purpose of this thesis, we will provide the classical formulation of differential geometry.
+  The theory of smooth curves in space or smooth surfaces is one of the main concerns of classical differential geometry.
+  Therefore, we refer to some standard textbooks, namely \textcite{goldhorn2009}, \textcite{carmo2016}, \textcite{kuehnel2013}, and \textcite{stahl2013}, for a more excessive and thorough introduction on this topic.
+  For the purpose of consistent notation and as a reminder, the main concepts of smooth curves are briefly given in the following in the sense of classical and modern differential geometry.
 
-  \autocite{goldhorn2009}
-  \autocite{carmo2016}
-  \autocite{kuehnel2013}
-  \autocite{stahl2013}
-
-  The surfaces, we are looking at, are given by compact orientable Riemannian submanifolds (with boundary) of dimension two embedded in $\setReal^3$.
+  In the field of analysis, it is a natural approach to extend a well-founded and -understood theory for smooth objects to their discrete counterparts and vice versa.
+  Hereby, discrete and smooth objects will be typically characterized by the limit of sequences of smooth and discrete objects, respectively.
+  This procedure may then allow for a generalization of properties and statements from one to the other case.
+  Surface mesh curves, as they will be defined in section~\ref{sub:polyhedral_surfaces}, can exactly be seen as such discrete counterparts to the shapes of special classes of smooth parameterized curves.
 
   \begin{definition}[Parameterized Curves]
     Let $n\in\setNatural$, $k\in\setNatural_{\infty}$, and $[a,b]\subset\setReal$ be a compact interval.
-    Then a $k$-times continuously differentiable function $\function{γ}{[a,b]}{\setReal^n}$ is called an $n$-dimensional parameterized curve of class $\mathrm{C}^k$.
+    Then a $k$-times continuously differentiable function $\function{γ}{[a,b]}{\setReal^n}$ is called an ($n$-dimensional) (parameterized) curve (of class $\mathrm{C}^k$).
+
+    For $k=\infty$, γ is also called a smooth ($n$-dimensional) (parameterized) curve.
     \begin{itemize}
       \item $\text{γ is closed} :\iff γ(a) = γ(b)$
       \item $\text{γ is simple} :\iff \forall t\in[a,b)\colon \forall s\in(t,b],(t,s)\neq(a,b)\colon\quad γ(t)\neq γ(s)$
       \item $\text{γ is regular} :\iff \forall t\in [a,b]\colon\quad γ'(t)\neq 0$
       \item $\text{γ is parameterized by arc length} :\iff \norm{γ'} = 1$
     \end{itemize}
-    For brevity, a parameterized curve will be called curve and the curve's dimensionality will be left out if the context is clear about or not requiring those signifiers.
+    % For brevity, a parameterized curve will be called curve and the curve's dimensionality will be left out if the context is clear about or not requiring those signifiers.
   \end{definition}
+  For most applications, the actual parameterization of a curve is not essential.
+  Only its shape, which is given by the image $γ([a,b])$, is used and referred to.
+  But using only the shape and neglecting its parameterization does only make sense if the shape at least fulfills the properties of a differentiable 1-manifold.
+  Unfortunately, the shape of parameterized curves exhibits more general structures and, thus, does not necessarily abide to these constraints.
+  As a consequence, more specialized classes of curves need to be looked at.
+
+  The derivative of a regular curve is never zero and therefore a map of full-rank at every point.
+  Hence, a regular curve is an immersion into space and its shape is an immersed submanifold.
+  For some applications, a regular curve is therefore already sufficiently useful.
+  A curve parameterized by arc length is hereby only a technical way of defining a canonical parameterization for regular curves that will be used to simplify the definition of curvature.
+  It is clear by definition, that every curve parameterized by arc length is also a regular curve.
+
+  To also make a regular curve an embedding, it needs to be injective.
+  To state that a curve is simple, ensures there are self-intersections and makes it an injective function.
+  Then by application of the theorem, the image of the embedding is an embedded 1-manifold.
+
+  \begin{corollary}
+    Let $n\in\setNatural$ and $k\in\setNatural_\infty$.
+    Then a simple and regular parameterized curve $\function{γ}{[a,b]}{\setReal^n}$ of class $\mathrm{C}^k$ is an embedding of class $\mathrm{C}^k$.
+    Hence, $γ([a,b])$ is a 1-manifold of class $\mathrm{C}^k$ embedded in $\setReal^n$.
+  \end{corollary}
+
   Every curve that is parameterized by arc length is automatically a regular curve.
   A regular parameterized curve is by definition a $\mathrm{C}^1$-embedding into $\setReal^n$.
   As a consequence, the image of a regular curve is a 1-manifold of class $\mathrm{C}^1$ embedded in $\setReal^n$.
@@ -124,6 +150,8 @@ In the following, a brief overview of the main concepts is given.
     \]
   \end{definition}
 
+  The surfaces, we are looking at, are given by compact orientable Riemannian submanifolds (with boundary) of dimension two embedded in $\setReal^3$.
+
   \begin{definition}[Geodesic and Normal Curvature of Curves]
     Let $M$ be a $k$-dimensional Riemannian submanifold embedded in $\setReal^n$ and $\function{γ}{[a,b]}{M}$ a curve parameterized by arc length.
     The geodesic curvature $κ_\mathrm{g}(γ)$ and the normal curvature $κ_\mathrm{n}$ of γ arg given by the following expressions.
@@ -184,51 +212,145 @@ In the following, a brief overview of the main concepts is given.
     \[
       \triangle \define \set{uA + vB + wC}{u,v,w\in[0,1], u+v+w=1}
     \]
-    The triangle's vertices $\mathcal{V}(\triangle)$ and edges $\mathcal{E}(\triangle)$ are hereby defined as follows.
+    The triangle's vertices $\mathscr{V}(\triangle)$ and edges $\mathscr{E}(\triangle)$ are hereby defined as follows.
     \[
-      \mathcal{V}(\triangle) \define \set{A,B,C}{}
+      \mathscr{V}(\triangle) \define \set{A,B,C}{}
       \separate
-      \mathcal{E}(\triangle) \define \set{\overline{AB}, \overline{BC}, \overline{CA}}{}
+      \mathscr{E}(\triangle) \define \set{\overline{AB}, \overline{BC}, \overline{CA}}{}
+    \]
+    \[
+      \partial\triangle \define \textstyle\bigcup\mathscr{E}(\triangle)
+    \]
+    \[
+      Π \define \set{\function{π}{\set{1,2,3}{}}{\mathscr{V}(\triangle)}}{\text{π bijective}}
+    \]
+    \[
+      D \define \set{(u,v) \in [0,1]^2}{u + v < 1}
+    \]
+    \[
+      \function{φ_π}{\overline{D}}{\triangle}
+      \separate
+      φ_π(u,v) \define (1 - u - v) π(1) + u π(2) + v π(3)
+    \]
+    \[
+      π\sim π' :\iff \exists σ\in\mathrm{S}_3, \mathrm{sgn}\, σ = 1 \colon π' = π\circ σ
+    \]
+    \[
+      Π/\sim = \set{[π], [\bar{π}]}{}
+    \]
+    \[
+      \triangle_{[π]} \define (\triangle, [π])
+    \]
+    \[
+      \mathscr{E}(\triangle_{[π]}) \define \set{\overrightarrow{π_1π_2},\overrightarrow{π_2π_3}, \overrightarrow{π_3π_1}}{}
     \]
     \[
       ϑ_\triangle(A) = \arccos\frac{\scalarProduct{\overrightarrow{AB}}{\overrightarrow{AC}}}{\norm{\overrightarrow{AB}}\norm{\overrightarrow{AC}}}
     \]
   \end{definition}
-  A triangle is topological 2-manifold with boundary embedded in $\setReal^n$.
+  A triangle is an orientable topological 2-manifold with boundary embedded in $\setReal^n$.
+  The atlas is given by $\set{\roundBrackets{φ_π(D),φ_π|_D^{-1}}}{π\in Π}$
+  The inner set $\triangle^\circ$ is an orientable smooth 2-manifold without boundary.
+  Its atlas is given by the restrictions $(\triangle^\circ, φ_π|_{D^\circ}^{-1})$.
   Triangles are planar surfaces and, hence, geodesics are given by straight lines.
+  Furthermore, the triangle is by definition a convex set and therefore always provides a unique solution for the geodesic boundary value problem.
 
-  \begin{definition}[Surface Mesh]
-    Let $n\in\setNatural$ with $n\geq 2$ and $\mathcal{T}\neq\emptyset$ be a finite set of triangles embedded in $\setReal^n$.
-    Let $S=\cup\mathcal{T}$ be a two-dimensional topological manifold (with boundary), such that for all $\triangle_1,\triangle_2\in\mathcal{T}$ with $\triangle_1\neq\triangle_2$ the following holds.
+  \begin{definition}[Polyhedral Surface and Surface Mesh]
+    Let $n\in\setNatural$ with $n\geq 2$ and $\mathscr{T}\neq\emptyset$ be a finite set of triangles embedded in $\setReal^n$.
+    Let $S=\bigcup\mathscr{T}$ be a two-dimensional topological manifold (with boundary), such that for all $\triangle_1,\triangle_2\in\mathscr{T}$ with $\triangle_1\neq\triangle_2$ the following holds.
     \[
-      \triangle_1\cap\triangle_2 \in \set{\emptyset}{} \cup [\mathcal{V}(\triangle_1)\cap\mathcal{V}(\triangle_2)] \cup [\mathcal{E}(\triangle_1)\cap\mathcal{E}(\triangle_2)]
+      \triangle_1\cap\triangle_2 \in \set{\emptyset}{} \cup [\mathscr{V}(\triangle_1)\cap\mathscr{V}(\triangle_2)] \cup [\mathscr{E}(\triangle_1)\cap\mathscr{E}(\triangle_2)]
     \]
-    In this case, $S$ is called a (topological) surface mesh (embedded in $\setReal^n$).
-    With $\mathcal{V}(S)$ we denote its vertices, with $\mathcal{E}(S)$ its edges, and with $\mathcal{F}(S)$ its faces.
+    In this case, $S$ is called a (topological) polyhedral surface (embedded in $\setReal^n$).
+    With $\mathscr{V}(S)$ we denote its vertices, with $\mathscr{E}(S)$ its edges, and with $\mathscr{F}(S)$ its faces.
     \[
-      \mathcal{V}(S) \define \bigcup_{\triangle\in\mathcal{T}} \mathcal{V}(\triangle)
+      \mathscr{V}(S) \define \bigcup_{\triangle\in\mathscr{T}} \mathscr{V}(\triangle)
       \separate
-      \mathcal{E}(S) \define \bigcup_{\triangle\in\mathcal{T}} \mathcal{E}(\triangle)
+      \mathscr{E}(S) \define \bigcup_{\triangle\in\mathscr{T}} \mathscr{E}(\triangle)
       \separate
-      \mathcal{F}(S) \define \mathcal{T}
+      \mathscr{F}(S) \define \mathscr{T}
+    \]
+    (topological) surface mesh.
+    \[
+      \mathscr{M}(S) \define \textstyle\bigcup \mathscr{E}(S)
+    \]
+    \[
+      \partial\mathscr{E}(S) \define \set{e\in\mathscr{E}(S)}{\exists!\triangle\in\mathscr{F}(S)\colon e\subset\triangle}
+      \separate
+      \mathscr{E}^\circ(S) \define \mathscr{E}(S) \setminus \partial\mathscr{E}(S)
+    \]
+    \[
+      \partial S \define \textstyle\bigcup \partial\mathscr{E}(S)
+      \separate
+      \partial\mathscr{V}(S) \define \mathscr{V}(S) \cap \partial S
+      \separate
+      \mathscr{V}^\circ(S) \define \mathscr{V}(S) \setminus \partial\mathscr{V}(S)
     \]
   \end{definition}
   A surface mesh is again a topological 2-manifold.
 
-  \begin{definition}[Piecewise Geodesic Curves]
+  \begin{definition}[Oriented Surface Mesh]
+    Let $S$ be a surface mesh and $\function{Π}{\mathscr{F}(S)}{\bigsqcup_{\triangle\in\mathscr{F}(S)} Π_\triangle}$.
+    \[
+      \forall \triangle_1,\triangle_2\in\mathscr{F}(S),\triangle_1\neq\triangle_2\colon\quad \mathscr{E}(Π(\triangle_1)) \cap \mathscr{E}(Π(\triangle_2)) = \emptyset
+    \]
+    $(S,Π)$ is called an oriented surface mesh.
+  \end{definition}
 
+  \begin{definition}[Discrete Surface Mesh Curve]
+    Let $n\in\setNatural$, $S$ be a surface mesh, and $x\in \boxBrackets{\bigcup\mathscr{E}(S)}^{n+1}$ be a tuple of $n+1$ points on the edges of the surface mesh $S$, such that adjacent points lie on the same triangle.
+    \[
+      \forall k\in\setNatural,k\leq n\colon x_k\neq x_{k+1} \land \exists \triangle\in\mathscr{F}(S)\colon x_k, x_{k+1}\in\triangle
+    \]
+    The (topological) curve given by connecting adjacent points by a straight line is called the (topological) discrete surface mesh curve.
+  \end{definition}
+
+  \begin{definition}[Surface Mesh Curve without Artifacts]
+    Let $S$ be a polyhedral surface and γ be a surface mesh curve characterized by $x\in\mathscr{M}^{n+1}(S)$.
+    \[
+      \forall k\in\setNatural, 1\leq k \leq n\colon
+      \mathscr{F}_S(x_{k-1}) \cap \mathscr{F}_S(x_{k+1}) = \emptyset
+    \]
+    If γ is a closed curve, that is $x_0 = x_{n+1}$, then
+    \[
+      \mathscr{F}_S(x_1) \cap \mathscr{F}_S(x_n) = \emptyset
+    \]
   \end{definition}
 
   \begin{definition}[Total Vertex Angle]
     \[
-      ϑ_S(v) \define \sum_{\triangle\in\mathcal{T}, v\in\triangle} ϑ_\triangle(v)
+      ϑ_S(v) \define \sum_{\triangle\in\mathscr{T}, v\in\triangle} ϑ_\triangle(v)
     \]
   \end{definition}
+
+  \begin{definition}[Curve Angle]
+    Let $S$ be a polyhedral surface and $p,x,q\in\mathscr{M}(S)$, $x\in S^\circ$ be adjacent vertices of surface mesh curve without artifacts on $S$.
+    Let $\mathscr{V}_S(x)$ the neighboring vertices.
+    The neighbor set can be partitioned into three possible empty tuples, such that $p,(x),q$ is surface mesh curvature without artifacts.
+    There exists two tuples $(p=x_{λ(0)},x_{λ(1)},\ldots,x_{λ(n)},x_{λ(n+1)} = q)$ and $(p,x_{ρ(1)},\ldots,x_{ρ(m)},q)$ that characterize a surface mesh curve without artifacts.
+    \[
+      β_λ = \sum_{k=1}^n \sphericalangle(x_{λ(k-1)},x_{λ(k)},x_{λ(k+1)})
+      \separate
+      β_ρ = \sum_{k=1}^m \sphericalangle(x_{ρ(k-1)},x_{ρ(k)},x_{ρ(k+1)})
+    \]
+    The (unoriented) curve angle at $x$ is given by the sum
+    \[
+      β = \min \set{β_λ, β_ρ}{}
+    \]
+    If there is an orientation $Π$ for $S$ then the (oriented) curve angle is given by the segmentation which points are connected by directed edge paths in their respective triangles such that $x$ is not contained.
+  \end{definition}
+  For the oriented case, the curve angle can only be defined for curve vertices that do not lie on the boundary of $S$.
+  Also the interpretation of the total vertex angle for boundary points is different.
+  This makes a generalization of the oriented discrete curvature at boundary points difficult.
 
   \begin{definition}[Discrete Geodesic Curvature]
     \[
       κ_\mathrm{g}(γ) = π - \frac{2π}{ϑ_S(γ)}β_S(γ)
     \]
+  \end{definition}
+
+  \begin{definition}[Discrete Geodesic Curvature for Boundaries]
+
   \end{definition}
 
   \begin{definition}[Discrete Geodesic Problems]
