@@ -14,39 +14,35 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
 
   The theory of smooth curves in space or smooth surfaces is one of the main concerns of classical differential geometry.
   Therefore, we refer to some standard textbooks, namely \textcite{goldhorn2009}, \textcite{carmo2016}, \textcite{kuehnel2013}, and \textcite{stahl2013}, for a more excessive and thorough introduction on this topic.
-  For the purpose of consistent notation and as a reminder, the main concepts of smooth curves are briefly given in the following in the sense of classical and modern differential geometry.
+  For the purpose of consistent notation and as a reminder, the main concepts of smooth curves are briefly given in the following in the sense of classical and modern differential geometry based on these books.
 
-  In the field of analysis, it is a natural approach to extend a well-founded and -understood theory for smooth objects to their discrete counterparts and vice versa.
-  Hereby, discrete and smooth objects will be typically characterized by the limit of sequences of smooth and discrete objects, respectively.
+  In the fields of analysis and numerical mathematics, it is a natural approach to extend a well-founded and -understood theory for smooth objects to their discrete counterparts and vice versa.
+  Hereby, discrete or smooth objects will be typically characterized by the limit of sequences of smooth or discrete objects, respectively.
   This procedure may then allow for a generalization of properties and statements from one to the other case.
-  Surface mesh curves, as they will be defined in section~\ref{sub:polyhedral_surfaces}, can exactly be seen as such discrete counterparts to the shapes of special classes of smooth parameterized curves.
+  Surface mesh curves, as they will be defined in section~\ref{sub:polyhedral_surfaces}, can exactly be seen as such discrete counterparts to the shapes of special classes of smooth parameterized curves \autocite{polthier2006}. \\
+  \autocite{forster2016,elstrodt2011,cheney2008,goldhorn2009}
 
-  \begin{definition}[Parameterized Curves]
-    Let $n\in\setNatural$, $k\in\setNatural_{\infty}$, and $[a,b]\subset\setReal$ be a compact interval.
-    Then a $k$-times continuously differentiable function $\function{γ}{[a,b]}{\setReal^n}$ is called an ($n$-dimensional) (parameterized) curve (of class $\mathrm{C}^k$).
+  \begin{definition}[Open and Closed Parameterized Curves]
+    Let $n\in\setNatural$, $k\in\setNatural_{\infty}$, and $[a,b]\subset\setReal$ be a compact interval.\\
 
-    For $k=\infty$, γ is also called a smooth ($n$-dimensional) (parameterized) curve.
-    \begin{itemize}
-      \item $\text{γ is closed} :\iff γ(a) = γ(b)$
-      \item $\text{γ is simple} :\iff \forall t\in[a,b)\colon \forall s\in(t,b],(t,s)\neq(a,b)\colon\quad γ(t)\neq γ(s)$
-      \item $\text{γ is regular} :\iff \forall t\in (a,b)\colon\quad γ'(t)\neq 0$
-      \item $\text{γ is parameterized by arc length} :\iff \norm{γ'} = 1$
-    \end{itemize}
-    % For brevity, a parameterized curve will be called curve and the curve's dimensionality will be left out if the context is clear about or not requiring those signifiers.
+    An (open) ($n$-dimensional) (parameterized) curve (of class $\mathrm{C}^k$) is a $k$-times continuously differentiable function $\function{γ}{[a,b]}{\setReal^n}$ on the compact interval $[a,b]$. \\
+
+    A closed ($n$-dimensional) (parameterized) curve (of class $\mathrm{C}^k$) is a $k$-times continuously differentiable function $\function{γ}{\mathds{T}^1[a,b]}{\setReal^n}$ on the respective one-dimensional topological torus $\mathds{T}^1[a,b]$. \\
+
+    Parameterized curves of class $\mathrm{C}^\infty$ are also called smooth.
   \end{definition}
-  For most applications, the actual parameterization of a curve is not essential.
-  Only its shape, which is given by the image $γ([a,b])$, is used and referred to.
-  But using only the shape and neglecting its parameterization does only make sense if the shape at least fulfills the properties of a differentiable 1-manifold.
-  Unfortunately, the shape of parameterized curves exhibits more general structures and, thus, does not necessarily abide to these constraints.
-  As a consequence, more specialized classes of curves need to be looked at.
+  Defining closed curves to be smooth functions on the topological space of a one-dimensional torus is hereby only a technicality that automatically takes care of the agreement of values and derivatives at the two boundary points which are glued together \autocite{stahl2013,carmo2016}.
+  The change of topological requirements for a closed curve still allows to interpret it as a general curve.
+  For this reason, when referring to parameterized curves in the following, closed and open curves are meant.
+  To get an impression of the implications of this definition, in figure~\ref{fig:curve-examples} typical examples of smooth curves are shown.
 
-  \begin{figure}[h]
+  \begin{figure}[t]
     \centering
     \begin{subfigure}[t]{0.32\linewidth}
       \center
       \includegraphics[width=\linewidth]{plots/curve-example-1.pdf}
       \caption{%
-        Zero-Velocity Curve
+        Semicubical Parabola
         \[
           \begin{aligned}[t]
             &\function{γ}{[-1,1]}{\setReal^2} \\
@@ -101,7 +97,7 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
         Teardrop Curve
         \[
           \begin{aligned}[t]
-            &\function{γ}{[0,2π]}{\setReal^2}\\
+            &\function{γ}{\mathds{T}^1[0,2π]}{\setReal^2}\\
             &γ(t) \define
             \begin{pmatrix}
               \cos(t) \\
@@ -118,7 +114,7 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
         Lissajous Curve
         \[
           \begin{aligned}[t]
-            &\function{γ}{[0,2π]}{\setReal^2} \\
+            &\function{γ}{\mathds{T}^1[0,2π]}{\setReal^2} \\
             &γ(t)\define
             \begin{pmatrix}
               \cos t \\
@@ -135,7 +131,7 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
         Circle
         \[
           \begin{aligned}[t]
-            &\function{γ}{[0,2π]}{\setReal^2} \\
+            &\function{γ}{\mathds{T}^1[0,2π]}{\setReal^2} \\
             &γ(t)\define
               \begin{pmatrix}
                 \cos t \\
@@ -145,35 +141,50 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
         \]
       }
     \end{subfigure}
-    \caption[Examples of Parameterized Curves]{%
-      \textbf{Examples of Parameterized Curves}\\
-      All the plots show a smooth two-dimensional parameterized curve γ on a compact interval with different additional properties.
-      The first row from left to right shows no special properties, a regular curve with self-intersection, and a regular and simple curve parameterized by arc length.
-      The second row shows their closed counterparts.
+    \caption[Examples of Smooth Parameterized Curves]{%
+      \textbf{Examples of Smooth Parameterized Curves}\\
+      All the plots show a smooth two-dimensional parameterized curve γ of a different class.
+      The first row from left to right shows a general curve, a regular curve with self-intersection, and a regular and simple curve parameterized by arc length.
+      The second row shows closed counterparts, respectively.
+      Hereby, the black arrows indicate the orientation of the chosen parameterization and the black lines its start and end.
     }
+    \label{fig:curve-examples}
   \end{figure}
 
-  The derivative of a regular curve is never zero and therefore a map of full-rank at every point.
-  Hence, a regular curve is an immersion into space and its shape is an immersed submanifold.
-  For some applications, a regular curve is therefore already sufficiently useful.
-  A curve parameterized by arc length is hereby only a technical way of defining a canonical parameterization for regular curves that will be used to simplify the definition of curvature.
-  It is clear by definition, that every curve parameterized by arc length is also a regular curve.
+  For most of the considered applications, the actual parameterization of a curve is not essential.
+  Only the shape, given by its image, is used, referred, and transformed.
+  But using only the shape and neglecting the parameterization of a curve does only make sense if the shape at least fulfills the properties of a one-dimensional manifold.
+  Unfortunately, as can be seen in figure~\ref{fig:curve-examples}, the shape of parameterized curves may exhibit more general structures, such as sharp edges and self-intersections, and, thus, does not necessarily abide to these constraints.
+  As a consequence, more regular and specialized classes of curves need to be looked at. \\
+  \autocite{goldhorn2009,carmo2016,kuehnel2013}
 
-  To also make a regular curve an embedding, it needs to be injective.
-  To state that a curve is simple, ensures there are self-intersections and makes it an injective function.
-  Then by application of the theorem, the image of the embedding is an embedded 1-manifold.
+  \begin{definition}[Regular and Simple Parameterized Curves]
+    Let γ be a parameterized curve.
+    Then γ is said to be simple if it is injective and regular if the following statement holds.
+    \[
+      \forall t\in \mathscr{D}(γ)^\circ \colon\quad γ'(t)\neq 0
+    \]
+    Furthermore, if $\norm{γ'} = 1$ then γ is parameterized by arc length.
+  \end{definition}
+  The derivative of a regular curve is apart from its boundary never zero and therefore a map of full-rank at every inner point.
+  Hence, a regular curve is an immersion into Euclidean space and, as a result, its shape is an immersed submanifold that still may contain self-intersections.
+  Using a curve that is parameterized by arc length is hereby only a way of defining a canonical parameterization for regular curves that will be used to simplify the definition of curvature.
+  It is clear by definition, that every curve parameterized by arc length is also a regular curve.\\
+  \autocite{goldhorn2009,carmo2016,kuehnel2013}
 
-  \begin{corollary}
-    Let $n\in\setNatural$ and $k\in\setNatural_\infty$.
-    Then a simple and regular parameterized curve $\function{γ}{[a,b]}{\setReal^n}$ of class $\mathrm{C}^k$ is an embedding of class $\mathrm{C}^k$.
-    Hence, $γ([a,b])$ is a 1-manifold of class $\mathrm{C}^k$ embedded in $\setReal^n$.
+  In applications that are able to handle self-intersections, regular curves are already sufficiently constrained.
+  Indeed, a robust and stable algorithm for curve smoothing should be able to cope with self-intersections and even remove them if necessary.
+  Still, to properly understand the transition, a regular curve shall become an embedding, such that, according to section~\ref{sec:analysis_on_manifolds}, is shape is actually a one-dimensional manifold.
+  To state that a curve is also simple, ensures it exhibits no self-intersections other than the single intersection for closed curves. \\
+  % Then by application of the theorem, the image of the embedding is an embedded 1-manifold.
+  \autocite{goldhorn2009,carmo2016,kuehnel2013}
+
+  \begin{corollary}[Simple, Regular Curves are Embeddings]
+    Let γ be a smooth parameterized curve that is simple and regular.
+    Then γ is a smooth embedding into Euclidean space and its image is an orientable and connected one-dimensional submanifold with boundary.
+    If γ is closed, then its image has no boundary.
   \end{corollary}
-
-  Every curve that is parameterized by arc length is automatically a regular curve.
-  A regular parameterized curve is by definition a $\mathrm{C}^1$-embedding into $\setReal^n$.
-  As a consequence, the image of a regular curve is a 1-manifold of class $\mathrm{C}^1$ embedded in $\setReal^n$.
-  The statement that a curve is simple makes sure that other intersections than the first with the last points are not allowed to occur.
-  A closed curve can therefore still be simple.
+  As this statement is a direct corollary, no additional proof will be given.
 
   \begin{definition}[Length of Curves]
     Let $n\in\setNatural$, $k\in\setNatural_{\infty}$, $[a,b]\subset\setReal$ be a compact interval, and $\function{γ}{[a,b]}{\setReal^n}$ be an $n$-dimensional parameterized curve of class $\mathrm{C}^k$.
