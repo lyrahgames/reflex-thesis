@@ -278,6 +278,7 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
   \end{definition}
   For smooth curves parameterized by arc length, the definition of their curvature is now straight-forward, as we understand it as the amount the curve bends at a point when moving along its trajectory.
   Referring to differential calculus, the magnitude of the second derivative exactly describes this specific amount.
+  \autocite{forster2016,goldhorn2009}
 
   \begin{definition}[Curvature of Regular Curves]
     Let $k\in\setNatural_\infty$ with $k\geq 2$, γ be a curve parameterized by arc length of class $\mathrm{C}^k$, and φ be a regular curve of class $\mathrm{C}^k$.
@@ -289,7 +290,7 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
     \]
   \end{definition}
   The definition involves second-order derivatives and therefore at least requires the curves to be of class $\mathrm{C}^2$.
-  In differential geometry, only smooth curves are typically observed where this states no further constraints.
+  In differential geometry, only smooth curves are typically observed where this states no further constraints \autocite{goldhorn2009}.
   For general regular curves, the tangent vector is not normalized which results in a scaling of the curvature value.
   The definition omits this peculiarity by using the arc length function to get back to the original parameterization.
 
@@ -298,56 +299,79 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
   Based on this intrinsic curvature, the overall curvature of a curve can be decomposed into the geodesic and normal curvature.
   Hereby, the geodesic curvature describes the amount of curvature an intrinsic observer of the ambient surface would measure walking along the curve without knowledge of the extrinsic curvature.
   The normal curvature on the other hand is only observable from the ambient space and depends on the extrinsic curvature and the tangential vector of the curve.
-  In the context of curve smoothing, the surfaces, we are looking at, are given by compact (orientable) Riemannian submanifolds (with boundary) of dimension two embedded in $\setReal^3$.
+  In the context of curve smoothing, the surfaces, we are looking at, are given by compact (orientable) Riemannian submanifolds (with boundary) of dimension two embedded in three-dimensional Euclidean space.
+  \autocite{goldhorn2009,carmo2016,kuehnel2013}
 
   \begin{definition}[Geodesic and Normal Curvature of Curves]
-    Let $M$ be a Riemannian submanifold embedded in $\setReal^n$ and γ be a curve parameterized by arc length and embedded in $M$.
-    The geodesic curvature $κ_\mathrm{g}(M,γ)$ and the normal curvature $κ_\mathrm{n}(M,γ)$ are given by the following expressions.
+    Let $M$ be a Riemannian submanifold embedded in Euclidean space and γ be a curve embedded in $M$ and parameterized by arc length.
+    The geodesic curvature $κ_\mathrm{g}(M,γ)$ and the normal curvature $κ_\mathrm{n}(M,γ)$ are defined as follows.
     \[
-      κ_\mathrm{g}(M,γ) \define \norm{P_{\mathrm{T}_{γ}M} (γ'')}
+      \bar{κ}_\mathrm{g}(M,γ) \define \norm{P_{\mathrm{T}_{γ}M} (γ'')}
       \separate
-      κ_\mathrm{n}(M,γ) \define \norm{P_{\mathrm{N}_{γ}M} (γ'')}
+      \bar{κ}_\mathrm{n}(M,γ) \define \norm{P_{\mathrm{N}_{γ}M} (γ'')}
     \]
   \end{definition}
   Geodesic and normal curvature are simply defined by computing the norm of projecting the direction of bending into the tangential and normal space of the manifold, respectively.
   Hence, this definition is consistent with the interpretation given above.
   As a direct consequence of the definition, the following statement can be deduced without further proof.
 
-  \begin{corollary}
-    Let $M$ be a Riemannian submanifold embedded in $\setReal^n$ and γ be a curve embedded in $M$  and parameterized by arc length.
+  \begin{corollary}[Relationship of Geodesic and Normal Curvature]
+    Let $M$ be a Riemannian submanifold embedded in Euclidean space and γ be a curve embedded in $M$  and parameterized by arc length.
+    Then the following holds.
     \[
-      κ^2(γ) = κ_\mathrm{g}^2(M,γ) + κ_\mathrm{n}^2(M,γ)
+      κ^2(γ) = \bar{κ}_\mathrm{g}^2(M,γ) + \bar{κ}_\mathrm{n}^2(M,γ)
     \]
   \end{corollary}
-  This statement may also be used to generalize the normal curvature for polyhedral surfaces.
-
+  % This statement may also be used to generalize the normal curvature for polyhedral surfaces.
   Up to now, all curvature definitions have been non-negative scalar functions that did not provide any orientation.
-  But in the context of orientable Riemannian submanifolds of dimension two, further knowledge about the direction of geodesic bending can be provided.
+  But in the context of orientable Riemannian submanifolds of dimension two, further knowledge about the direction of geodesic bending can be provided \autocite{goldhorn2009}.
   This is especially useful for implementation-specific work.
   Providing orientations for manifolds and curves allows for a more efficient moving of points along a curve or surface and access to its neighbors.
 
   \begin{definition}[Oriented Curvatures of Curves]
-    Let $M$ be a two-dimensional oriented Riemannian submanifold embedded in $\setReal^3$ and γ a curve embedded in $M$ parameterized by arc length.
-    Let $\function{ν}{M}{\mathrm{N}M}$ be a field of positively oriented unit normals on $M$ and $\function{μ}{M}{\mathrm{T}M}$ be a field of tangent vectors such that $(γ',μ\circ γ)$ is positively oriented basis.
+    Let $M$ be a two-dimensional oriented Riemannian submanifold embedded in $\setReal^3$ and γ be a curve embedded in $M$ and parameterized by arc length.
+
+    Furthermore, let $\function{ν}{M}{\mathrm{N}M}$ be a differentiable field of positively oriented unit normals and $\function{μ}{M}{\mathrm{T}M}$ be a differentiable field of normalized tangent vectors such that all values of $(γ',μ\circ γ)$ are a positively oriented basis.
+
+    The oriented geodesic and normal curvature are defined as follows, respectively.
     \[
       κ_\mathrm{g}(M,γ) = \scalarProduct{μ\circ γ}{γ''}
       \separate
       κ_\mathrm{n}(M,γ) = \scalarProduct{ν\circ γ}{γ''}
     \]
   \end{definition}
+  The oriented geodesic curvature is positive when the curve bends to the left and negative when it bends to the right with respect to the chosen positive orientation of the ambient submanifold.
+  The oriented normal curvature is not as important in our context as it only describes the bending of the surface along the trajectory.
+  Despite this, the previous corollary still holds for these oriented formulations.
 
-  \begin{definition}[Geodesics]
-    Let $M$ be a two-dimensional Riemannian submanifold embedded in $\setReal^3$ and $\function{γ}{[a,b]}{M}$ a curve parameterized by arc length.
-    The curve γ is called a geodesic if $κ_g(γ) = 0$.
+  For an intrinsic observer positioned in the ambient submanifold, the curve will be straight if it does not exhibit any geodesic curvature, because then it neither bends to the right nor to the left at any point.
+  This is one of the characterizing properties of geodesics in classical and modern differential geometry and, for us, will serve as a definition and generalization \autocite{goldhorn2009,carmo2016,kuehnel2013,polthier2006}.
+
+  \begin{definition}[Geodesic]
+    Let $M$ be a Riemannian submanifold embedded in Euclidean space and γ be a curve embedded in $M$ and parameterized by arc length.
+    Then γ is called a geodesic if $\bar{κ}_\mathrm{g}(M,γ) = 0$.
   \end{definition}
+  The problem of finding a geodesic for a given ambient submanifold, a starting point, and a starting direction is called the geodesic initial value problem.
+  In a rigorous formulation, it breaks down to a system of second-order ordinary differential equations for which it can be proven that a locally unique solution exists in some sense \autocite{polthier2006}.
+  If no starting direction is given, but instead the point to end at, then we call it the geodesic boundary value problem.
+  The boundary value problem is not as easy to handle as the initial value problem.
+  There is typically no unique solution despite the fact that there may be no solutions at all \autocite{polthier2006}.
+  Alas, for smoothing already given curves, the boundary value problem needs to be solved in a way that we find a single solution if there exists at least one.
+  \autocite{goldhorn2009,carmo2016,kuehnel2013}
 
-  \begin{definition}[Geodesics Problems]
-    Let $M$ be a two-dimensional Riemannian submanifold embedded in $\setReal^3$.
+  Another important alternative characterization states that geodesics are a critical point of their length functional with respect to variations tangential to the ambient submanifold \autocite{polthier2006}.
+  In general, this is understood to mean that a curve is locally shortest, that is, a slight change of the trajectory at any point will only increase the overall length of the curve.
+  Unfortunately, a critical point is not necessarily a local minimum of the length of a curve and by no means a global minimum.
+  Working with smooth submanifolds, this property is equivalent to our defining geodesic property.
+  Embedding a curve in a polyhedral non-differentiable submanifold allows for multiple non-trivial generalizations of geodesics, namely straightest and shortest discrete geodesics, based on each characterizing property as these are no longer equivalent in such a context \autocite{polthier2006}.
 
-    The problem of finding a geodesic $\function{γ}{[a,b]}{M}$ for a given starting point $γ(a)$ and a given direction $γ'(a)$ is called the geodesic initial value problem.
+  % \begin{definition}[Geodesics Problems]
+  %   Let $M$ be a two-dimensional Riemannian submanifold embedded in $\setReal^3$.
 
-    The problem of finding a geodesic $\function{γ}{[a,b]}{M}$ for given start and end points $γ(a)$ and $γ(b)$ is called the geodesic boundary value problem.
-  \end{definition}
+  %   The problem of finding a geodesic $\function{γ}{[a,b]}{M}$ for a given starting point $γ(a)$ and a given direction $γ'(a)$ is called the geodesic initial value problem.
+
+  %   The problem of finding a geodesic $\function{γ}{[a,b]}{M}$ for given start and end points $γ(a)$ and $γ(b)$ is called the geodesic boundary value problem.
+  % \end{definition}
 
 % subsection differential_geometry (end)
 
