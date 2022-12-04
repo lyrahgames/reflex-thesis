@@ -37,9 +37,14 @@
   So, choosing the initial curve in the right way will also heavily change the speed and quality of the algorithm.
   The algorithm should be able to handle a vast amount unsmooth curves.
   Still, the handling of artifacts will be taken care of at the start.
+  \paragraph{User Interface for Selecting and Controlling Initial Curves}
   \paragraph{Drawing by Ray Tracing}
   \paragraph{Connecting the Vertices}
+  \paragraph{Closed Initial Curves and Fixed Vertices}
   \paragraph{Artifact Removal}
+  \paragraph{Smoothed Curvature Values by Stencil}
+    Stencil is discrete approximation of solution to Laplacian equation or heat equation which is smooth (infinitely differentiable).
+    Maybe it would be useful to keep the length of the curve and still smooth it.
   \paragraph{Vertex Curves}
   \paragraph{Face Curves}
   \paragraph{Tracing Geodesics}
@@ -53,10 +58,16 @@
   \paragraph{Vertex Vertex Relaxation}
   \paragraph{Critical Vertex Handling}
   \paragraph{Artifact Removal and Self-Intersection Handling}
+  \paragraph{Desired Curvature Mapping}
+    Desired curvatures need to be constant along edges.
+    Therefore interpolate on angle-basis around vertex.
+    We do not want to loose information of desired curvatures.
   \paragraph{Curve Evaluation}
   \paragraph{Correctness and Convergence}
     Correctness can be shown by showing the convergence to the curvature values.
     This by definition of the given curvature values smooths the curve.
+    The convergence might only be shown for contracting the curve by smoothing.
+    As the limit is the geodesic, the prove of its convergence is there.
   \paragraph{Complexity}
 % subsection curve_smoothing_algorithm (end)
 

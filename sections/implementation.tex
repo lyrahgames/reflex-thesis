@@ -3,5 +3,42 @@
 \section{Implementation} % (fold)
 \label{sec:implementation}
 
+The implementation will explain the implementation of the curve smoothing and not the of other stages of the pipeline.
+Maybe geodesics tracing.
+
+\subsection{Serial Implementation on CPU} % (fold)
+\label{sub:serial_implementation_on_cpu}
+  \paragraph{Data Structure for Curve Vertices}
+    The stored edge is oriented.
+  \paragraph{Edge Vertex Relaxation}
+  \paragraph{Vertex Vertex Relaxation}
+  \paragraph{Critical Vertices}
+  \paragraph{Loop}
+% subsection serial_implementation_on_cpu (end)
+
+\subsection{Parallelization and Vectorization} % (fold)
+\label{sub:parallelization_and_vectorization}
+  Vectorization takes place at a low level while parallelization takes place at a high level.
+  Using SIMD vectorization, one needs to make sure that the registers are full.
+  For Edge Vertices, this is no problem.
+  For Vertex Vertex Handling, this might not increase the handling at all.
+  To let the compiler automatically vectorize wherever possible, divide edge vertices and vertex vertices and different sets.
+  Is this still useful?
+
+  Vectorization might not be the source for efficiency of this algorithm and it cannot be applied directly to GPU programming.
+  Parallelization will most likely need to take care of neighboring points.
+  Stream-based serial process needs to be changed.
+% subsection parallelization_and_vectorization (end)
+
+\subsection{Parallel Implementation on the CPU} % (fold)
+\label{sub:parallel_implementation_on_the_cpu}
+
+% subsection parallel_implementation_on_the_cpu (end)
+
+\subsection{Implementation on the GPU} % (fold)
+\label{sub:implementation_on_the_gpu}
+
+% subsection implementation_on_the_gpu (end)
+
 % section implementation (end)
 \end{document}
