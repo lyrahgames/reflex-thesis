@@ -3,5 +3,62 @@
 \section{Design} % (fold)
 \label{sec:design}
 
+\subsection{Overview and Program Pipeline} % (fold)
+\label{sub:program_pipeline}
+  The implementation will not be given for all parts of the program pipeline.
+  These will still be briefly discussed in this section.
+  \begin{itemize}
+    \item STL Input (get the topological connections)
+    \item Mesh Preprocessing for Normals and Neighbors and Checks for Orientability and Connection $\rightarrow$ Render the mesh
+    \item Initial Curve Selection (Vertex Curve, Face Curve, Tracing of Geodesics) $\rightarrow$ Render the initial curve
+    \item Parameter Set Selection for Smoothing Algorithm (Distance Envelope, Mask of Allowed Vertices, Tolerance, Iterations, Smoothness, Epsilon Hull Smoothing) $\rightarrow$ Render the envelopes and estimations based on parameters
+    \item Curve Smoothing and Smooth Curve Properties $\rightarrow$ Render smoothed curve
+    \item Smoothed Curve Transformation for Cutting, Storing, and other Applications
+  \end{itemize}
+% subsection program_pipeline (end)
+
+\subsection{Mesh Preprocessing} % (fold)
+\label{sub:mesh_preprocessing}
+  We need the topological connections of a given surface mesh.
+  In the case of general file formats, a scene is typically separated into multiple meshes which are topologically but not smoothly connected.
+  For proper drawing of curves in a whole scene, the topological structure of connections needs to be generated first.
+  Using the STL file format, this is not needed.
+  A given Mesh for the algorithm can be quite general.
+  Providing triangles which will introduce numerical difficulties is out of the scope of this thesis.
+  We will focus on orientable meshes.
+  Please note, that is not an actual restriction for the algorithm but will only speed up the implementation.
+  The boundaries need to be handled properly.
+% subsection mesh_preprocessing (end)
+
+\subsection{Initial Curve Selection} % (fold)
+\label{sub:initial_curve_selection}
+  As for the vast majority of optimization algorithms, the results and efficient working are highly dependent on the chosen starting values.
+  Curve smoothing itself is an optimization process and to solve the boundary value problem, we need an initial value.
+  So, choosing the initial curve in the right way will also heavily change the speed and quality of the algorithm.
+  The algorithm should be able to handle a vast amount unsmooth curves.
+  Still, the handling of artifacts will be taken care of at the start.
+  \paragraph{Drawing by Ray Tracing}
+  \paragraph{Connecting the Vertices}
+  \paragraph{Artifact Removal}
+  \paragraph{Vertex Curves}
+  \paragraph{Face Curves}
+  \paragraph{Tracing Geodesics}
+% subsection initial_curve_selection (end)
+
+\subsection{Curve Smoothing Algorithm} % (fold)
+\label{sub:curve_smoothing_algorithm}
+  \paragraph{Idea and Overview}
+  \paragraph{Edge Vertex Relaxation}
+    We need to take a look at topological and numerical robustness.
+  \paragraph{Vertex Vertex Relaxation}
+  \paragraph{Critical Vertex Handling}
+  \paragraph{Artifact Removal and Self-Intersection Handling}
+  \paragraph{Curve Evaluation}
+  \paragraph{Correctness and Convergence}
+    Correctness can be shown by showing the convergence to the curvature values.
+    This by definition of the given curvature values smooths the curve.
+  \paragraph{Complexity}
+% subsection curve_smoothing_algorithm (end)
+
 % section design (end)
 \end{document}
