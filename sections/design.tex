@@ -27,7 +27,12 @@
   Providing triangles which will introduce numerical difficulties is out of the scope of this thesis.
   We will focus on orientable meshes.
   Please note, that is not an actual restriction for the algorithm but will only speed up the implementation.
+  Furthermore, we look at surfaces which are the boundary of volumes in three-dimensional Euclidean space which can be looked at as open submanifolds.
+  These volumes are therefore by definition oriented and, hence, their boundary needs to be, too.
+  Still, we need to look boundaries for surfaces as, for example, distance envelopes restrict the surface without boundary to be one.
   The boundaries need to be handled properly.
+  Also, these requirements are only need to hold for the restriction to the distance envelope.
+  Often, lines will be drawn on oriented/orientable parts of the surface even if the surface is not orientable due to artifacts originating from scanning or generating meshes.
 % subsection mesh_preprocessing (end)
 
 \subsection{Initial Curve Selection} % (fold)
