@@ -3,18 +3,62 @@
 \section{Design} % (fold)
 \label{sec:design}
 
-\subsection{Overview and Program Pipeline} % (fold)
+Experimenting with various designs and implementations of algorithms, that robustly and efficiently smooth discrete curves on surface meshes, requires us to use a whole computer graphics pipeline or framework for loading input data, intuitively working with user interaction, and visualizing any intermediate result.
+As changing specific parts of such a pipeline may affect the performance, outcomes, and overall behavior of an algorithm or program, a brief overview over all of its components is essential to allow for reproducible results and will therefore be given in the following subsections.
+This will also make it possible for readers to simply reconstruct, adjust, and improve the pipeline for their own domain-specific projects.
+Afterwards, I will thoroughly elaborate on the design and implementation of chosen data structures and algorithms together with their mathematical primitives for curve smoothing.
+
+The pipeline or framework, described in this thesis, has been manually implemented with the C++ programming language and the OpenGL graphics API using some external libraries to handle low-level tasks.
+Already described in the introduction in section~\ref{sec:introduction}, this choice is well suited for open-source graphics applications and provides programmers with a large freedom when it comes to the implementation of data structures and algorithms.
+The complete source code of the project, called \textit{nanoreflex}, is provided as an open-source repository on GitHub.
+
+\subsection{Pipeline Overview} % (fold)
 \label{sub:program_pipeline}
-  The implementation will not be given for all parts of the program pipeline.
-  These will still be briefly discussed in this section.
-  \begin{itemize}
-    \item STL Input (get the topological connections)
-    \item Mesh Preprocessing for Normals and Neighbors and Checks for Orientability and Connection $\rightarrow$ Render the mesh
-    \item Initial Curve Selection (Vertex Curve, Face Curve, Tracing of Geodesics) $\rightarrow$ Render the initial curve
-    \item Parameter Set Selection for Smoothing Algorithm (Distance Envelope, Mask of Allowed Vertices, Tolerance, Iterations, Smoothness, Epsilon Hull Smoothing) $\rightarrow$ Render the envelopes and estimations based on parameters
-    \item Curve Smoothing and Smooth Curve Properties $\rightarrow$ Render smoothed curve
-    \item Smoothed Curve Transformation for Cutting, Storing, and other Applications
-  \end{itemize}
+  In the following, the stages of the implemented program pipeline are stated and summarized.
+  These stages naturally arise from an insight into the generation and tracing of geodesics on surface meshes, described in section~\ref{sec:previous_work}.
+  Locally shortest or straightest geodesics that follow as a solution from the discrete boundary value problem are in some sense the smoothest curves that cannot be made any smoother.
+  As we typically need to provide an initial curve for those geodesics to be found, the whole generation and tracing of geodesics can be looked at as an extreme smoothing process.
+  Adding parameters to let the user decide on when to stop this process then results in the pipeline given below and schematically shown in figure~\ref{fig:program-pipeline}.
+
+  \begin{figure}[h]
+    \begin{center}
+      \large
+      INSERT YOUR IMAGE HERE!
+    \end{center}
+    \caption[Program Pipeline Stages]{%
+      \textbf{Program Pipeline Stages}\\
+      The scheme shows all the stages of the implemented program pipeline.
+      The arrows indicate data flow and dependencies.
+    }
+    \label{fig:program-pipeline}
+  \end{figure}
+
+  \begin{enumerate}
+    \item \textbf{Surface Mesh Loading:}\\
+      Load a surface mesh given by a specific file format from the storage.
+    \item \textbf{Surface Mesh Preprocessing:}
+      \begin{enumerate}
+        \item Generate a connected mesh object to properly model the topology of the input.
+        \item Generate the pseudo-normals for each vertex.
+        \item Generate the dual graph for the neighbors of each triangle.
+        \item Check that the mesh is a valid orientable two-dimensional topological manifold.
+      \end{enumerate}
+    \item \textbf{Initial Curve Selection:} \\
+      Let the user choose an initial curve by drawing on the surface.
+    \item \textbf{Parameter Selection:} \\
+      Let the user choose parameters for the curve smoothing algorithm.
+    \item \textbf{Curve Smoothing:} \\
+      Smooth the initial curve according to the constraints given by the selected parameters.
+    \item \textbf{Postprocessing:} \\
+      Optionally apply the smoothed curve in a domain-specific context.
+  \end{enumerate}
+  According to figure~\ref{fig:program-pipeline}, the output of every stage is not only forwarded to the next stage but also specifically visualized and rendered to the screen to provide the user with visual feedback and to catch errors or exceptional behavior as early as possible.
+  Besides, additional user interactions will be processed for all stages to allow for measurements and adjustments and to be able to react to the output of previous stages.
+  The loading of surface meshes from different file formats is typically handled by loader libraries, such as \textit{Assimp}, and will not be further explained.
+  On the other hand, surface mesh preprocessing and the initial curve selection are crucial steps in the whole pipeline which remove geometric degeneracies and artifacts that would otherwise violate assertions needed for the correct execution of the algorithm.
+  Therefore both stages will be discussed in more detail in the following subsections.
+  The postprocessing in our case is optional and only provided for the sake of completeness.
+  The parameter selection is highly dependent on the implementation of the curve smoothing algorithm and, as a result, it will be described together with the curve smoothing itself.
 % subsection program_pipeline (end)
 
 \subsection{Mesh Preprocessing} % (fold)
