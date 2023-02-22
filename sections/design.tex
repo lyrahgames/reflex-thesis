@@ -191,11 +191,167 @@ The complete source code of the project, called \textit{nanoreflex}, is provided
   \paragraph{Tracing Geodesics}
 % subsection initial_curve_selection (end)
 
+\subsection{Unfolding} % (fold)
+\label{sub:unfolding}
+To unfold two triangles along their common edge and find the shortest line connecting two points, we will first look back into two dimensions.
+
+\begin{figure}[h]
+  \begin{center}
+    \large
+    INSERT YOUR IMAGE HERE!
+  \end{center}
+  \caption[2D Unfolding Primitive]{%
+    \textbf{2D Unfolding Primitive}
+  }
+\end{figure}
+
+Let $p,q\in\setReal^2$ such that $p_x < q_x$.
+\[
+  \Delta x = q_x - p_x
+  \separate
+  \Delta y = q_y - p_y
+\]
+The straight line function connecting these two points then looks like the following.
+\[
+  f(x) = \frac{q_y - p_y}{q_x - p_x}(x - p_x) + p_y = \frac{q_y - p_y}{q_x - p_x}x + \frac{p_yq_x - q_yp_x}{q_x - p_x}
+\]
+Please note that this function is well-defined, as $q_x - p_x > 0$.
+To get the intersection point with the ordinate, set the argument to zero.
+\[
+  t\define f(0) = \frac{p_yq_x - q_yp_x}{q_x - p_x}
+\]
+\begin{figure}[h]
+  \begin{center}
+    \large
+    INSERT YOUR IMAGE HERE!
+  \end{center}
+  \caption[Unfolding of two Triangles]{%
+    \textbf{Unfolding of two Triangles}
+  }
+\end{figure}
+
+Applying this expression to the case of two triangles that needs to be unfolded, the following results.
+\[
+  e \define \frac{v_2 - v_1}{\norm{v_2 - v_1}}
+  \separate
+  p \define r_1 - v_1
+  \separate
+  q \define r_2 - v_1
+\]
+\[
+  p_y = \scalarProduct{e}{p}
+  \separate
+  q_y = \scalarProduct{e}{q}
+\]
+\[
+  p_x = -\norm{p - p_y e}
+  \separate
+  q_x = \norm{q - q_y e}
+\]
+Unfolding two adjacent triangles that share a common edge from three-dimensional space into the two-dimensional plane is not unique as there are two cases.
+In one case, the triangles might overlap and in the other not.
+The above sign for $p_x$ is therefore important.
+
+\begin{lemma}[Unfolding leads to geodesic]
+  Connecting $p$, $r$, and $q$ in that order by straight lines leads to locally shortest and straightest geodesics.
+  It solves the discrete boundary value problem for locally shortest and straightest geodesics when boundary points lie in the inside of adjacent triangles.
+\end{lemma}
+\begin{proof}
+  According to \textcite{polthier2006} and \textcite{martinez2005}, locally shortest and straightest geodesics coincide on polyhedral if they do not contain any vertices.
+  So, it is sufficient to show that the discrete curvature at the crease is zero.
+  But this has be true by construction.
+\end{proof}
+% subsection unfolding (end)
+
+\subsection{Unfolding with Desired Curvature} % (fold)
+\label{sub:unfolding_with_desired_curvature}
+Again, a two-dimensional primitive is used.
+\[
+  f(x) = -\cot α (x - p_x) + p_y
+\]
+\[
+  t = f(0) = p_y + \absolute{p_x}\cot α
+\]
+Now, combine two points to both sides with a desired discrete curvature.
+For this, assume $p_x < 0$ and $q_x > 0$.
+Furthermore, the desired curvature is positive $κ > 0$ and taken mathematically positive.
+\[
+  κ + π = α + β
+\]
+From the former computation, it is clear that their points on the ordinate have to coincide.
+\[
+  p_y - p_x \cot α = q_y + q_x \cot β
+\]
+\[
+  \cot β = \cot(π-(α-κ)) = -\cot(α-κ)
+\]
+\[
+  \cot(α-κ) = \frac{\cot α \cot κ + 1}{\cot α - \cot κ}
+\]
+\[
+  p_y - p_x \cot α = q_y - q_x \frac{\cot α \cot κ + 1}{\cot α - \cot κ}
+\]
+\[
+  φ\define \cot{α}
+  \separate
+  K\define \cot κ
+\]
+\[
+  p_y - p_x φ = q_y - q_x \frac{Kφ + 1}{φ - K}
+\]
+\[
+  q_x \frac{Kφ + 1}{φ - K} = q_y - p_y + p_x φ
+\]
+\[
+  Kq_xφ + q_x = (q_y-p_y)(φ - K) + p_x φ (φ - K)
+\]
+\[
+  Kq_xφ + q_x = \Delta y φ - K\Delta y + p_x φ^2 - Kp_x φ
+\]
+\[
+  q_x + K\Delta y = p_x φ^2 + (\Delta y -K(p_x+q_x))φ
+\]
+\[
+  \frac{q_x + K\Delta y}{p_x} = φ^2 + \frac{\Delta y - K\Sigma x}{p_x}φ
+\]
+\[
+  φ = -\frac{\Delta y - K\Sigma x}{2p_x} \pm \sqrt{\frac{q_x + K\Delta y}{p_x} + \frac{(\Delta y - K\Sigma x)^2}{4p^2_x}}
+\]
+\[
+  t = p_y - p_x φ
+\]
+\[
+  t = p_y + \frac{\Delta y - K\Sigma x}{2} \mp \sqrt{p_x(q_x + K\Delta y) + \frac{(\Delta y - K\Sigma x)^2}{4}}
+\]
+\[
+  t = \frac{\Sigma y - K\Sigma x}{2} \mp \sqrt{p_x(q_x + K\Delta y) + \frac{\Delta^2y - 2K\Delta y\Sigma x + K^2\Sigma^2x}{4}}
+\]
+\[
+  t = \frac{\Sigma y - K\Sigma x}{2} \mp \sqrt{p_xq_x(1 + K^2) + \frac{\Delta^2y - 2K\Delta y\Delta x + K^2\Delta^2x}{4}}
+\]
+\[
+  t = \frac{\Sigma y - K\Sigma x}{2} \mp \sqrt{p_xq_x(1 + K^2) + \frac{(\Delta y - K\Delta x)^2}{4}}
+\]
+% subsection unfolding_with_desired_curvature (end)
+
+\subsection{Desired Curvature Stencil} % (fold)
+\label{sub:desired_curvature_stencil}
+
+% subsection desired_curvature_stencil (end)
+
+\subsection{Desired Curvature Mapping} % (fold)
+\label{sub:desired_curvature_mapping}
+
+% subsection desired_curvature_mapping (end)
+
 \subsection{Curve Smoothing Algorithm} % (fold)
 \label{sub:curve_smoothing_algorithm}
   Curve smoothing is not a discrete problem.
   Using only a finite amount of steps is probably not possible.
   So, we use a process of convergence.
+  This has the advantage that not all triangles need to be unfolded at once.
+  This makes the implementation and parallelization much simpler.
+  The discrete algorithms for tracing geodesics are not easy to parallelize.
 
   \paragraph{Idea and Overview}
   \paragraph{Edge Vertex Relaxation}
