@@ -10,6 +10,9 @@
 !printing.pdf
 !references.bib
 
+!*.hpp
+!*.cpp
+
 !makefile
 
 !.git*

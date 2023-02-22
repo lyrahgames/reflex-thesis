@@ -3,7 +3,7 @@
 \section{Design} % (fold)
 \label{sec:design}
 
-Experimenting with various designs and implementations of algorithms, that robustly and efficiently smooth discrete curves on surface meshes, requires us to use a whole computer graphics pipeline or framework for loading input data, intuitively working with user interaction, and visualizing any intermediate result.
+Experimenting with various designs and implementations of algorithms, that robustly and efficiently smooth discrete curves on surface meshes, requires us to use a whole program pipeline or framework for loading input data, intuitively working with user interaction, and visualizing any intermediate results.
 As changing specific parts of such a pipeline may affect the performance, outcomes, and overall behavior of an algorithm or program, a brief overview over all of its components is essential to allow for reproducible results and will therefore be given in the following subsections.
 This will also make it possible for readers to simply reconstruct, adjust, and improve the pipeline for their own domain-specific projects.
 Afterwards, I will thoroughly elaborate on the design and implementation of chosen data structures and algorithms together with their mathematical primitives for curve smoothing.
@@ -12,7 +12,7 @@ The pipeline or framework, described in this thesis, has been manually implement
 Already described in the introduction in section~\ref{sec:introduction}, this choice is well suited for open-source graphics applications and provides programmers with a large freedom when it comes to the implementation of data structures and algorithms.
 The complete source code of the project, called \textit{nanoreflex}, is provided as an open-source repository on GitHub.
 
-\subsection{Pipeline Overview} % (fold)
+\subsection{Overview of the Program Pipeline} % (fold)
 \label{sub:program_pipeline}
   In the following, the stages of the implemented program pipeline are stated and summarized.
   These stages naturally arise from an insight into the generation and tracing of geodesics on surface meshes, described in section~\ref{sec:previous_work}.
@@ -61,14 +61,62 @@ The complete source code of the project, called \textit{nanoreflex}, is provided
   The parameter selection is highly dependent on the implementation of the curve smoothing algorithm and, as a result, it will be described together with the curve smoothing itself.
 % subsection program_pipeline (end)
 
-\subsection{Mesh Preprocessing} % (fold)
+\subsection{Polyhedral Surface Data Structure} % (fold)
+\label{sub:polyhedral_surface_data_structure}
+  For loading and preprocessing a surface mesh, the data structure of a polyhedral surface has to be defined first.
+  The easiest representation, especially useful for rendering, is to have two separate lists of vertices and faces.
+  Each vertex should at least store its position but will most likely also provide a pseudo-normal for better visualization.
+  Every face is a triangle, that refers to the three vertices it contains.
+  This is the minimal information that needs to be provided to create a polyhedral surface.
+
+  To allow points to move on the surface, each face must know about its neighbors.
+  Every triangle can at most have three neighbors.
+  So, each triangle will also refer to its neighbors.
+  When there is no neighbor, we will store an invalid id.
+
+  This makes the dual graph of the surface mesh available.
+
+  \inputCodeBlock[title = Polyhedral Surface]{code/polyhedral_surface/polyhedral_surface.hpp}
+
+  An optional step would also to construct the vertex graph.
+  But we probably do not need it.
+
+  The triangle-based data structured described so far was also used by \textcite{mancinelli2022} and seems to be superior to other edge-based data structures.
+  Looking at Delaunay triangulations this was similar.
+  So, the quad-edge structure may not be a good idea.
+
+  \begin{figure}[h]
+    \begin{center}
+      \large
+      INSERT YOUR IMAGE HERE!
+    \end{center}
+    \caption[Polyhedral Surface Data Structure]{%
+      \textbf{Polyhedral Surface Data Structure}
+      Scheme and Memory Layout of triangles and vertices
+    }
+  \end{figure}
+
+  \begin{figure}
+    \begin{center}
+      \large
+      INSERT YOUR IMAGE HERE!
+    \end{center}
+    \caption[Examples of Polyhedral Surfaces]{%
+      \textbf{Examples of Polyhedral Surfaces}
+      The images shows oriented polyhedral surfaces with and without boundaries, also called models.
+    }
+  \end{figure}
+% subsection polyhedral_surface_data_structure (end)
+
+\subsection{Surface Mesh Preprocessing} % (fold)
 \label{sub:mesh_preprocessing}
-  We need the topological connections of a given surface mesh.
-  In the case of general file formats, a scene is typically separated into multiple meshes which are topologically but not smoothly connected.
-  For proper drawing of curves in a whole scene, the topological structure of connections needs to be generated first.
-  Using the STL file format, this is not needed.
+  The goal of preprocessing a surface mesh which has been loaded from disk is to transform its data into a valid and efficient representation of a polyhedral surface that should exhibit functionality to draw and move points and discrete curves on its surface.
+  In the case that this transformation is not possible, the stage at least must check for the validity of the given data and emit an error if there might be any violations.
+  % On one hand, the preprocessing of a given surface mesh needs to make sure that the program or algorithm is actually dealing with a valid two-dimensional topological manifold.
+
   A given Mesh for the algorithm can be quite general.
   Providing triangles which will introduce numerical difficulties is out of the scope of this thesis.
+
   We will focus on orientable meshes.
   Please note, that is not an actual restriction for the algorithm but will only speed up the implementation.
   Furthermore, we look at surfaces which are the boundary of volumes in three-dimensional Euclidean space which can be looked at as open submanifolds.
@@ -77,7 +125,51 @@ The complete source code of the project, called \textit{nanoreflex}, is provided
   The boundaries need to be handled properly.
   Also, these requirements are only need to hold for the restriction to the distance envelope.
   Often, lines will be drawn on oriented/orientable parts of the surface even if the surface is not orientable due to artifacts originating from scanning or generating meshes.
+
+  \paragraph{Topological Connections}
+  We need the topological connections of a given surface mesh.
+  In the case of general file formats, a scene is typically separated into multiple meshes which are topologically but not smoothly connected.
+  For proper drawing of curves in a whole scene, the topological structure of connections needs to be generated first.
+  Using the STL file format, this is not needed.
+
+  \paragraph{Generating the dual graph}
+   To generate such a dual graph we refer to this book.
+  It is assumed to be a solved problem.
+  First, we have created a hash map of oriented edges with a custom hash function to mangle vertex indices.
+  The mapped values store the faces indices and their location in the triangle.
+  By inverting the indices of a stored edge, one can easily access the neighboring triangle if it exists.
+  Furthermore, it is easy to check whether the mesh is oriented and a valid two-dimensional manifold.
+
+  \paragraph{Check for orientability and validity}
+
 % subsection mesh_preprocessing (end)
+
+\subsection{Discrete Surface Curve Data Structure} % (fold)
+\label{sub:discrete_surface_curve_data_structure}
+  There two main attempts for the construction of a data structure representing surface mesh curves.
+  One of them is based on edges and the other on triangles.
+
+  We do not look at polyhedral surfaces as an approximation of a real-world smooth manifold.
+
+  Advantages of discrete surface mesh curves over more general curves on polyhedral surfaces
+  \begin{itemize}
+    \item Curve is provided in triangle precision. Better Compression. More points would be waste of memory.
+    \item Robust: Snap to vertex if points get arbitrary near to each other
+    \item curve is always a surface curve of the polyhedral surface and not violating mathematical properties. This also allows for direct rendering without projection.
+    \item Useful for mesh processing
+    \item Interpretation of Discretization is more consistent: surface mesh may be discretized approximationof real-world manifold with the mesh to be the finite grid. then it is only natural to discretize a real world surface curve in the same way.
+  \end{itemize}
+
+  Advantages of the triangular data structure over the edge-based one:
+  \begin{itemize}
+    \item Triangles can be easier generalized to higher dimensions than edges.
+    \item Triangles do not need to handle boundaries in complicated ways.
+    \item Triangles allow easy and ordered access to fan around vertex.
+    \item Artifact removal routine for triangles is simpler than for edges.
+    \item Triangles do not exhibit data loss when handling reflex vertices
+    \item Triangles allow for a more general moving of points
+  \end{itemize}
+% subsection discrete_surface_curve_data_structure (end)
 
 \subsection{Initial Curve Selection} % (fold)
 \label{sub:initial_curve_selection}
@@ -101,6 +193,10 @@ The complete source code of the project, called \textit{nanoreflex}, is provided
 
 \subsection{Curve Smoothing Algorithm} % (fold)
 \label{sub:curve_smoothing_algorithm}
+  Curve smoothing is not a discrete problem.
+  Using only a finite amount of steps is probably not possible.
+  So, we use a process of convergence.
+
   \paragraph{Idea and Overview}
   \paragraph{Edge Vertex Relaxation}
     We need to take a look at topological and numerical robustness.
