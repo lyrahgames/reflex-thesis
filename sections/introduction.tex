@@ -7,9 +7,10 @@ Nowadays, the majority of application domains vital to the life of humanity is s
 These are typically programs that provide a set of tools to facilitate the automatic generation, transfer, manipulation, and visualization of domain-specific data by keeping user interaction at a required minimum.
 Computer systems have enabled humanity to streamline processes and to abstract and encapsulate low-level tasks.
 As a consequence, this resulted in the ability to solve harder problems even more efficiently.
+Ironically, these complex automatic systems consisting of multiple layers of abstraction are driven by many processes that might naively be considered rather insignificant.
 
 Especially in the area of medicine, examples such as the resection of liver tumors for long-term survival \autocite{alirr2019} and osteotomy planning \autocite{zachow2003}, that involves reshaping and realigning bones to repair or fix bone-specific issues, show that the use of computer-aided systems for surgery planning reduces the duration of treatment and heavily increases the chance of long-term survival.
-Both of the named medical applications use curves on the two-dimensional reconstructed surface of scanned medical objects, such as livers and bones, to represent and visualize surgery cuts.
+Both of the named medical applications simply use curves on the two-dimensional reconstructed surface of scanned medical objects, such as livers and bones, to represent and visualize surgery cuts.
 The reconstructed surfaces will thereby be provided as triangular meshes and are often referred to as surface meshes. \\
 \autocite{zachow2003,alirr2019}\footnote{In this thesis, citations concerning a whole paragraph will be given after the last sentence of the very paragraph.}
 
@@ -54,7 +55,7 @@ Both tools allow for a sophisticated modularization of the whole framework.
 So, no user needs to pay for features that are not needed. \\
 \autocite{stroustrup2014,meyers2014,vandevoorde2018,reddy2011,cppreference,isocpp,opengl}
 
-In this thesis, precisely in sections \ref{sec:design} and \ref{sec:implementation}, we develop a new library and program, called \citetitle{reflex}\footfullcite{reflex}, using the C++ programming language in conjunction with OpenGL graphics API.
+In this thesis, precisely in sections \ref{sec:design} and \ref{sec:implementation}, we develop a new library and program, called \citetitle{reflex}\footfullcite{reflex}, using the C++ programming language in conjunction with the OpenGL graphics API.
 \citetitle{reflex} implements parallelized and tweaked variants of the curve smoothing algorithm given by \textcite{lawonn2014} on the CPU and GPU which should be applicable in a wide variety of cases.
 Hereby, a special emphasis lies on the robust and fast implementation for medical purposes.
 The program and library are open-source and can be found on GitHub.

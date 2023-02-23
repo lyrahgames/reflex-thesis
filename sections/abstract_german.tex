@@ -1,7 +1,7 @@
 \documentclass[crop=false]{standalone}
 \usepackage{standard}
 \begin{document}
-  \newgeometry{top=0mm,bottom=0mm,right=43mm,left=43mm}
+  \newgeometry{top=0mm,bottom=0mm,right=38mm,left=38mm}
   {
     \selectlanguage{ngerman}
     \thispagestyle{empty}
@@ -11,12 +11,24 @@
     \medskip
     \begin{abstract}
       \itshape
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      % The smoothing of surface curves is an essential tool in mesh processing to allow applications, such as surgical planning, to segment, edit, and cut surfaces.
+      Das Glätten von Oberflächenkurven ist ein wesentliches Werkzeug im Mesh Processing, um es Anwendungen, wie zum Beispiel in der chirurgischen Planung, zu ermöglichen, Oberflächen zu segmentieren, bearbeiten und zerschneiden.
+      % As curves are typically designed by domain experts to mark relevant surface regions, its smoothed counterpart should retain close to the original and easily adjustable by the user.
+      Da Kurven in der Regel von Fachleuten konstruiert werden, um relevante Oberflächenbereiche zu markieren, sollte deren geglättete Form nahe am Original und durch den Benutzer leicht anpassbar sein.
+      % Previous solutions that are based on energy-minimizing splines or generalizations of Bézier splines need a large number of control points to achieve this behavior and may suffer from poor performance or numerical instabilities.
+      Bisherige Lösungen, die auf energieminimierenden Splines oder Verallgemeinerungen von Bézier-Splines basieren, benötigen eine große Anzahl von Kontrollpunkten, um dieses Verhalten zu erreichen, und weisen unter Umständen eine schlechte Performanz oder numerische Instabilitäten auf.
+      % This thesis aims for the development and a detailed implementation strategy of an efficient and robust algorithm for smoothing discrete curves on triangular surface meshes.
+      Diese Arbeit zielt auf die Entwicklung und eine detaillierte Implementierungsstrategie eines effizienten und robusten Algorithmus zur Glättung diskreter Kurven auf Oberflächennetzen ab.
+      % The method is based on the optimization of local geodesic curvatures to obtain results close to the initial curve and achieves real-time performance through parallelization on the CPU and GPU.
+      Die Methode basiert auf der Optimierung lokaler geodätischer Krümmungen, um Ergebnisse nahe der Ausgangskurve zu erzielen, und erreicht Echtzeitperformanz durch die Parallelisierung auf der CPU und GPU.
+      % The implementation uses the C++ programming language combined with the OpenGL graphics API and is fully provided as an open-source code repository.
+      Die Implementierung verwendet die C++-Programmiersprache
+      kombiniert mit der OpenGL-API und wird vollständig als Open-Source
+      Code-Repository bereitgestellt.
+      % Using appropriate benchmarks and the \citetitle{thingi10k} dataset, the efficiency and robustness of the algorithm is evaluated.
+      Unter Verwendung geeigneter Benchmarks und des \citetitle{thingi10k}-Datensatzes wird die Effizienz und Robustheit des Algorithmus ausgewertet.
+      % Finally, the curve smoothing approach is applied in a medical context to the automatic segmentation of lung lobes.
+      Schließlich wird der Ansatz der Kurvenglättung im medizinischen Kontext auf die automatische Segmentierung von Lungenflügeln angewandt.
     \end{abstract}
     \medskip
     \hrule
