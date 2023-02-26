@@ -1,7 +1,7 @@
 \documentclass[crop=false]{standalone}
 \usepackage{standard}
 \begin{document}
-  \newgeometry{top=0mm,bottom=0mm,right=43mm,left=43mm}
+  \newgeometry{top=0mm,bottom=0mm,right=38mm,left=38mm}
   {
     \thispagestyle{empty}
     \null
@@ -10,12 +10,14 @@
     \medskip
     \begin{abstract}
       \itshape
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      The smoothing of surface curves is an essential tool in mesh processing to allow applications, such as surgical planning, to segment, edit, and cut surfaces.
+      As curves are typically designed by domain experts to mark relevant surface regions, its smoothed counterpart should retain close to the original and easily adjustable by the user.
+      Previous solutions that are based on energy-minimizing splines or generalizations of Bézier splines need a large number of control points to achieve this behavior and may suffer from poor performance or numerical instabilities.
+      This thesis aims for the development and a detailed implementation strategy of an efficient and robust algorithm for smoothing discrete curves on triangular surface meshes.
+      The method is based on the optimization of local geodesic curvatures to obtain results close to the initial curve and achieves real-time performance through parallelization on the CPU and GPU.
+      The implementation uses the C++ programming language combined with the OpenGL graphics API and is fully provided as an open-source code repository.
+      Using appropriate benchmarks and the \citetitle{thingi10k} dataset, the efficiency and robustness of the algorithm is evaluated.
+      Finally, the curve smoothing approach is applied in a medical context to the automatic segmentation of lung lobes.
     \end{abstract}
     \medskip
     \hrule
