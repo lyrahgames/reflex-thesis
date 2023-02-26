@@ -10,18 +10,50 @@
 % Ironically, these complex automatic systems consisting of multiple layers of abstraction are driven by many processes that might naively be considered rather insignificant.
 
 % Especially
-In the area of medicine, examples such as the resection of liver tumors for long-term survival \autocite{alirr2019} and osteotomy planning \autocite{zachow2003}, that involves reshaping and realigning bones to repair or fix bone-specific issues, show that the use of computer-aided systems for surgery planning reduces the duration of treatment and heavily increases the chance of long-term survival.
+In the area of medicine, examples such as the resection of liver tumors for long-term survival \autocite{alirr2019} and osteotomy planning \autocite{zachow2003} (see figure~\ref{fig:introduction-examples-zachow2003}), that involves reshaping and realigning bones to repair or fix bone-specific issues, show that the use of computer-aided systems for surgery planning reduces the duration of treatment and heavily increases the chance of long-term survival.
 Both of the named medical applications simply use curves on the two-dimensional reconstructed surface of scanned medical objects to represent and visualize surgery cuts.
 The reconstructed surfaces will thereby be provided as triangular meshes and are often referred to as surface meshes.
-As curves on surface meshes are in general a basic building block for tasks involving mesh processing and segmentation \autocite{ji2006,kaplansky2009}, they also play a fundamental role in the areas of computer-aided geometric design, computer graphics, and visualization.
+As curves on surface meshes are in general a basic building block for tasks involving mesh processing and segmentation \autocite{ji2006,kaplansky2009} (see figures~\ref{fig:introduction-examples-lee2004} and~\ref{fig:introduction-examples-ji2006}), they also play a fundamental role in the areas of computer-aided geometric design, computer graphics, and visualization.
 Building on these research areas, significant applications can not only be found in the medical context but also for machine learning \autocite{benhabiles2011,park2019} and engineering.
 % \\
 % \autocite{zachow2003,alirr2019}
 
+\begin{figure}[b]
+  \centering
+  \begin{subfigure}[b]{0.32\linewidth}
+    \centering
+    \includegraphics[width=0.75\linewidth,trim={0px 300 340 30},clip]{images/zachow2003-1.png}
+    \includegraphics[width=0.75\linewidth,trim={300px 300 0 30},clip]{images/zachow2003-1.png}
+    \caption{From \textcite{zachow2003}.}
+    \label{fig:introduction-examples-zachow2003}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.32\linewidth}
+    \centering
+    \includegraphics[width=0.85\linewidth]{images/lee2004-1.png}
+    \bigskip
+    \includegraphics[width=0.85\linewidth]{images/lee2004-2.png}
+    \caption{From \textcite{lee2004}.}
+    \label{fig:introduction-examples-lee2004}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.32\linewidth}
+    \centering
+    \includegraphics[width=0.6\linewidth]{images/ji2006-1.png}
+    \includegraphics[width=0.6\linewidth]{images/ji2006-2.png}
+    \caption{From \textcite{ji2006}.}
+    \label{fig:introduction-examples-ji2006}
+  \end{subfigure}
+  \caption[Application Examples for Smooth Curves on Surface Meshes]{%
+    \textbf{Application Examples for Smooth Curves on Surface Meshes}\\
+    The images show typical applications for smooth curves on surface meshes, such as osteotomy planning in medicine (left) and surface mesh cutting (middle) and segmentation (right) in computer-aided geometric design and machine learning from other publications.
+  }
+  \label{fig:introduction-examples}
+\end{figure}
 
 Initially chosen curves on surfaces meshes are typically jagged due to the finite precision of the underlying mesh and emit curvature noise that is not neglectable and perceivable by the human eye.
 Hence, a smoothing process is applied to reduce their overall curvature and attain surface cuts with well-defined properties.
-In general, the result of curve smoothing might strongly deviate from the initially given curve to fulfill the given constraints.
+In general, the result of curve smoothing might strongly deviate from the initially given curve to fulfill the provided constraints.
 For medical surface cutting applications, though, the shape of an initial curve is defined by domain experts, such as physicians or bioengineers, and most likely indicates relevant anatomical landmarks or surface regions.
 Thus, under these circumstances, the smoothing additionally requires the resulting curve to be close to its original such that no essential information is lost during the process.
 \autocite{lawonn2014}\footnote{In this thesis, citations concerning a whole paragraph will be given after the last sentence of the very paragraph.}
@@ -40,12 +72,12 @@ In conjunction with its correctness, this also means that such an algorithm need
 % , that may result in wrong calculations based on the finite precision of floating-point values.
 Yet another property to take into account is the efficiency of the algorithm.
 To seamlessly integrate curve smoothing into the user interface of a computer-assisted system for domain-specific applications, it at least needs to provide an interactive up to real-time performance.
-As a consequence, the implementation and API design of such algorithms is assumed to be an involved task and error-prone and should not be handled by a custom implementation for each framework.
+As a consequence, the implementation and application programming interface (API) design of such algorithms is assumed to be an involved task and error-prone and should not be handled by a custom implementation for each framework. \\
 %when the programmer intends to apply the algorithm on a wide variety of cases.
 \autocite{lawonn2014}
 
 % There are a few already existing algorithms for producing smoothed curves on surface meshes \autocite{hofer2004,martinez2007,lawonn2014,mancinelli2022}.
-Previous solutions to these problems involving the use of energy-minimizing splines \autocite{hofer2004} and generalizations of Bézier splines to three-dimensional surfaces \autocite{martinez2007,mancinelli2022}, while offering a general approach and tools, either suffer from poor performance and numerical instabilities or are not sufficient for applications in a medical context.
+Previous solutions to these problems involving the use of energy-minimizing splines \autocite{hofer2004} and generalizations of Bézier splines to three-dimensional surfaces \autocite{martinez2007,mancinelli2022}, while offering a general approach and sophisticated tools, either suffer from poor performance and numerical instabilities or are not sufficient for applications in a medical context.
 Using an iterative method that is based on the reduction of local geodesic curvature, \textcite{lawonn2014} were able to construct a robust curve smoothing algorithm which preserves closeness to the initial curve.
 They successfully applied it to the decomposition of cerebral aneurysms and the resection planning for liver surgery.
 Unfortunately, the initial selection and propagation of desired curvature values when handling critical or splitting vertices is not provided or at least inconsistent.
@@ -80,12 +112,13 @@ Incorporating efficient data structures and heuristics shown to work by \textcit
 % Hereby, a special emphasis lies on the design for medical purposes.
 The source code is provided as an open-source repository on GitHub.
 % It is easily installable on every operating system.
-The necessary theoretical background to understand the design- and the implementation-specific aspects is given in section \ref{sec:preliminaries}.
+The necessary theoretical background to understand the design- and the implementation-specific aspects is given in section~\ref{sec:preliminaries}.
 Here, we will give a brief introduction to differential geometry and polyhedral manifolds.
 A mathematical rigorous discussion about the algorithm will be part of section~\ref{sec:design} to properly encapsulate all the information specific to the implementations.
 Section~\ref{sec:previous_work} refers to some related work concerning general curves, geodesics and the smoothing of curves on surfaces.
-At the end in section \ref{sec:application}, \citetitle{nanoreflex} is applied to the segmentation of lung lobes \autocite{park2019}.
-In the sections \ref{sec:evaluation} and \ref{sec:conclusions}, the evaluation is shown followed by a discussion dealing with further improvements.
+Afterwards, in section~\ref{sec:application}, \citetitle{nanoreflex} is applied to the segmentation of lung lobes \autocite{park2019}.
+In section~\ref{sec:evaluation}, the algorithm will be used on the \citetitle{thingi10k} dataset and other test cases to evaluate its robustness and efficiency.
+At the end, in section~\ref{sec:conclusions}, I will give a brief summary of the thesis and a discussion dealing with advantages, disadvantages, and further improvements.
 
 % section introduction (end)
 \end{document}
