@@ -1,0 +1,41 @@
+\documentclass{standalone}
+
+\usepackage{tikz}
+\usepackage{tkz-euclide}
+
+\usepackage{times}
+
+\begin{document}
+\begin{tikzpicture}[%
+  line/.style = {thin, dotted},
+  >={Stealth[scale=1.2]},
+]
+
+  \tkzDefPoint(0.0, 0.0){A}
+  \tkzDefPoint(2.0, 0.0){B}
+  \tkzDefPoint(-0.6, -1.6){C}
+  \tkzDefPoint(1.6, -1.6){D}
+
+  \tkzDefPoint(0.1, -0.8){P}
+  \tkzDefPoint(1.4, -0.8){Q}
+
+  \tkzDefPoint(0.8, 0.0){X}
+
+  \tkzInterLL(A,D)(B,C)
+  \tkzGetPoint{H}
+
+  \tkzInterLL(X,Q)(C,B)
+  \tkzGetPoint{HH}
+
+  \tkzDrawPolygon[thin,fill=gray!20](A,B,C)
+  \tkzDrawSegment[thin,dotted](A,H)
+  \tkzDrawSegments[thin](H,D D,B)
+
+  \tkzDrawSegment(P,X)
+  \tkzDrawSegment[dotted](X,HH)
+  \tkzDrawSegment(HH,Q)
+
+  \tkzDrawPoints[size=2.0](A,B,C,D,P,Q)
+
+\end{tikzpicture}
+\end{document}

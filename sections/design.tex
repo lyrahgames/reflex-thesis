@@ -196,10 +196,8 @@ The complete source code of the project, called \textit{nanoreflex}, is provided
 To unfold two triangles along their common edge and find the shortest line connecting two points, we will first look back into two dimensions.
 
 \begin{figure}[h]
-  \begin{center}
-    \large
-    INSERT YOUR IMAGE HERE!
-  \end{center}
+  \centering
+  \includegraphics[width=0.6\linewidth]{figures/unfolding_geodesic_2d.pdf}
   \caption[2D Unfolding Primitive]{%
     \textbf{2D Unfolding Primitive}
   }
@@ -265,6 +263,24 @@ The above sign for $p_x$ is therefore important.
 
 \subsection{Unfolding with Desired Curvature} % (fold)
 \label{sub:unfolding_with_desired_curvature}
+
+  \begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=0.9\linewidth]{figures/unfolding_curvature_2d.pdf}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=0.9\linewidth]{figures/unfolding_curvature_2d_positive.pdf}
+    \end{subfigure}
+    \caption[2D Unfolding Curvature Primitive]{%
+      \textbf{2D Unfolding Curvature Primitive}\\
+    }
+    \label{fig:}
+  \end{figure}
+
 Again, a two-dimensional primitive is used.
 \[
   f(x) = -\cot α (x - p_x) + p_y
