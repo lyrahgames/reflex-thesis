@@ -12,14 +12,20 @@
 ]
 
   \tkzDefPoint(0.0, 0.0){A}
-  \tkzDefPoint(2.0, 0.0){B}
-  \tkzDefPoint(-0.6, -1.6){C}
-  \tkzDefPoint(1.6, -1.6){D}
+  \tkzLabelPoint[above left](A){$v_2$}
 
-  \tkzDefPoint(0.1, -0.8){P}
-  \tkzDefPoint(1.4, -0.8){Q}
+  \tkzDefPoint(4.0, -1.0){B}
+  \tkzLabelPoint[above right](B){$v_1$}
 
-  \tkzDefPoint(0.8, 0.0){X}
+  \tkzDefPoint(-1.2, -3.2){C}
+  \tkzDefPoint(3.0, -3.0){D}
+
+  \tkzDefPoint(0.2, -1.6){P}
+
+  \tkzDefPoint(2.8, -2.0){Q}
+
+  \tkzDefPointOnLine[pos=0.4](A,B)
+  \tkzGetPoint{X}
 
   \tkzInterLL(A,D)(B,C)
   \tkzGetPoint{H}
@@ -28,14 +34,19 @@
   \tkzGetPoint{HH}
 
   \tkzDrawPolygon[thin,fill=gray!20](A,B,C)
-  \tkzDrawSegment[thin,dotted](A,H)
+  \tkzDrawSegment[thin,dashed](A,H)
   \tkzDrawSegments[thin](H,D D,B)
 
   \tkzDrawSegment(P,X)
   \tkzDrawSegment[dotted](X,HH)
   \tkzDrawSegment(HH,Q)
 
-  \tkzDrawPoints[size=2.0](A,B,C,D,P,Q)
+  \tkzDrawSegment[->](B,A)
+  \tkzLabelSegment[above](B,A){$e$}
+
+  \tkzLabelPoint[above left](P){$\tilde{p}$}
+  \tkzLabelPoint[above right](Q){$\tilde{q}$}
+  \tkzDrawPoints[size=3.0](A,B,C,D,P,Q)
 
 \end{tikzpicture}
 \end{document}

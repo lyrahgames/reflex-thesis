@@ -28,13 +28,17 @@
   \tkzDefPoint(0.0, 1.0){X}
   \tkzLabelPoint[above left](X){$t$}
 
+  \tkzInterLL(P,Q)(O,T)
+  \tkzGetPoint{X0}
+  \tkzLabelPoint[above left](X0){$t_0$}
+
   \tkzDefPointBy[projection = onto L--O](P)
   \tkzGetPoint{PX}
   \tkzLabelPoint[above left](PX){$p_x$}
 
   \tkzDefPointBy[projection = onto O--T](P)
   \tkzGetPoint{PY}
-  \tkzLabelPoint[above left](PY){$p_y$}
+  \tkzLabelPoint[right](PY){$p_y$}
 
   \tkzDefPointBy[projection = onto O--R](Q)
   \tkzGetPoint{QX}
@@ -58,9 +62,10 @@
 
   \tkzDrawSegments(P,X X,Q)
   \tkzDrawSegments[line](X,K)
+  \tkzDrawSegments[thin,dotted](P,X0 X0,Q)
 
   \tkzDrawSegments[line](P,PX Q,QX P,PY Q,QY)
-  \tkzDrawPoints(P,Q,X)
+  \tkzDrawPoints(P,Q,X,X0)
 
 \end{tikzpicture}
 \end{document}

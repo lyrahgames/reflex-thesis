@@ -208,6 +208,10 @@ Let $p,q\in\setReal^2$ such that $p_x < q_x$.
   \Delta x = q_x - p_x
   \separate
   \Delta y = q_y - p_y
+  \separate
+  \Sigma x = p_x + q_x
+  \separate
+  \Sigma y = p_y + q_y
 \]
 The straight line function connecting these two points then looks like the following.
 \[
@@ -216,16 +220,24 @@ The straight line function connecting these two points then looks like the follo
 Please note that this function is well-defined, as $q_x - p_x > 0$.
 To get the intersection point with the ordinate, set the argument to zero.
 \[
-  t\define f(0) = \frac{p_yq_x - q_yp_x}{q_x - p_x}
+  t\define f(0) = \frac{p_yq_x - q_yp_x}{q_x - p_x} = \frac{\Delta x \Sigma y - \Sigma x \Delta y}{2 \Delta x}
 \]
 \begin{figure}[h]
-  \begin{center}
-    \large
-    INSERT YOUR IMAGE HERE!
-  \end{center}
+  \begin{subfigure}[b]{0.49\linewidth}
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/unfolding_geodesic.pdf}
+    \caption{Folded in 3D space}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/unfolding_unfolded.pdf}
+    \caption{Unfolded in 2D space}
+  \end{subfigure}
   \caption[Unfolding of two Triangles]{%
     \textbf{Unfolding of two Triangles}
   }
+  \label{fig:design-triangle-unfolding}
 \end{figure}
 
 Applying this expression to the case of two triangles that needs to be unfolded, the following results.
@@ -251,7 +263,7 @@ In one case, the triangles might overlap and in the other not.
 The above sign for $p_x$ is therefore important.
 
 \begin{lemma}[Unfolding leads to geodesic]
-  Connecting $p$, $r$, and $q$ in that order by straight lines leads to locally shortest and straightest geodesics.
+  Connecting $p$, $r$, and $q$ in that order by straight lines leads to locally shortest and straightest geodesics as long as $λ\in (0,1)$.
   It solves the discrete boundary value problem for locally shortest and straightest geodesics when boundary points lie in the inside of adjacent triangles.
 \end{lemma}
 \begin{proof}
@@ -268,12 +280,14 @@ The above sign for $p_x$ is therefore important.
     \centering
     \begin{subfigure}[b]{0.49\linewidth}
       \centering
-      \includegraphics[width=0.9\linewidth]{figures/unfolding_curvature_2d.pdf}
+      \includegraphics[width=\linewidth]{figures/unfolding_curvature_2d.pdf}
+      \caption{$κ < 0$}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.49\linewidth}
       \centering
-      \includegraphics[width=0.9\linewidth]{figures/unfolding_curvature_2d_positive.pdf}
+      \includegraphics[width=\linewidth]{figures/unfolding_curvature_2d_positive.pdf}
+      \caption{$κ > 0$}
     \end{subfigure}
     \caption[2D Unfolding Curvature Primitive]{%
       \textbf{2D Unfolding Curvature Primitive}\\
@@ -291,6 +305,7 @@ Again, a two-dimensional primitive is used.
 Now, combine two points to both sides with a desired discrete curvature.
 For this, assume $p_x < 0$ and $q_x > 0$.
 Furthermore, the desired curvature is positive $κ > 0$ and taken mathematically positive.
+$α,β\in(0,π)$ and $κ\in(-π,π)$ with $κ < α$ and $π+κ > α$
 \[
   κ + π = α + β
 \]
@@ -302,52 +317,90 @@ From the former computation, it is clear that their points on the ordinate have 
   \cot β = \cot(π-(α-κ)) = -\cot(α-κ)
 \]
 \[
-  \cot(α-κ) = \frac{\cot α \cot κ + 1}{\cot α - \cot κ}
+  \cot(α-κ) = \frac{\cos κ \cot α + \sin κ}{\cos κ - \sin κ \cot α}
 \]
-\[
-  p_y - p_x \cot α = q_y - q_x \frac{\cot α \cot κ + 1}{\cot α - \cot κ}
-\]
+% \[
+%   \cot(α-κ) = \frac{\cot α \cot κ + 1}{\cot κ - \cot α}
+% \]
+% \[
+%   p_y - p_x \cot α = q_y - q_x \frac{\cot α \cot κ + 1}{\cot κ - \cot α}
+% \]
 \[
   φ\define \cot{α}
-  \separate
-  K\define \cot κ
+  % \separate
+  % K\define \cot κ
 \]
 \[
-  p_y - p_x φ = q_y - q_x \frac{Kφ + 1}{φ - K}
+  p_y - p_x φ = q_y - q_x \frac{φ \cos κ + \sin κ}{\cos κ - φ \sin κ}
 \]
 \[
-  q_x \frac{Kφ + 1}{φ - K} = q_y - p_y + p_x φ
+  q_x \frac{φ \cos κ + \sin κ}{\cos κ - φ \sin κ} = q_y - p_y + p_x φ
 \]
 \[
-  Kq_xφ + q_x = (q_y-p_y)(φ - K) + p_x φ (φ - K)
+  φ q_x \cos κ + q_x \sin κ
+  = (\Delta y + φ p_x)(\cos κ - φ \sin κ)
 \]
 \[
-  Kq_xφ + q_x = \Delta y φ - K\Delta y + p_x φ^2 - Kp_x φ
+  φ q_x \cos κ + q_x \sin κ
+  = \Delta y \cos κ - φ \Delta y \sin κ + φ p_x \cos κ - φ^2 p_x \sin κ
 \]
 \[
-  q_x + K\Delta y = p_x φ^2 + (\Delta y -K(p_x+q_x))φ
+  φ^2 p_x \sin κ + φ (\Delta x \cos κ + \Delta y \sin κ) + q_x \sin κ - \Delta y \cos κ = 0
 \]
 \[
-  \frac{q_x + K\Delta y}{p_x} = φ^2 + \frac{\Delta y - K\Sigma x}{p_x}φ
+  φ = \frac{1}{2 p_x \sin κ} \boxBrackets{-(\Delta x \cos κ + \Delta y \sin κ) \pm \sqrt{(\Delta x \cos κ + \Delta y \sin κ)^2 - 4p_x \sin κ (q_x \sin κ - \Delta y \cos κ)}}
 \]
 \[
-  φ = -\frac{\Delta y - K\Sigma x}{2p_x} \pm \sqrt{\frac{q_x + K\Delta y}{p_x} + \frac{(\Delta y - K\Sigma x)^2}{4p^2_x}}
+  φ = \frac{1}{2 p_x \sin κ} \boxBrackets{-(\Delta x \cos κ + \Delta y \sin κ) \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
 \]
 \[
-  t = p_y - p_x φ
+  t = \frac{1}{2 \sin κ} \boxBrackets{\Delta x \cos κ + \Sigma y \sin κ \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
 \]
 \[
-  t = p_y + \frac{\Delta y - K\Sigma x}{2} \mp \sqrt{p_x(q_x + K\Delta y) + \frac{(\Delta y - K\Sigma x)^2}{4}}
+  t = t_0 + \Delta t
 \]
 \[
-  t = \frac{\Sigma y - K\Sigma x}{2} \mp \sqrt{p_x(q_x + K\Delta y) + \frac{\Delta^2y - 2K\Delta y\Sigma x + K^2\Sigma^2x}{4}}
+  t = t_0 + \frac{1}{2 \sin κ} \boxBrackets{-2t_0\sin κ + \Delta x \cos κ + \Sigma y \sin κ \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
 \]
 \[
-  t = \frac{\Sigma y - K\Sigma x}{2} \mp \sqrt{p_xq_x(1 + K^2) + \frac{\Delta^2y - 2K\Delta y\Delta x + K^2\Delta^2x}{4}}
+  t_0 = \frac{1}{2}(\Sigma y - \Sigma x \frac{\Delta y}{\Delta x})
 \]
 \[
-  t = \frac{\Sigma y - K\Sigma x}{2} \mp \sqrt{p_xq_x(1 + K^2) + \frac{(\Delta y - K\Delta x)^2}{4}}
+  \Delta t = \frac{1}{2 \sin κ} \boxBrackets{\Sigma x \frac{\Delta y}{\Delta x}\sin κ + \Delta x \cos κ \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
 \]
+\[
+  2 \Delta t \sin κ \leq 0
+\]
+\[
+  \Delta t = \frac{1}{2 \sin κ} \boxBrackets{\Sigma x \frac{\Delta y}{\Delta x}\sin κ + \Delta x \cos κ - \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
+\]
+% \[
+%   Kq_xφ + q_x = \Delta y φ - K\Delta y + p_x φ^2 - Kp_x φ
+% \]
+% \[
+%   q_x + K\Delta y = p_x φ^2 + (\Delta y -K(p_x+q_x))φ
+% \]
+% \[
+%   \frac{q_x + K\Delta y}{p_x} = φ^2 + \frac{\Delta y - K\Sigma x}{p_x}φ
+% \]
+% \[
+%   φ = -\frac{\Delta y - K\Sigma x}{2p_x} \pm \sqrt{\frac{q_x + K\Delta y}{p_x} + \frac{(\Delta y - K\Sigma x)^2}{4p^2_x}}
+% \]
+% \[
+%   t = p_y - p_x φ
+% \]
+% \[
+%   t = p_y + \frac{\Delta y - K\Sigma x}{2} \mp \sqrt{p_x(q_x + K\Delta y) + \frac{(\Delta y - K\Sigma x)^2}{4}}
+% \]
+% \[
+%   t = \frac{\Sigma y - K\Sigma x}{2} \mp \sqrt{p_x(q_x + K\Delta y) + \frac{\Delta^2y - 2K\Delta y\Sigma x + K^2\Sigma^2x}{4}}
+% \]
+% \[
+%   t = \frac{\Sigma y - K\Sigma x}{2} \mp \sqrt{p_xq_x(1 + K^2) + \frac{\Delta^2y - 2K\Delta y\Delta x + K^2\Delta^2x}{4}}
+% \]
+% \[
+%   t = \frac{\Sigma y - K\Sigma x}{2} \mp \sqrt{p_xq_x(1 + K^2) + \frac{(\Delta y - K\Delta x)^2}{4}}
+% \]
 % subsection unfolding_with_desired_curvature (end)
 
 \subsection{Desired Curvature Stencil} % (fold)
