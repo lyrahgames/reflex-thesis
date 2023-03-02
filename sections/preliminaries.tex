@@ -3,10 +3,11 @@
 \section{Preliminaries} % (fold)
 \label{sec:preliminaries}
 
-To systematically approach the design and implementation of curve smoothing algorithms for surface meshes, basic knowledge in the topic of differential geometry of curves and its application and generalization to polyhedral surfaces and surface mesh curves is administrable.
-It allows to rigorously formulate the initial and boundary value problems for discrete geodesics which build the foundation of curve smoothing as geodesics can be interpreted as the class of smoothest curves.
-Alas, differential geometry heavily builds on the mathematical tools given in the topic of analysis on manifolds and, as a consequence, the reader is assumed to be familiar with its basic concepts.
-For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still provides a brief introduction to the topic to remind of and clarify notations.
+To systematically approach the topic of curve smoothing algorithms for surface meshes, basic knowledge in the topics of differential geometry for curves and its further application and generalization to polyhedral surfaces is administrable.
+% It allows to rigorously generalize the concept of geodesics to discete surfaces and formulate their initial and boundary value problems.
+% Geodesics can be interpreted as the class of smoothest curves and as such they build the foundation of curve smoothing algorithms.
+As modern differential geometry heavily builds on the mathematical tools given in the area of analysis on manifolds, the reader is assumed to be familiar with its basic concepts.
+For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provides a brief introduction to clarify and remind of notations.
 % In the following, a brief overview of the main concepts is given.
 
 \subsection{Differential Geometry of Curves} % (fold)
@@ -37,7 +38,7 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
 
   Defining closed curves to be smooth functions on the topological space of a one-dimensional torus is a technicality that automatically takes care of the agreement of values and derivatives at the two boundary points which are glued together \autocite{stahl2013,carmo2016}.
   The change of topological requirements for a closed curve still allows to interpret it as a general curve.
-  For this reason, when referring to parameterized curves in the following, closed and open curves are meant.
+  For this reason, when referring to parameterized curves, both closed and open curves are meant.
   To get an impression of the implications of this definition, in figure~\ref{fig:curve-examples} typical examples of smooth curves are shown.
 
   \begin{figure}[t]
@@ -156,8 +157,8 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
   \end{figure}
 
   For most of the considered applications, the actual parameterization of a curve is not essential.
-  Only the shape, given by its image, is used, referred, and transformed.
-  But using only the shape and neglecting the parameterization of a curve does only make sense if the shape at least fulfills the properties of a one-dimensional manifold.
+  Only the shape, given by its image, is used, referred to, and transformed.
+  But using the shape and neglecting the parameterization of a curve does only make sense if the shape at least fulfills the properties of a one-dimensional manifold.
   Unfortunately, as can be seen in figure~\ref{fig:curve-examples}, the shape of parameterized curves may exhibit more general structures, such as sharp edges and self-intersections, and, thus, does not necessarily abide to these constraints.
   As a consequence, more regular and specialized classes of curves need to be looked at. \\
   \autocite{goldhorn2009,carmo2016,kuehnel2013}
@@ -170,17 +171,19 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
     \]
     Furthermore, if $\norm{γ'} = 1$ then γ is parameterized by arc length.
   \end{definition}
-  The definition states that the derivative of a regular curve is apart from its boundary never zero and therefore a map of full-rank at every inner point.
-  Hence, a regular curve is an immersion into Euclidean space and, as a result, its shape is an immersed submanifold that still may contain self-intersections.
-  Using a curve that is parameterized by arc length is hereby only a way of defining a canonical parameterization for regular curves that will be used to simplify the definition of curvature.
-  It is clear by definition, that every curve parameterized by arc length is also a regular curve.
+  The definition states that the derivative of a regular curve is, apart from its boundary, never zero and therefore a map of full-rank at every inner point.
+  Hence, a regular curve is an immersion into Euclidean space and, as a result, its shape is an immersed submanifold.
+  Please note, an immersed submanifold still may contain self-intersections.
+  Using a curve that is parameterized by arc length is a way of defining a canonical parameterization for regular curves.
+  % that will be used to simplify the definition of curvature.
+  It is clear by definition, that every curve parameterized by arc length is also a regular curve. \\
   \autocite{goldhorn2009,carmo2016,kuehnel2013}
 
   In applications that are able to handle self-intersections, regular curves are already sufficiently constrained.
   Indeed, a robust and stable algorithm for curve smoothing should be able to cope with self-intersections and even remove them if necessary.
-  Still, to properly understand the transition, a regular curve shall become an embedding, such that, according to section~\ref{sec:analysis_on_manifolds}, its shape is actually a one-dimensional manifold.
+  Still, to properly understand the transition, a regular curve shall become an embedding, such that, according to section~\ref{sec:analysis_on_manifolds}, its shape would be a one-dimensional manifold.
   To state that a curve is also simple, ensures it exhibits no self-intersections other than the single intersection for closed curves.
-  The results of the statements and thoughts of this and the previous paragraph are rigorously summarized in the following proposition.
+  The results of the ideas of this and the previous paragraph are rigorously summarized in the following proposition.
   As this statement is a direct corollary, no additional rigorous proof will be given for it.
   % Then by application of the theorem, the image of the embedding is an embedded 1-manifold.
   \autocite{goldhorn2009,carmo2016,kuehnel2013}
@@ -192,11 +195,12 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
   \end{corollary}
   The fundamental part of the concept of geodesics is the curvature.
   To gain an intuitive approach to a definition of curvature of a regular curve, we need to be able to evaluate its length and arc length in Euclidean space.
-  These will allow us to properly provide a canonical parameterization to overall simplify the use of regular curves.
+  These will allow us to properly provide a canonical parameterization to simplify the use of regular curves.
 
   \begin{definition}[Length of Curves]
+  \label{def:curve-length}
     Let γ be a parameterized curve on $[a,b]$ or $\mathds{T}^1[a,b]$.
-    Then the length $L(γ)$ and arc length, given by $\function{s_γ}{[a,b]}{[0,L(γ)]}$ or $\function{s_γ}{\mathds{T}^1[a,b]}{\mathds{T}^1[0,L(γ)]}$, respectively, of γ are defined by the following expressions.
+    Then the length $L(γ)$ and arc length, given by $\function{s_γ}{[a,b]}{[0,L(γ)]}$ or $\function{s_γ}{\mathds{T}^1[a,b]}{\mathds{T}^1[0,L(γ)]}$, respectively, of γ are defined by the following expressions (see section~\ref{sec:proofs} for consistency proof).
     \[
       L(γ) \define \integral{a}{b}{\norm{γ'(t)}}{t}
       % \separate
@@ -205,69 +209,25 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
       s_γ(t) \define \integral{a}{t}{\norm{γ'(x)}}{x}
     \]
   \end{definition}
-  The definition of the length and arc length mainly stems from the physical interpretation that a parameterized curve is a trajectory in space over time of a particle moving with a specific velocity that is given by the derivative of the curve's parameterization.
-  For evaluating the distance covered, one needs to integrate over the speed, that is given by the magnitude of the velocity, at each point in time.
+  The definition of the length and arc length mainly stems from a physical interpretation.
+  Hereby, a parameterized curve is a trajectory of a particle moving in space with a specific velocity over time.
+  In this interpretation, the particle's velocity is given by the derivative of the curve's parameterization.
+  For evaluating the distance covered, one needs to integrate over the particle's speed, that is given by the magnitude of its velocity, at each point in time.
 
-  For every parameterized curve γ, the length and arc length are well-defined because the function $\norm{γ'}$ is continuous on a compact set and, consequently, uniformly continuous.
-  Hence, the integral expressions defining $L(γ)$ and $s_γ$ are finite and well-behaved.
-  Furthermore, according to the fundamental theorem of calculus \autocite{forster2016,elstrodt2011}, $s_γ$ is continuously differentiable with derivative $s_γ' = \norm{γ'}$ and surjective.
   A direct consequence for curves parameterized by arc length is that their length can be simply computed by $L(γ)=b-a$.
   This simplification leads to the idea to reparameterize general regular curves, such that they become curves parameterized by arc length and, accordingly, inheriting their good properties.
-  The details for this approach are given by the following lemma for open parameterized curves as closed curves can be seen as a special kind of open curve.
+  The details for this approach are given by the following lemma for open parameterized curves with its proof provided in the appendix in section~\ref{sec:proofs}.
+  % for open parameterized curves as closed curves can be seen as a special kind of open curve.
+  % Its proof is given in the appendix in section~\ref{sec:proofs}.
 
   \begin{lemma}[Regular curves can be parameterized by arc length]
+  \label{lemma:canonical-parameterization}
     Let $n\in\setNatural$, $k\in\setNatural_{\infty}$, $[a,b]\subset\setReal$ be a compact interval, and $\function{γ}{[a,b]}{\setReal^n}$ be an $n$-dimensional parameterized curve of class $\mathrm{C}^k$ that is regular.
     Then up to a constant shift, there exists a unique $k$-times continuously differentiable and bijective function $\function{u}{[c,d]}{[a,b]}$ on a compact interval $[c,d]\subset\setReal$ with strictly positive derivative, such that the composition $γ\composition u$ is a curve parameterized by arc length.
   \end{lemma}
-  \begin{proof}
-    The restriction of $\norm{\cdot}$ to $\setReal^n\setminus\set{0}{}$ is an infinitely differentiable function.
-    The regularity of γ implies that $\norm{γ'}$ and, as a direct consequence, the derivative of $s_γ$ are strictly positive on $(a,b)$.
-    Hence, $s_γ$ is bijective with $k$-times continuously differentiable inverse.
-    The derivative of $s_γ^{-1}$ must also be strictly positive in the interior and continuous as a composition of continuous functions.
-    \[
-      \roundBrackets{s_γ^{-1}}' = \frac{1}{s_γ'\composition s_γ^{-1}} = \frac{1}{\norm{γ'}\composition s_γ^{-1}} > 0
-    \]
-    Define $\tilde{γ}\define γ\composition s_γ^{-1}$.
-    Then by differential calculus, it follows, that $\tilde{γ}$ is $k$-times continuously differentiable and parameterized by arc length.
-    \[
-      \norm{\tilde{γ}'}
-      = \norm{γ'\composition s_γ^{-1} \cdot \roundBrackets{s_γ^{-1}}'}
-      = \norm{\frac{γ'\composition s_γ^{-1}}{s_γ'\composition s_γ^{-1}}}
-      = \norm{\frac{γ'\composition s_γ^{-1}}{\norm{γ'}\composition s_γ^{-1}}}
-      = \frac{\norm{γ'\composition s_γ^{-1}}}{\norm{γ'\composition s_γ^{-1}}}
-      = 1
-    \]
-    This shows that $s_γ^{-1}$ fulfills the required properties and the existence of a parameterization by arc length.
-    To show its uniqueness up to a constant shift, assume an arbitrary function $u$ as given in the lemma.
-    Applying the same reasoning as for $s_γ$, it is clear that $\inverse{u}$ also is $k$-times continuously differentiable with strictly positive derivative on the interior.
-    By calculation, we may then show its connection to the arc length.
-    \[
-      1
-      = \norm{(γ\composition u)'}
-      = \norm{γ'\composition u} \cdot u'
-      = \frac{\norm{γ'\composition u}}{\roundBrackets{\inverse{u}}'\composition u}
-      = \frac{\norm{γ'}}{\roundBrackets{\inverse{u}}'}
-      \quad\implies\quad
-      \norm{γ'} = \roundBrackets{\inverse{u}}'
-    \]
-    To integrate this formula, let $t\in[a,b]$ be arbitrary and use again the fundamental theorem of calculus.
-    \[
-      s_γ(t)
-      = \integral{a}{t}{\norm{γ'(x)}}{x}
-      = \integral{a}{t}{\roundBrackets{\inverse{u}}'(x)}{x}
-      = \inverse{u}(t) - \inverse{u}(a)
-      = \inverse{u}(t) - c
-    \]
-    \[
-      u = s_γ^{-1}\composition s_γ\composition u
-      = s_γ^{-1}(\cdot - c)\composition \inverse{u}\composition u
-      = s_γ^{-1}\roundBrackets{\cdot - c}
-    \]
-    This shows that, up to a constant shift, $u$ is the same as $s_γ^{-1}$ and the uniqueness of the parameterization by arc length.
-  \end{proof}
-  The proof above shows, that the inverse of the arc length of a regular curve up to some shifting can be used as a unique reparameterization to transform it into a curve parameterized by arc length.
-  In this sense, the lemma makes clear that it is sufficient to handle curves that are parameterized by arc length instead of general regular curves.
-  According to this, we will define this as the canonical parameterization of a regular curve.
+  The proof of this lemma shows, that the inverse of the arc length of a regular curve up to some shifting can be used as a unique reparameterization to transform it into a curve parameterized by arc length.
+  % In this sense, the lemma makes clear that it is sufficient to handle curves that are parameterized by arc length instead of general regular curves.
+  According to this, the arc length provides a canonical parameterization.
 
   \begin{definition}[Canonical Parameterization by Arc Length]
     Let γ be a regular curve.
@@ -290,30 +250,30 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
     \]
   \end{definition}
   The definition involves second-order derivatives and therefore at least requires the curves to be of class $\mathrm{C}^2$.
-  In differential geometry, only smooth curves are typically observed where this states no further constraints \autocite{goldhorn2009}.
-  For general regular curves, the tangent vector is not normalized which results in a scaling of the curvature value.
-  The definition omits this peculiarity by using the arc length function to get back to the original parameterization.
+  In differential geometry, typically only smooth curves are observed where this states no further constraints \autocite{goldhorn2009}.
+  % For general regular curves, the tangent vector is not normalized which results in a scaling of the curvature value.
+  % The definition omits this peculiarity by using the arc length function to get back to the original parameterization.
 
   To finally provide a definition for geodesics, it is no longer sufficient to look at smooth curves freely traversing the Euclidean space.
   Instead, we will embed curves into smooth surfaces which already exhibit intrinsic curvature.
-  Based on this intrinsic curvature, the overall curvature of a curve can be decomposed into the geodesic and normal curvature.
-  Hereby, the geodesic curvature describes the amount of curvature an intrinsic observer of the ambient surface would measure walking along the curve without knowledge of the extrinsic curvature.
-  The normal curvature on the other hand is only observable from the ambient space and depends on the extrinsic curvature and the tangential vector of the curve.
-  In the context of curve smoothing, the surfaces, we are looking at, are given by compact (orientable) Riemannian submanifolds (with boundary) of dimension two embedded in three-dimensional Euclidean space.
-  \autocite{goldhorn2009,carmo2016,kuehnel2013}
+  In this scenario, the overall curvature can be decomposed into the geodesic and normal curvature.
 
   \begin{definition}[Geodesic and Normal Curvature of Curves]
     Let $M$ be a Riemannian submanifold embedded in Euclidean space and γ be a curve embedded in $M$ and parameterized by arc length.
-    The geodesic curvature $κ_\mathrm{g}(M,γ)$ and the normal curvature $κ_\mathrm{n}(M,γ)$ are defined as follows.
+    The geodesic curvature $\bar{κ}_\mathrm{g}(M,γ)$ and the normal curvature $\bar{κ}_\mathrm{n}(M,γ)$ are defined as follows.
     \[
       \bar{κ}_\mathrm{g}(M,γ) \define \norm{P_{\mathrm{T}_{γ}M} (γ'')}
       \separate
       \bar{κ}_\mathrm{n}(M,γ) \define \norm{P_{\mathrm{N}_{γ}M} (γ'')}
     \]
   \end{definition}
-  Geodesic and normal curvature are simply defined by computing the norm of projecting the direction of bending into the tangential and normal space of the manifold, respectively.
-  Hence, this definition is consistent with the interpretation given above.
+  The geodesic curvature describes the amount a curve bends measured by an intrinsic observer of the ambient surface that is moving along the curve without any knowledge of the extrinsic curvature.
+  The normal curvature on the other hand is only observable from the ambient space and depends on the extrinsic curvature and the tangential vector of the curve.
+  % In the context of curve smoothing, the surfaces, we are looking at, are given by compact (orientable) Riemannian submanifolds (with boundary) of dimension two embedded in three-dimensional Euclidean space.
+  % Geodesic and normal curvature are simply defined by computing the norm of projecting the direction of bending into the tangential and normal space of the manifold, respectively.
+  % Hence, this definition is consistent with the interpretation given above.
   As a direct consequence of the definition, the following statement can be deduced without further proof.
+  \autocite{goldhorn2009,carmo2016,kuehnel2013}
 
   \begin{corollary}[Relationship of Geodesic and Normal Curvature]
     Let $M$ be a Riemannian submanifold embedded in Euclidean space and γ be a curve embedded in $M$  and parameterized by arc length.
@@ -353,17 +313,18 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix still p
   \end{definition}
   The problem of finding a geodesic for a given ambient submanifold, a starting point, and a starting direction is called the geodesic initial value problem.
   In a rigorous formulation, it breaks down to a system of second-order ordinary differential equations for which it can be proven that a locally unique solution exists in some sense \autocite{polthier2006}.
-  If no starting direction is given, but instead the point to end at, then we call it the geodesic boundary value problem.
+  If no starting direction is given, but instead the point to end at, we call it the geodesic boundary value problem.
   The boundary value problem is not as easy to handle as the initial value problem.
-  There is typically no unique solution despite the fact that there may be no solutions at all \autocite{polthier2006}.
-  Alas, for smoothing already given curves, the boundary value problem needs to be solved in a way that we find a single solution if there exists at least one.
+  There is typically no unique solution despite the fact that there may be no solutions at all \autocite{polthier2006}.\\
+  % Alas, for smoothing already given curves, the boundary value problem needs to be solved in a way that we find a single solution if there exists at least one.
   \autocite{goldhorn2009,carmo2016,kuehnel2013}
 
   Another important alternative characterization states that geodesics are a critical point of their length functional with respect to variations tangential to the ambient submanifold \autocite{polthier2006}.
   In general, this is understood to mean that a curve is locally shortest, that is, a slight change of the trajectory at any point will only increase the overall length of the curve.
   Unfortunately, a critical point is not necessarily a local minimum of the length of a curve and by no means a global minimum.
   Working with smooth submanifolds, this property is equivalent to our defining geodesic property.
-  Embedding a curve in a polyhedral non-differentiable submanifold allows for multiple non-trivial generalizations of geodesics, namely straightest and shortest discrete geodesics, based on each characterizing property as these are no longer equivalent in such a context \autocite{polthier2006}.
+  Embedding a curve in a polyhedral non-differentiable submanifold, the characterizing properties of geodesics are no longer equivalent \autocite{polthier2006}.
+  In such a context, multiple non-trivial generalizations of geodesics are possible.
 
   % \begin{definition}[Geodesics Problems]
   %   Let $M$ be a two-dimensional Riemannian submanifold embedded in $\setReal^3$.

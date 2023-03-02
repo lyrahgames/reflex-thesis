@@ -3,5 +3,73 @@
 \section{Mathematical Proofs} % (fold)
 \label{sec:proofs}
 
+  \begin{definition*}[Length of Curves]
+    Let γ be a parameterized curve on $[a,b]$ or $\mathds{T}^1[a,b]$.
+    Then the length $L(γ)$ and arc length, given by $\function{s_γ}{[a,b]}{[0,L(γ)]}$ or $\function{s_γ}{\mathds{T}^1[a,b]}{\mathds{T}^1[0,L(γ)]}$, respectively, of γ are defined by the following expressions.
+    \[
+      L(γ) \define \integral{a}{b}{\norm{γ'(t)}}{t}
+      % \separate
+      % \function{s_γ}{\mathscr{D}(γ)}{[0,L(γ)]}
+      \separate
+      s_γ(t) \define \integral{a}{t}{\norm{γ'(x)}}{x}
+    \]
+  \end{definition*}
+  \begin{proof}[Consistency Definition~\ref{def:curve-length}]
+    For every parameterized curve γ, the length and arc length are well-defined because the function $\norm{γ'}$ is continuous on a compact set and, consequently, uniformly continuous.
+    Hence, the integral expressions defining $L(γ)$ and $s_γ$ are finite and well-behaved.
+    Furthermore, according to the fundamental theorem of calculus \autocite{forster2016,elstrodt2011}, $s_γ$ is continuously differentiable with derivative $s_γ' = \norm{γ'}$ and surjective.
+  \end{proof}
+
+  \begin{lemma*}[Regular curves can be parameterized by arc length]
+    Let $n\in\setNatural$, $k\in\setNatural_{\infty}$, $[a,b]\subset\setReal$ be a compact interval, and $\function{γ}{[a,b]}{\setReal^n}$ be an $n$-dimensional parameterized curve of class $\mathrm{C}^k$ that is regular.
+    Then up to a constant shift, there exists a unique $k$-times continuously differentiable and bijective function $\function{u}{[c,d]}{[a,b]}$ on a compact interval $[c,d]\subset\setReal$ with strictly positive derivative, such that the composition $γ\composition u$ is a curve parameterized by arc length.
+  \end{lemma*}
+  \begin{proof}[Lemma \ref{lemma:canonical-parameterization}]
+    The restriction of $\norm{\cdot}$ to $\setReal^n\setminus\set{0}{}$ is an infinitely differentiable function.
+    The regularity of γ implies that $\norm{γ'}$ and, as a direct consequence, the derivative of $s_γ$ are strictly positive on $(a,b)$.
+    Hence, $s_γ$ is bijective with $k$-times continuously differentiable inverse.
+    The derivative of $s_γ^{-1}$ must also be strictly positive in the interior and continuous as a composition of continuous functions.
+    \[
+      \roundBrackets{s_γ^{-1}}' = \frac{1}{s_γ'\composition s_γ^{-1}} = \frac{1}{\norm{γ'}\composition s_γ^{-1}} > 0
+    \]
+    Define $\tilde{γ}\define γ\composition s_γ^{-1}$.
+    Then by differential calculus, it follows, that $\tilde{γ}$ is $k$-times continuously differentiable and parameterized by arc length.
+    \[
+      \norm{\tilde{γ}'}
+      = \norm{γ'\composition s_γ^{-1} \cdot \roundBrackets{s_γ^{-1}}'}
+      = \norm{\frac{γ'\composition s_γ^{-1}}{s_γ'\composition s_γ^{-1}}}
+      = \norm{\frac{γ'\composition s_γ^{-1}}{\norm{γ'}\composition s_γ^{-1}}}
+      = \frac{\norm{γ'\composition s_γ^{-1}}}{\norm{γ'\composition s_γ^{-1}}}
+      = 1
+    \]
+    This shows that $s_γ^{-1}$ fulfills the required properties and the existence of a parameterization by arc length.
+    To show its uniqueness up to a constant shift, assume an arbitrary function $u$ as given in the lemma.
+    Applying the same reasoning as for $s_γ$, it is clear that $\inverse{u}$ also is $k$-times continuously differentiable with strictly positive derivative on the interior.
+    By calculation, we may then show its connection to the arc length.
+    \[
+      1
+      = \norm{(γ\composition u)'}
+      = \norm{γ'\composition u} \cdot u'
+      = \frac{\norm{γ'\composition u}}{\roundBrackets{\inverse{u}}'\composition u}
+      = \frac{\norm{γ'}}{\roundBrackets{\inverse{u}}'}
+      \quad\implies\quad
+      \norm{γ'} = \roundBrackets{\inverse{u}}'
+    \]
+    To integrate this formula, let $t\in[a,b]$ be arbitrary and use again the fundamental theorem of calculus.
+    \[
+      s_γ(t)
+      = \integral{a}{t}{\norm{γ'(x)}}{x}
+      = \integral{a}{t}{\roundBrackets{\inverse{u}}'(x)}{x}
+      = \inverse{u}(t) - \inverse{u}(a)
+      = \inverse{u}(t) - c
+    \]
+    \[
+      u = s_γ^{-1}\composition s_γ\composition u
+      = s_γ^{-1}(\cdot - c)\composition \inverse{u}\composition u
+      = s_γ^{-1}\roundBrackets{\cdot - c}
+    \]
+    This shows that, up to a constant shift, $u$ is the same as $s_γ^{-1}$ and the uniqueness of the parameterization by arc length.
+  \end{proof}
+
 % section proofs (end)
 \end{document}
