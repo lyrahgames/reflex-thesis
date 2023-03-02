@@ -1,6 +1,6 @@
 \documentclass{stdlocal}
 \begin{document}
-\section{Preliminaries} % (fold)
+\section{Mathematical Preliminaries} % (fold)
 \label{sec:preliminaries}
 
 To systematically approach the topic of curve smoothing algorithms for surface meshes, basic knowledge in the topics of differential geometry for curves and its further application and generalization to polyhedral surfaces is administrable.
@@ -336,17 +336,26 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
 
 % subsection differential_geometry (end)
 
-\subsection{Polyhedral Surfaces} % (fold)
+\subsection{Polyhedral Surfaces and Surface Meshes} % (fold)
 \label{sub:polyhedral_surfaces}
 
-  There are definitions for manifolds with corners.
-  In the topological case, these are equivalent to manifolds with boundaries.
-  For the smooth case, it is different.
-  The half space is only homeomorphic and not diffeomorphic to the cube space.
-  so, we could generalize a polyhedral surface as a smooth manifold with corners.
-  on the definitions, there is no uniform agree.
-  So, we will not use the generalization of manifolds with corners.
-  we will use the theory of polthier which should be applicable to manifolds with corners.
+  In mathematics, smooth manifolds are well understood and provide a rich set of good properties and generalizations.
+  Unfortunately, arbitrarily complex smooth manifolds are not easily representable in a computer system due to the finite amount of available storage and precision.
+  In the spirit of scientific computing, surfaces of real-world objects are typically approximated by many triangles which are put together to a polyhedral surface.
+  % This mesh is called a polyhedral surface or surface mesh.
+  This interpretation is slightly altered in the area of computational geometry and in the context of this thesis.
+  A polyhedral surface is no longer looked at as an approximation to a smooth surface but viewed as an exact description of the shape of interest.
+  \autocite{sharp2020}
+
+  Polyhedral surfaces no longer fulfill the requirements of any differentiable manifold and, at a first glance, lack many good properties.
+  To cope with the implied disadvantages, they could be generalized by the rarely used concept of smooth manifolds with corners.
+  Here, coordinate charts are defined over the cube space instead of the half space to directly include corners and edges (see appendix~\ref{sec:analysis_on_manifolds} definition~\ref{def:topological-manifold}).
+  In the topological case, this concept is equivalent to manifolds with boundaries and does not provide further insights.
+  But because the half space is only homeomorphic and not diffeomorphic to the cube space, this statement does not hold in the differential case of manifolds.
+  Therefore using smooth manifolds with corners to model polyhedral surfaces could lead to a simpler handling of structures and theorems.
+  Unfortunately, according to \textcite{joyce2009}, the exact definition of manifolds with corners is not universally agreed upon and still raises questions and problems.
+  Therefore, in this thesis, the focus will put on the definition and ideas given by \textcite{polthier2006}.
+  \autocite{joyce2009}
 
   \begin{definition}[Triangle]
     Let $n\in\setNatural$ with $n\geq 2$ and $A,B,C\in\setReal^n$ affinely independent points.
@@ -360,40 +369,74 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
       \separate
       \mathscr{E}(\triangle) \define \set{\overline{AB}, \overline{BC}, \overline{CA}}{}
     \]
-    \[
-      \partial\triangle \define \textstyle\bigcup\mathscr{E}(\triangle)
-    \]
-    \[
-      Π \define \set{\function{π}{\set{1,2,3}{}}{\mathscr{V}(\triangle)}}{\text{π bijective}}
-    \]
-    \[
-      D \define \set{(u,v) \in [0,1]^2}{u + v < 1}
-    \]
-    \[
-      \function{φ_π}{\overline{D}}{\triangle}
-      \separate
-      φ_π(u,v) \define (1 - u - v) π(1) + u π(2) + v π(3)
-    \]
-    \[
-      π\sim π' :\iff \exists σ\in\mathrm{S}_3, \mathrm{sgn}\, σ = 1 \colon π' = π\circ σ
-    \]
-    \[
-      Π/\sim = \set{[π], [\bar{π}]}{}
-    \]
-    \[
-      \triangle_{[π]} \define (\triangle, [π])
-    \]
+  \end{definition}
+  The triangle is defined in the topological context by using barycentric coordinates.
+  Its structure on the other hand is given by its vertices and edges.
+  To show some basic manifold properties, I first introduce a restricted parameter set.
+  \[
+    D \define \set{(u,v) \in [0,1]^2}{u + v < 1}
+  \]
+  Furthermore, the set $Π(\triangle)$ of all vertex arrangements is needed to also handle orientation.
+  \[
+    Π(\triangle) \define \set{\function{π}{\set{1,2,3}{}}{\mathscr{V}(\triangle)}}{\text{π bijective}}
+  \]
+  Then let $π\in Π(\triangle)$ be arbitrary and define the following coordinate charts and atlases.
+  \[
+    \function{φ_π}{\overline{D}}{\triangle}
+    \separate
+    φ_π(u,v) \define (1 - u - v) π_1 + u π_2 + v π_3
+  \]
+  \[
+    \mathscr{A} \define \set{\roundBrackets{φ_π(D),φ_π|_D^{-1}}}{π\in Π(\triangle)}
+    \separate
+    \mathscr{A}^\circ \define \set{\roundBrackets{\triangle^\circ, φ_π|_{D^\circ}^{-1}}}{π\in Π(\triangle)}
+  \]
+  Given $\mathscr{A}$ as atlas for $\triangle$, it follows directly that $\triangle$ is an orientable topological 2-manifold with boundary embedded in $\setReal^n$.
+  Using $\mathscr{A}^\circ$ as atlas for $\triangle^\circ$, the open triangle an orientable smooth 2-manifold without boundary.
+  For orientability, let the following equivalence relation define when two vertex arrangements $π,π'\in Π(\triangle)$ induce the same orientation.
+  \[
+    π\sim π' \quad :\iff \quad \exists σ\in\mathrm{S}_3, \mathrm{sgn}\, σ = 1 \colon\quad π' = π\circ σ
+  \]
+  The quotient space of vertex arrangements then only consist of two elements which uniquely model the possible orientations of a triangle that are schematically visualized in figure~\ref{fig:triangle-orientations}.
+  \[
+    Π(\triangle)/\sim = \set{[π], [\bar{π}]}{}
+  \]
+
+  \begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=0.7\linewidth]{figures/triangle-counterclockwise.pdf}
+      \caption{counterclockwise}
+    \end{subfigure}
+    % \hfill
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=0.7\linewidth]{figures/triangle-clockwise.pdf}
+      \caption{clockwise}
+    \end{subfigure}
+    \caption[Orientations of Triangles]{%
+      \textbf{Orientations of Triangles}\\
+      The orientations are given with respect to the normal of the Euclidean plane pointing outwards.
+    }
+    \label{fig:triangle-orientations}
+  \end{figure}
+
+  \begin{definition}[Oriented Triangle]
+    An oriented triangle $\triangle_{[π]} \define (\triangle, [π])$ is tuple consisting of a triangle $\triangle$ and a chosen orientation $[π]\in Π(\triangle)/\sim$ of that triangle.
+    The set of directed edges is then given by the following.
+    % Let $\triangle$ be a triangle and $[π]\in Π(\triangle)/\sim$ be an orientation of $\triangle$.
+    % The oriented
+    % \[
+    %   \triangle_{[π]} \define (\triangle, [π])
+    % \]
     \[
       \mathscr{E}(\triangle_{[π]}) \define \set{\overrightarrow{π_1π_2},\overrightarrow{π_2π_3}, \overrightarrow{π_3π_1}}{}
     \]
-    \[
-      ϑ_\triangle(A) = \arccos\frac{\scalarProduct{\overrightarrow{AB}}{\overrightarrow{AC}}}{\norm{\overrightarrow{AB}}\norm{\overrightarrow{AC}}}
-    \]
+    % \[
+    %   ϑ_\triangle(A) = \arccos\frac{\scalarProduct{\overrightarrow{AB}}{\overrightarrow{AC}}}{\norm{\overrightarrow{AB}}\norm{\overrightarrow{AC}}}
+    % \]
   \end{definition}
-  A triangle is an orientable topological 2-manifold with boundary embedded in $\setReal^n$.
-  The atlas is given by $\set{\roundBrackets{φ_π(D),φ_π|_D^{-1}}}{π\in Π}$
-  The inner set $\triangle^\circ$ is an orientable smooth 2-manifold without boundary.
-  Its atlas is given by the restrictions $(\triangle^\circ, φ_π|_{D^\circ}^{-1})$.
   Triangles are planar surfaces and, hence, geodesics are given by straight lines.
   Furthermore, the triangle is by definition a convex set and therefore always provides a unique solution for the geodesic boundary value problem.
 
