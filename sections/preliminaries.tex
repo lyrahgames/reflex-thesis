@@ -392,14 +392,14 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
     \mathscr{A}^\circ \define \set{\roundBrackets{\triangle^\circ, φ_π|_{D^\circ}^{-1}}}{π\in Π(\triangle)}
   \]
   Given $\mathscr{A}$ as atlas for $\triangle$, it follows directly that $\triangle$ is an orientable topological 2-manifold with boundary embedded in $\setReal^n$.
-  Using $\mathscr{A}^\circ$ as atlas for $\triangle^\circ$, the open triangle an orientable smooth 2-manifold without boundary.
+  Using $\mathscr{A}^\circ$ as atlas for $\triangle^\circ$, the open triangle is an orientable smooth 2-manifold without boundary.
   For orientability, let the following equivalence relation define when two vertex arrangements $π,π'\in Π(\triangle)$ induce the same orientation.
   \[
     π\sim π' \quad :\iff \quad \exists σ\in\mathrm{S}_3, \mathrm{sgn}\, σ = 1 \colon\quad π' = π\circ σ
   \]
   The quotient space of vertex arrangements then only consist of two elements which uniquely model the possible orientations of a triangle that are schematically visualized in figure~\ref{fig:triangle-orientations}.
   \[
-    Π(\triangle)/\sim = \set{[π], [\bar{π}]}{}
+    \Theta(\triangle) \define Π(\triangle)/\sim = \set{[π], [\bar{π}]}{}
   \]
 
   \begin{figure}[h]
@@ -423,7 +423,7 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   \end{figure}
 
   \begin{definition}[Oriented Triangle]
-    An oriented triangle $\triangle_{[π]} \define (\triangle, [π])$ is tuple consisting of a triangle $\triangle$ and a chosen orientation $[π]\in Π(\triangle)/\sim$ of that triangle.
+    An oriented triangle $\triangle_{[π]} \define (\triangle, [π])$ is tuple consisting of a triangle $\triangle$ and a chosen orientation $[π]\in \Theta(\triangle)$ of that triangle.
     The set of directed edges is then given by the following.
     % Let $\triangle$ be a triangle and $[π]\in Π(\triangle)/\sim$ be an orientation of $\triangle$.
     % The oriented
@@ -440,6 +440,8 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   Triangles are planar surfaces and, hence, geodesics are given by straight lines.
   Furthermore, the triangle is by definition a convex set and therefore always provides a unique solution for the geodesic boundary value problem.
 
+
+
   \begin{definition}[Polyhedral Surface and Surface Mesh]
     Let $n\in\setNatural$ with $n\geq 2$ and $\mathscr{T}\neq\emptyset$ be a finite set of triangles embedded in $\setReal^n$.
     Let $S=\bigcup\mathscr{T}$ be a two-dimensional topological manifold (with boundary), such that for all $\triangle_1,\triangle_2\in\mathscr{T}$ with $\triangle_1\neq\triangle_2$ the following holds.
@@ -455,32 +457,62 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
       \separate
       \mathscr{F}(S) \define \mathscr{T}
     \]
-    (topological) surface mesh.
-    \[
-      \mathscr{M}(S) \define \textstyle\bigcup \mathscr{E}(S)
-    \]
-    \[
-      \partial\mathscr{E}(S) \define \set{e\in\mathscr{E}(S)}{\exists!\triangle\in\mathscr{F}(S)\colon e\subset\triangle}
-      \separate
-      \mathscr{E}^\circ(S) \define \mathscr{E}(S) \setminus \partial\mathscr{E}(S)
-    \]
-    \[
-      \partial S \define \textstyle\bigcup \partial\mathscr{E}(S)
-      \separate
-      \partial\mathscr{V}(S) \define \mathscr{V}(S) \cap \partial S
-      \separate
-      \mathscr{V}^\circ(S) \define \mathscr{V}(S) \setminus \partial\mathscr{V}(S)
-    \]
+    % (topological) surface mesh.
+    % \[
+    %   \mathscr{M}(S) \define \textstyle\bigcup \mathscr{E}(S)
+    % \]
+    % \[
+    %   \partial\mathscr{E}(S) \define \set{e\in\mathscr{E}(S)}{\exists!\triangle\in\mathscr{F}(S)\colon e\subset\triangle}
+    %   \separate
+    %   \mathscr{E}^\circ(S) \define \mathscr{E}(S) \setminus \partial\mathscr{E}(S)
+    % \]
+    % \[
+    %   \partial S \define \textstyle\bigcup \partial\mathscr{E}(S)
+    %   \separate
+    %   \partial\mathscr{V}(S) \define \mathscr{V}(S) \cap \partial S
+    %   \separate
+    %   \mathscr{V}^\circ(S) \define \mathscr{V}(S) \setminus \partial\mathscr{V}(S)
+    % \]
   \end{definition}
-  A surface mesh is again a topological 2-manifold.
+  For convenience, my definition of polyhedral surfaces is more restricted than that of \textcite{polthier2006} as it does not allow for an infinite amount of triangles or arbitrary flat intrinsic metrics.
+  Concerning the applications of curve smoothing algorithms, this is not a serious constraint because scenes have a finite extent.
 
-  \begin{definition}[Oriented Surface Mesh]
-    Let $S$ be a surface mesh and $\function{Π}{\mathscr{F}(S)}{\bigsqcup_{\triangle\in\mathscr{F}(S)} Π_\triangle}$.
+  The definition makes sure that each pair of triangles may only share a common vertex or edge and does not overlap in any other way.
+  Additionally, requiring that the polyhedral surface is a topological 2-manifold, lets neighborhoods of any point be parameterized by two-dimensional charts.
+  So, an edge, for example, may only belong either to one or two triangles at the same time.
+
+  For the construction of orientation, I will build on the tools given above for oriented triangles.
+  Given a pair of oriented triangles sharing a common edge, their orientations are compatible if they do \textit{not} share any directed edge.
+
+  \begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=0.8\linewidth]{figures/compatible-triangle-orientations.pdf}
+      \caption{compatible}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=0.8\linewidth]{figures/incompatible-triangle-orientations.pdf}
+      \caption{incompatible}
+    \end{subfigure}
+    \caption[Compatible and Incompatible Triangle Orientations]{%
+      \textbf{Compatible and Incompatible Triangle Orientations}\\
+    }
+    \label{fig:compatible-triangle-orientations}
+  \end{figure}
+
+  \begin{definition}[Oriented Polyhedral Surface]
+    Let $S$ be a polyhedral surface. Then $S$ is called orientable if there exists a function $\function{ϑ}{\mathscr{F}(S)}{\bigsqcup_{\triangle\in\mathscr{F}(S)} \Theta(\triangle)}$ that selects an orientation for each contained triangle with the following property.
     \[
-      \forall \triangle_1,\triangle_2\in\mathscr{F}(S),\triangle_1\neq\triangle_2\colon\quad \mathscr{E}(Π(\triangle_1)) \cap \mathscr{E}(Π(\triangle_2)) = \emptyset
+      \forall \triangle_1,\triangle_2\in\mathscr{F}(S),\triangle_1\neq\triangle_2\colon\quad \mathscr{E}(ϑ(\triangle_1)) \cap \mathscr{E}(ϑ(\triangle_2)) = \emptyset
     \]
-    $(S,Π)$ is called an oriented surface mesh.
+    In this case, $ϑ$ is called an orientation of $S$ and $(S,ϑ)$ an oriented polyhedral surface. The set of all orientations for $S$ is denoted with $\Theta(S)$.
   \end{definition}
+  There are artificial cases, such as the polyhedral Möbius strip, of non-orientable polyhedral surfaces.
+  Also objects may look like orientable surfaces but may provide artifacts in their surface meshes originating from scanning.
+  As polyhedral surfaces are not required to be connected, more than two orientations might exist.
 
   \begin{definition}[Discrete Surface Mesh Curve]
     Let $n\in\setNatural$, $S$ be a surface mesh, and $x\in \boxBrackets{\bigcup\mathscr{E}(S)}^{n+1}$ be a tuple of $n+1$ points on the edges of the surface mesh $S$, such that adjacent points lie on the same triangle.
