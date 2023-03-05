@@ -336,7 +336,7 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
 
 % subsection differential_geometry (end)
 
-\subsection{Polyhedral Surfaces and Surface Meshes} % (fold)
+\subsection{Polyhedral Surfaces and Discrete Geodesics} % (fold)
 \label{sub:polyhedral_surfaces}
 
   In mathematics, smooth manifolds are well understood and provide a rich set of good properties and generalizations.
@@ -371,6 +371,18 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
       \mathscr{V}(\triangle) \define \set{A,B,C}{}
       \separate
       \mathscr{E}(\triangle) \define \set{\overline{AB}, \overline{BC}, \overline{CA}}{}
+    \]
+    Furthermore, the total vertex angle $\function{ϑ_\triangle}{\triangle}{[0,2π]}$ is given by the following values.
+    \[
+      ϑ_\triangle|_{\triangle^\circ} = 2π
+      \separate ϑ_\triangle|_{\partial\triangle\setminus\mathscr{V}(\triangle)} = π
+      \separate
+      ϑ_\triangle(C) \define \arccos\frac{\scalarProduct{\overrightarrow{CB}}{\overrightarrow{CA}}}{\norm{\overrightarrow{CB}}\norm{\overrightarrow{CA}}}
+    \]
+    \[
+      ϑ_\triangle(A) \define \arccos\frac{\scalarProduct{\overrightarrow{AB}}{\overrightarrow{AC}}}{\norm{\overrightarrow{AB}}\norm{\overrightarrow{AC}}}
+      \separate
+      ϑ_\triangle(B) \define \arccos\frac{\scalarProduct{\overrightarrow{BA}}{\overrightarrow{BC}}}{\norm{\overrightarrow{BA}}\norm{\overrightarrow{BC}}}
     \]
   \end{definition}
   In the topological context, the triangle can simply be defined by using barycentric coordinates that build a convex linear combination of its vertices.
@@ -483,6 +495,12 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
     %   \separate
     %   \mathscr{V}^\circ(S) \define \mathscr{V}(S) \setminus \partial\mathscr{V}(S)
     % \]
+    The total vertex angle $\function{ϑ_S}{S}{[0,2π]}$ of $S$ is defined as follows.
+    \[
+      ϑ_S(v) \define \sum_{\triangle\in\mathscr{F}_v(S)} ϑ_\triangle(v)
+      \separate
+      \mathscr{F}_v(S) \define \set{\triangle\in\mathscr{F}(S)}{v\in\triangle}
+    \]
   \end{definition}
   The definition makes sure that each pair of triangles may only share a common vertex or edge and does not overlap in any other way.
   Additionally, requiring that the polyhedral surface is a topological 2-manifold, lets neighborhoods of any point be parameterized by two-dimensional charts.
@@ -597,24 +615,24 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
 
   To make it possible to use regular surface mesh curves for the definition of discrete geodesics, \textcite{polthier2006} introduce the concept of discrete geodesic curvature.
 
-  \begin{definition}[Total Vertex Angle]
-    Let $S$ be a polyhedral surface.
-    For vertices $v\in\mathscr{V}(S)$, the total vertex angle is defined as follows.
-    \[
-      ϑ_\triangle(A) = \arccos\frac{\scalarProduct{\overrightarrow{AB}}{\overrightarrow{AC}}}{\norm{\overrightarrow{AB}}\norm{\overrightarrow{AC}}}
-    \]
-    \[
-      ϑ_S(v) \define \sum_{\triangle\in\mathscr{F}(S), v\in\triangle} ϑ_\triangle(v)
-    \]
-  \end{definition}
+  % \begin{definition}[Total Vertex Angle]
+  %   % Let $\triangle$ be a triangle with vertices $A$, $B$, and $C$.
+  %   Let $S$ be a polyhedral surface.
+  %   Then the total vertex angle $\function{ϑ_S}{S}{[0,2π]}$ of $S$ is defined as follows.
+  %   \[
+  %     ϑ_S(v) \define \sum_{\triangle\in\mathscr{F}_v(S)} ϑ_\triangle(v)
+  %     \separate
+  %     \mathscr{F}_v(S) \define \set{\triangle\in\mathscr{F}(S)}{v\in\triangle}
+  %   \]
+  % \end{definition}
 
   Surface mesh curves without artifacts will never contain points that lie on the inside of a boundary edge.
   They may contain boundary vertices.
 
   \begin{definition}[Curve Angle]
-    Let $S$ be a polyhedral surface and $p,x,q\in\mathscr{M}(S)$, $x\in S^\circ$ be adjacent vertices of surface mesh curve without artifacts on $S$.
+    Let $S$ be a polyhedral surface and $p,x,q\in\mathscr{M}(S)$, $x\in S^\circ$ be adjacent vertices of a regular surface mesh curve on $S$.
     Let $\mathscr{V}_S(x)$ the neighboring vertices.
-    The neighbor set can be partitioned into three possible empty tuples, such that $p,(x),q$ is surface mesh curvature without artifacts.
+    The neighbor set can be partitioned into three possible empty tuples, such that $p,(x),q$ is regular surface mesh curvature.
     There exists two tuples $(p=x_{λ(0)},x_{λ(1)},\ldots,x_{λ(n)},x_{λ(n+1)} = q)$ and $(p,x_{ρ(1)},\ldots,x_{ρ(m)},q)$ that characterize a surface mesh curve without artifacts.
     \[
       β_λ = \sum_{k=1}^n \sphericalangle(x_{λ(k-1)},x_{λ(k)},x_{λ(k+1)})
