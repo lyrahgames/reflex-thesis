@@ -580,6 +580,9 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   To make sure that the connection of two adjacent control points by a straight line is also part of the polyhedral surface itself, they are forced to be part of the same face.
   Mathematically, this property is important for consistency.
 
+  To provide a proper distinction from the vertices of the surface, I called the vertices of a surface mesh curve its control points.
+  There is no further meaning to that.
+
   % \begin{corollary}
   %   Discrete surface mesh curves of a polyhedral surface are part of that surface.
   % \end{corollary}
@@ -629,29 +632,76 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   Surface mesh curves without artifacts will never contain points that lie on the inside of a boundary edge.
   They may contain boundary vertices.
 
-  \begin{definition}[Curve Angle]
-    Let $S$ be a polyhedral surface and $p,x,q\in\mathscr{M}(S)$, $x\in S^\circ$ be adjacent vertices of a regular surface mesh curve on $S$.
-    Let $\mathscr{V}_S(x)$ the neighboring vertices.
-    The neighbor set can be partitioned into three possible empty tuples, such that $p,(x),q$ is regular surface mesh curvature.
-    There exists two tuples $(p=x_{λ(0)},x_{λ(1)},\ldots,x_{λ(n)},x_{λ(n+1)} = q)$ and $(p,x_{ρ(1)},\ldots,x_{ρ(m)},q)$ that characterize a surface mesh curve without artifacts.
+  \begin{definition}[Oriented Curve Angle]
+    Let $(S,ω)$ be an oriented polyhedral surface and γ be a regular surface mesh curve on $S$.
+    Let $p,x,q\in\mathscr{M}(S)$ be adjacent control points of γ, such that $x\in S^\circ$.
+
+    Then there is $n\in\setNatural_0$ and a unique sequence $(\triangle_0,\ldots,\triangle_{n+1})$ of adjacent and pairwise distinct triangles with $v\in \mathscr{V}(\triangle_0)\cap\mathscr{V}(\triangle_1)$ and $w\in \mathscr{V}(\triangle_n)\cap\mathscr{V}(\triangle_{n+1})$, such that the following properties are fulfilled.
     \[
-      β_λ = \sum_{k=1}^n \sphericalangle(x_{λ(k-1)},x_{λ(k)},x_{λ(k+1)})
+      p,x \in \triangle_0
       \separate
-      β_ρ = \sum_{k=1}^m \sphericalangle(x_{ρ(k-1)},x_{ρ(k)},x_{ρ(k+1)})
+      x,q \in \triangle_{n+1}
+      \separate
+      \forall i\in\setNatural,i\leq n\colon\quad x \in \triangle_i \ \wedge\ p,q\not\in \triangle_i
     \]
-    The (unoriented) curve angle at $x$ is given by the sum
     \[
-      β = \min \set{β_λ, β_ρ}{}
+      \text{$\roundBrackets{\overrightarrow{xp},\overrightarrow{xv}}$ is a positively oriented basis in $ω(\triangle_0)$.}
     \]
-    If there is an orientation $Π$ for $S$ then the (oriented) curve angle is given by the segmentation which points are connected by directed edge paths in their respective triangles such that $x$ is not contained.
+    \[
+      \text{$\roundBrackets{\overrightarrow{xw},\overrightarrow{xq}}$ is a positively oriented basis in $ω(\triangle_{n+1})$.}
+    \]
+
+    In this case, the (oriented) curve angle $β_S(γ)$ of γ at $x$ is defined as follows.
+    \[
+      β_S(γ)(x) \define \sphericalangle(p,x,v) + \sphericalangle(w,x,q) + \sum_{i=1}^n ϑ_{\triangle_i}(x)
+    \]
+
+    % Let $\mathscr{V}_S(x)$ the neighboring vertices.
+    % The neighbor set can be partitioned into three possible empty tuples, such that $p,(x),q$ is regular surface mesh curvature.
+    % There exists two tuples $(p=x_{λ(0)},x_{λ(1)},\ldots,x_{λ(n)},x_{λ(n+1)} = q)$ and $(p,x_{ρ(1)},\ldots,x_{ρ(m)},q)$ that characterize a surface mesh curve without artifacts.
+    % \[
+    %   β_λ = \sum_{k=1}^n \sphericalangle(x_{λ(k-1)},x_{λ(k)},x_{λ(k+1)})
+    %   \separate
+    %   β_ρ = \sum_{k=1}^m \sphericalangle(x_{ρ(k-1)},x_{ρ(k)},x_{ρ(k+1)})
+    % \]
+    % The (unoriented) curve angle at $x$ is given by the sum
+    % \[
+    %   β = \min \set{β_λ, β_ρ}{}
+    % \]
+    % If there is an orientation $Π$ for $S$ then the (oriented) curve angle is given by the segmentation which points are connected by directed edge paths in their respective triangles such that $x$ is not contained.
   \end{definition}
+  The definition of the curve angle of a regular surface mesh curve is a little bit more technical.
+  \textcite{polthier2006} and \textcite{lawonn2014} use the unoriented curve angle.
   For the oriented case, the curve angle can only be defined for curve vertices that do not lie on the boundary of $S$.
   Also the interpretation of the total vertex angle for boundary points is different.
   This makes a generalization of the oriented discrete curvature at boundary points difficult.
 
+  \begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=0.65\linewidth]{figures/curve-angle-edge.pdf}
+      \caption{Edge Case: $n=0$, $v=w$}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=0.65\linewidth]{figures/curve-angle-vertex.pdf}
+      \caption{Vertex Case: $n=2$, $ϑ_i\define ϑ_{\triangle_i}(x)$}
+    \end{subfigure}
+    \caption[Curve Angle Scheme for Vertices and Edges]{%
+      \textbf{Curve Angle Scheme for Vertices and Edges}\\
+      $α = \sphericalangle(p,x,v)$ and $β = \sphericalangle(w,x,q)$
+    }
+    \label{fig:curve-angle}
+  \end{figure}
+
   \begin{definition}[Discrete Geodesic Curvature]
+    Let $(S,ω)$ be an oriented polyhedral surface and γ be a regular surface mesh curve on $S$.
+    Then for all control points of γ that lie on the interior of γ and $S$, the discrete geodesic curvature is defined as follows.
+
     \[
-      κ_\mathrm{g}(γ) = π - \frac{2π}{ϑ_S(γ)}β_S(γ)
+      κ_\mathrm{g}(γ)(x) = π - \frac{2π}{ϑ_S(γ)}β_S(γ)(x)
     \]
   \end{definition}
 
