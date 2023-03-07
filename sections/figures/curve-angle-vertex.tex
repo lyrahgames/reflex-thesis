@@ -29,13 +29,26 @@
   \tkzDefShiftPoint[A](0,0){x}
   \tkzDefShiftPoint[F](0,0){q}
 
-  \tkzDrawPolygon(A,B,C)
-  \tkzDrawPolygon(A,C,D)
-  \tkzDrawPolygon(A,D,E)
-  \tkzDrawPolygon(A,E,F)
-  \tkzDrawPolygon[dotted](A,F,G)
-  \tkzDrawPolygon[dotted](A,G,H)
-  \tkzDrawPolygon[dotted](A,H,B)
+  % \tkzDrawPolygon(A,B,C)
+  % \tkzDrawPolygon(A,C,D)
+  % \tkzDrawPolygon(A,D,E)
+  % \tkzDrawPolygon(A,E,F)
+  % \tkzDrawPolygon[dotted](A,F,G)
+  % \tkzDrawPolygon[dotted](A,G,H)
+  % \tkzDrawPolygon[dotted](A,H,B)
+
+  \tkzFillPolygon[color=black!5](A,B,C)
+  \tkzFillPolygon[color=black!5](A,C,D)
+  \tkzFillPolygon[color=black!5](A,D,E)
+  \tkzFillPolygon[color=black!5](A,E,F)
+  \tkzFillPolygon[color=black!5](A,F,G)
+  \tkzFillPolygon[color=black!5](A,G,H)
+  \tkzFillPolygon[color=black!5](A,H,B)
+
+  \tkzDrawSegments(B,C C,D D,E E,F)
+  \tkzDrawSegments(A,B A,C A,D A,E A,F)
+  \tkzDrawSegments[dashed](F,G G,H H,B)
+  \tkzDrawSegments[dashed](A,G A,H)
 
   \tkzMarkAngle[size=1.2](p,x,C)
   \tkzLabelAngle[pos=0.8](p,x,C){$\alpha$}

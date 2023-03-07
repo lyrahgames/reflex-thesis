@@ -326,6 +326,15 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   Embedding a curve in a polyhedral non-differentiable submanifold, the characterizing properties of geodesics are no longer equivalent \autocite{polthier2006}.
   In such a context, multiple non-trivial generalizations of geodesics are possible.
 
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{figures/geodesic-on-boundary-smooth.pdf}
+    \caption[Geodesics on Smooth Manifolds with Boundary]{%
+      \textbf{Geodesics on Smooth Manifolds with Boundary}\\
+    }
+    \label{fig:geodesic-on-manifold-with-boundary-smooth}
+  \end{figure}
+
   % \begin{definition}[Geodesics Problems]
   %   Let $M$ be a two-dimensional Riemannian submanifold embedded in $\setReal^3$.
 
@@ -349,12 +358,12 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
 
   Polyhedral surfaces no longer fulfill the requirements of any differentiable manifold and, at a first glance, lack many good properties.
   To cope with the implied disadvantages, they could be generalized by the rarely used concept of smooth manifolds with corners.
-  Here, coordinate charts are defined over the cube space instead of the half space to directly include corners and edges (see appendix~\ref{sec:analysis_on_manifolds} definition~\ref{def:topological-manifold}).
+  Here, coordinate charts are defined over the cube space instead of the half space to directly include corners and edges (see appendix~\ref{sec:analysis_on_manifolds} definition~\ref{def:topological-manifold} and \textcite{joyce2009}).
   In the topological case, this concept is equivalent to manifolds with boundaries and does not provide further insights.
   But because the half space is only homeomorphic and not diffeomorphic to the cube space, this statement does not hold in the differential case of manifolds.
   Therefore using smooth manifolds with corners to model polyhedral surfaces could lead to a simpler handling of structures and theorems.
   Unfortunately, according to \textcite{joyce2009}, the exact definition of manifolds with corners is not universally agreed upon and still raises questions and problems.
-  Therefore, in this thesis, the focus lies on the definitions and ideas given by \textcite{polthier2006}.
+  Therefore, in this thesis, the focus lies on the definitions and ideas given by \textcite{polthier2006} and \textcite{martinez2005}.
 
   The geometric primitives of polyhedral surfaces are triangles.
   By attaching triangles to each other at their edges, arbitrary complex surfaces can be approximated.
@@ -371,18 +380,6 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
       \mathscr{V}(\triangle) \define \set{A,B,C}{}
       \separate
       \mathscr{E}(\triangle) \define \set{\overline{AB}, \overline{BC}, \overline{CA}}{}
-    \]
-    Furthermore, the total vertex angle $\function{ϑ_\triangle}{\triangle}{[0,2π]}$ is given by the following values.
-    \[
-      ϑ_\triangle|_{\triangle^\circ} = 2π
-      \separate ϑ_\triangle|_{\partial\triangle\setminus\mathscr{V}(\triangle)} = π
-      \separate
-      ϑ_\triangle(C) \define \arccos\frac{\scalarProduct{\overrightarrow{CB}}{\overrightarrow{CA}}}{\norm{\overrightarrow{CB}}\norm{\overrightarrow{CA}}}
-    \]
-    \[
-      ϑ_\triangle(A) \define \arccos\frac{\scalarProduct{\overrightarrow{AB}}{\overrightarrow{AC}}}{\norm{\overrightarrow{AB}}\norm{\overrightarrow{AC}}}
-      \separate
-      ϑ_\triangle(B) \define \arccos\frac{\scalarProduct{\overrightarrow{BA}}{\overrightarrow{BC}}}{\norm{\overrightarrow{BA}}\norm{\overrightarrow{BC}}}
     \]
   \end{definition}
   In the topological context, the triangle can simply be defined by using barycentric coordinates that build a convex linear combination of its vertices.
@@ -420,20 +417,20 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   \]
   The quotient space of vertex arrangements then only consists of two elements which uniquely model the possible orientations of a triangle that are schematically visualized in figure~\ref{fig:triangle-orientations}.
   \[
-    \Theta(\triangle) \define Π(\triangle)/\sim = \set{[π], [\bar{π}]}{}
+    \Omega(\triangle) \define Π(\triangle)/\sim = \set{[π], [\bar{π}]}{}
   \]
 
-  \begin{figure}[h]
+  \begin{figure}[t]
     \centering
     \begin{subfigure}[b]{0.49\linewidth}
       \centering
-      \includegraphics[width=0.7\linewidth]{figures/triangle-counterclockwise.pdf}
+      \includegraphics[scale=0.9]{figures/triangle_counterclockwise.pdf}
       \caption{counterclockwise}
     \end{subfigure}
     % \hfill
     \begin{subfigure}[b]{0.49\linewidth}
       \centering
-      \includegraphics[width=0.7\linewidth]{figures/triangle-clockwise.pdf}
+      \includegraphics[scale=0.9]{figures/triangle_clockwise.pdf}
       \caption{clockwise}
     \end{subfigure}
     \caption[Orientations of a Triangle]{%
@@ -445,7 +442,7 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   \end{figure}
 
   \begin{definition}[Oriented Triangle]
-    An oriented triangle is tuple $\triangle_{[π]} \define (\triangle, [π])$ consisting of a triangle $\triangle$ and an orientation $[π]\in \Theta(\triangle)$.
+    An oriented triangle is tuple $\triangle_{[π]} \define (\triangle, [π])$ consisting of a triangle $\triangle$ and an orientation $[π]\in \Omega(\triangle)$.
     The set of directed edges of $\triangle_{[π]}$ is defined as follows.
     % Let $\triangle$ be a triangle and $[π]\in Π(\triangle)/\sim$ be an orientation of $\triangle$.
     % The oriented
@@ -460,8 +457,7 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   In this sense, it is an oriented topological 2-manifold with an oriented boundary.
   Its oriented boundary can be characterized by the union of its directed edges.
   The structure of an oriented triangle can be modeled by a directed graph connecting its vertices by its directed edges.
-
-
+  With all these details, a rigorous definition of the polyhedral surfaces and its orientation can now be given.
 
   \begin{definition}[Polyhedral Surface and Surface Mesh]
     Let $n\in\setNatural$ with $n\geq 2$ and $\mathscr{T}\neq\emptyset$ be a finite set of triangles embedded in $\setReal^n$.
@@ -495,22 +491,52 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
     %   \separate
     %   \mathscr{V}^\circ(S) \define \mathscr{V}(S) \setminus \partial\mathscr{V}(S)
     % \]
-    The total vertex angle $\function{ϑ_S}{S}{[0,2π]}$ of $S$ is defined as follows.
-    \[
-      ϑ_S(v) \define \sum_{\triangle\in\mathscr{F}_v(S)} ϑ_\triangle(v)
-      \separate
-      \mathscr{F}_v(S) \define \set{\triangle\in\mathscr{F}(S)}{v\in\triangle}
-    \]
   \end{definition}
+
+  \begin{figure}[t]
+    \centering
+    \begin{subfigure}[b]{0.23\linewidth}
+      \centering
+      \includegraphics[width=\linewidth,trim={25px 20 25 50},clip]{images/polyhedral-surface-sphere.png}
+      \caption{Sphere}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.23\linewidth}
+      \centering
+      \includegraphics[width=\linewidth,trim={25px 20 25 50},clip]{images/polyhedral-surface-hilbert-cube.png}
+      \caption{Hilbert Cube}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.23\linewidth}
+      \centering
+      \includegraphics[width=\linewidth,trim={25px 20 25 50},clip]{images/polyhedral-surface-julia-vase.png}
+      \caption{Julia Vase}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.23\linewidth}
+      \centering
+      \includegraphics[width=\linewidth,trim={25px 20 25 50},clip]{images/polyhedral-surface-buddha.png}
+      \caption{Buddha}
+    \end{subfigure}
+    \caption[Examples of Polyhedral Surfaces]{%
+      \textbf{Examples of Polyhedral Surfaces}\\
+      The models for the Hilbert Cube, the Julia Vase, and the Buddha have been taken from the \citetitle{thingi10k} dataset \autocite{thingi10k}.
+    }
+    \label{fig:polyhedral-surface-examples}
+  \end{figure}
+
+  \noindent
   The definition makes sure that each pair of triangles may only share a common vertex or edge and does not overlap in any other way.
   Additionally, requiring that the polyhedral surface is a topological 2-manifold, lets neighborhoods of any point be parameterized by two-dimensional charts.
   So, an edge, for example, may only belong either to one or two triangles at the same time.
+  Figure~\ref{fig:polyhedral-surface-examples} shows four examples of polyhedral surfaces that show the potential of complexity a surface may reach.
+
   I also included a rather uncommon distinction of surface meshes and polyhedral surfaces.
   Whereas the polyhedral surface describes the topological manifold, the surface mesh is the topological model of the underlying graph connecting the vertices of the surface by edges.
   This is done mainly for consistency and convenience when classifying curves.
-
-  For further convenience, my definition of polyhedral surfaces is more restricted than the one of \textcite{polthier2006} as it does not allow for an infinite amount of triangles or arbitrary flat intrinsic metrics.
-  Concerning the applications of curve smoothing algorithms, this is not a serious constraint because real-world surfaces in the mesh processing context will always have a finite extent and only allow for finitely many faces.
+  Also, my definition of polyhedral surfaces is more restricted than the one of \textcite{polthier2006} as it does not allow for an infinite amount of triangles or arbitrary flat intrinsic metrics.
+  Concerning the applications of curve smoothing algorithms, this is not a serious constraint because real-world surfaces in the mesh processing context will mostly have a finite extent and only allow for finitely many faces.
+  Apart from that, regarding all the following considerations, my definition can simply be exchanged with the more general form.
 
   For the construction of orientation, I will build on the tools given above for oriented triangles.
   The idea is to consistently choose orientations for every triangle such that the boundary of two adjacent triangles keeps to be an oriented topological 1-manifold --- the orientations are called compatible.
@@ -538,30 +564,155 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   \end{figure}
 
   \begin{definition}[Oriented Polyhedral Surface]
-    Let $S$ be a polyhedral surface. Then $S$ is called orientable if there exists a function $\function{ϑ}{\mathscr{F}(S)}{\bigsqcup_{\triangle\in\mathscr{F}(S)} \Theta(\triangle)}$ that selects an orientation for each contained triangle with the following property.
+    Let $S$ be a polyhedral surface. Then $S$ is called orientable if there exists a function $\function{ω}{\mathscr{F}(S)}{\bigsqcup_{\triangle\in\mathscr{F}(S)} \Omega(\triangle)}$ that selects an orientation for each contained triangle with the following property.
     \[
-      \forall \triangle_1,\triangle_2\in\mathscr{F}(S),\triangle_1\neq\triangle_2\colon\quad \mathscr{E}(ϑ(\triangle_1)) \cap \mathscr{E}(ϑ(\triangle_2)) = \emptyset
+      \forall \triangle_1,\triangle_2\in\mathscr{F}(S),\triangle_1\neq\triangle_2\colon\quad \mathscr{E}(ω(\triangle_1)) \cap \mathscr{E}(ω(\triangle_2)) = \emptyset
     \]
-    In this case, $ϑ$ is called an orientation of $S$ and $(S,ϑ)$ an oriented polyhedral surface. The set of all orientations for $S$ is denoted with $\Theta(S)$.
+    In this case, $ω$ is called an orientation of $S$ and $(S,ω)$ an oriented polyhedral surface. The set of all orientations for $S$ is denoted with $\Omega(S)$.
   \end{definition}
   \noindent
   % To construct an orientation for a whole polyhedral surface, orientations for all its faces need to be selected first.
   In the case of compatible orientations, two adjacent triangles exhibit the same outer normal when unfolded into the Euclidean plane.
   For connected polyhedral surfaces without boundary, the outer normal of each face then consistently points to the outside or inside of the circumscribed volume depending on the chosen orientation.
-
-  There are artificial cases, such as the polyhedral Möbius strip, of non-orientable polyhedral surfaces.
-  Also objects may look like orientable surfaces but may provide artifacts in their surface meshes originating from scanning.
-  As polyhedral surfaces are not required to be connected, more than two orientations might exist.
+  But as polyhedral surfaces are not required to be connected, in general, more than two orientations might exist.
 
   Especially in this thesis, all algorithms will be constructed for oriented polyhedral surfaces to facilitate their implementation and efficiency.
   Concerning real-world data, this is not an actual restriction.
   Unorientable surface meshes mostly arise from artificial construction or numerical errors that can be handled by other mesh preprocessing techniques.
   For applications that need to process surface meshes, the surfaces mostly are the boundary of finite volumes in three-dimensional Euclidean space.
-  These volumes can be viewed as open submanifolds of $\setReal^3$
+  These volumes can be viewed as open submanifolds of $\setReal^3$.
   Because the Euclidean space itself is oriented, these volumes and, as a consequence, their boundaries need to be oriented, too (see appendix~\ref{sec:analysis_on_manifolds}).
 
-  In analogy to the previous subsection about curves on smooth manifolds, I will also introduce discrete curves on the surface mesh of polyhedral surfaces.
+  There are artificial cases, such as the polyhedral approximation of a Möbius strip, of non-orientable polyhedral surfaces.
+  In figure~\ref{fig:oriented-polyhedral-surface-examples}, polyhedral approximations for the torus and the Möbius strip are shown.
+  As it is known from differential geometry, the torus has no boundary and is orientable.
+  Whereas the flat Möbius strip has a boundary and is not orientable, adding thickness to it, makes it the boundary of a connected orientable 3-submanifold of the Euclidean space.
+  Hence, The Möbius strip with thickness has no boundary, is orientable, and homeomorph to the torus.
+  So, the flat Möbius strip can be seen as an ill-formed example.
+
+  % Also objects may look like orientable surfaces but may provide artifacts in their surface meshes originating from scanning.
+
+  \begin{figure}[t]
+    \centering
+    \begin{subfigure}[b]{0.32\linewidth}
+      \centering
+      \includegraphics[width=\linewidth,trim={25px 50 25 200},clip]{images/polyhedral-surface-torus.png}
+      \caption{Torus}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\linewidth}
+      \centering
+      \includegraphics[width=\linewidth,trim={25px 50 25 200},clip]{images/polyhedral-surface-mobius-thick.png}
+      \caption{Möbius Strip with Thickness}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\linewidth}
+      \centering
+      \includegraphics[width=\linewidth,trim={25px 50 25 200},clip]{images/polyhedral-surface-mobius-flat.png}
+      \caption{Möbius Strip}
+    \end{subfigure}
+    \caption[Möbius Strip as Orientable Polyhedral Surface]{%
+      \textbf{Möbius Strip as Orientable Polyhedral Surface}\\
+      The images show examples of polyhedral approximations of the torus (left), the Möbius strip with thickness (middle), and the standard flat Möbius strip (right).
+    }
+    \label{fig:oriented-polyhedral-surface-examples}
+  \end{figure}
+
+  Referring again to \textcite{polthier2006}, the Gauss curvature of smooth 2-manifolds without boundary embedded into Euclidean space can be generalized by measuring the available angle around a point --- the total vertex angle.
+  The introduction of this concept allows for the classification of points, especially vertices, on a polyhedral surface based on their discrete curvature properties and, as a consequence, will lead to statements about geodesics.
+
+  \begin{definition}[Total Vertex Angle and Total Gauss Curvature]
+    Let $\triangle$ be a triangle and $A,B,C$ its vertices.
+    % The total vertex angle $ϑ_\triangle$ of $\triangle$ is defined as follows.
+    Define the following.
+    \[
+      \function{ϑ_\triangle}{\triangle}{[0,2π]}
+      \separate
+      ϑ_\triangle|_{\triangle^\circ} \define 2π
+      \separate ϑ_\triangle|_{\partial\triangle\setminus\mathscr{V}(\triangle)} \define π
+      % \separate
+      % ϑ_\triangle(C) \define \arccos\frac{\scalarProduct{\overrightarrow{CB}}{\overrightarrow{CA}}}{\norm{\overrightarrow{CB}}\norm{\overrightarrow{CA}}}
+    \]
+    % \[
+    %   ϑ_\triangle(A) \define \arccos\frac{\scalarProduct{\overrightarrow{AB}}{\overrightarrow{AC}}}{\norm{\overrightarrow{AB}}\norm{\overrightarrow{AC}}}
+    %   \separate
+    %   ϑ_\triangle(B) \define \arccos\frac{\scalarProduct{\overrightarrow{BA}}{\overrightarrow{BC}}}{\norm{\overrightarrow{BA}}\norm{\overrightarrow{BC}}}
+    % \]
+    \[
+      ϑ_\triangle(A) \define \sphericalangle\roundBrackets{\overrightarrow{AB},\overrightarrow{AC}}
+      \separate
+      ϑ_\triangle(B) \define \sphericalangle\roundBrackets{\overrightarrow{BA},\overrightarrow{BC}}
+      \separate
+      ϑ_\triangle(C) \define \sphericalangle\roundBrackets{\overrightarrow{CB},\overrightarrow{CA}}
+    \]
+    Let $S$ be a polyhedral surface.
+    Then its total vertex angle $ϑ_S$ is defined as follows.
+    \[
+      \function{ϑ_S}{S}{\setReal^+_0}
+      \separate
+      ϑ_S(v) \define \sum_{\triangle\in\mathscr{F}_v(S)} ϑ_\triangle(v)
+    % \]
+    % \[
+      \separate
+      \mathscr{F}_v(S) \define \set{\triangle\in\mathscr{F}(S)}{v\in\triangle}
+    \]
+    The (total) Gauss curvature $K_S$ of $S$ is then given by the following expression.
+    \[
+      \function{K}{S^\circ}{\setReal}
+      \separate
+      K_S(x) \define 2π - ϑ_S(x)
+    \]
+  \end{definition}
+
+  \noindent
+  First, nearly all points in the interior of $S$ have a Gauss curvature of zero.
+  Only inner vertices of $S$ exhibit values different from zero.
+  This is consistent with the fact that polyhedral surfaces are not an approximation but the actual object of interest.
+  As it can be seen in figure~\ref{fig:vertex-classification}, vertices of a polyhedral surface are therefore classified to be spherical, Euclidean, or hyperbolic.
+
+  Formally, the Gauss curvature is not defined for the boundary of the polyhedral surface.
+  But it is possible to use the above formula for a generalization to boundary vertices.
+  According to \textcite{polthier2006}, together with the discrete geodesic curvature this would lead to a unique discrete formulation of the Gauss-Bonet theorem.
+  Still, the evaluation of the Gauss curvature formula at boundary vertices results in non-intuitive values that are hard to interpret or use in algorithms.
+  The Gauss curvature is bounded from above but not from below.
+  This is an inconsistency that arises due to discretization process when generalizing to polyhedral surfaces.
+
+  \begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.32\linewidth}
+      \centering
+      \includegraphics[width=0.65\linewidth]{figures/spherical-vertex.pdf}\\[0.5em]
+      $\Downarrow$\\[1em]
+      \includegraphics[width=0.65\linewidth]{figures/spherical-vertex-unfolded.pdf}
+      \caption{Spherical Vertex: $K_S(v) > 0$}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\linewidth}
+      \centering
+      \includegraphics[width=0.65\linewidth]{figures/euclidean-vertex.pdf}\\[0.5em]
+      $\Downarrow$\\[1em]
+      \includegraphics[width=0.65\linewidth]{figures/euclidean-vertex-unfolded.pdf}
+      \caption{Euclidean Vertex: $K_S(v) = 0$}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\linewidth}
+      \centering
+      \includegraphics[width=0.65\linewidth]{figures/hyperbolic-vertex.pdf}\\[0.5em]
+      $\Downarrow$\\[1em]
+      \includegraphics[width=0.65\linewidth]{figures/hyperbolic-vertex-unfolded.pdf}
+      \caption{Hyperbolic Vertex: $K_S(v) < 0$}
+    \end{subfigure}
+    \caption[Classification of Vertices on a Polyhedral Surface]{%
+      \textbf{Classification of Vertices on a Polyhedral Surface}\\
+      For a polyhedral surface $S$, an inner point $v\in S^\circ$ is classified by the value of the Gauss curvature $K_S(v)$ of that point.
+      The first row of images show schematic examples of the three categories, namely spherical, Euclidean, and hyperbolic vertices.
+      The second row unfolds the neighboring triangles into the Euclidean plane.
+      The images have been modeled on \textcite{polthier2006} and \textcite{crane2020}.
+    }
+    \label{fig:vertex-classification}
+  \end{figure}
+
+  In analogy to the previous subsection about curves on smooth manifolds, I will introduce discrete curves on the surface mesh of polyhedral surfaces.
   This will allow for the discretization of geodesics and the geodesics problems.
+  Furthermore, surface mesh curves build the fundamental building blocks for data structures concerning the construction of the curve smoothing algorithm.
 
   \begin{definition}[Surface Mesh Curve]
     Let $S$ be a polyhedral surface, $n\in\setNatural$, and $x\in \mathscr{M}(S)^{n+1}$ be a sequence of control points, such that the following property is fulfilled.
@@ -576,12 +727,11 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
       γ(t) \define \roundBrackets{\floorBrackets{1+t} - t} x_{1 + \floorBrackets{t}} + \roundBrackets{t - \floorBrackets{t}} x_{1 + \ceilBrackets{t}}
     \]
   \end{definition}
-  In this definition, control points of a curve are only allowed to lie on edges or vertices of the underlying polyhedral surface.
+  To provide a proper distinction from the vertices of the surface, I called the vertices of a surface mesh curve its control points.
+  Please note that there is no further meaning to that.
+  In this definition, control points of a surface mesh curve are only allowed to lie on edges or vertices of the underlying polyhedral surface.
   To make sure that the connection of two adjacent control points by a straight line is also part of the polyhedral surface itself, they are forced to be part of the same face.
   Mathematically, this property is important for consistency.
-
-  To provide a proper distinction from the vertices of the surface, I called the vertices of a surface mesh curve its control points.
-  There is no further meaning to that.
 
   % \begin{corollary}
   %   Discrete surface mesh curves of a polyhedral surface are part of that surface.
@@ -611,10 +761,23 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   By forbidding three adjacent control points to lie on the same triangle, surface mesh curves without artifacts are representable a by a sequence of $n$ triangles, $n-1$ real values, and start/end points.
   In this representation, control points lie on the common edges of two adjacent triangles.
 
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth,trim={15px 20 25 50},clip]{images/surface-mesh-curve-torus.png}
+    \caption[Example of a Regular Surface Mesh Curve on a Torus]{%
+      \textbf{Example of a Regular Surface Mesh Curve on a Torus}\\
+    }
+    \label{fig:surface-mesh-curve-example}
+  \end{figure}
+
   At first, the concept of discrete surface mesh curves is much more restricted than the standard practice of using piecewise continuously differentiable curves as it was done by \textcite{polthier2006}.
   Still, regular surface mesh curves can represent all geodesics, are robust when it comes to singularities, and more efficient.
   Should there be need for more fine-grained curve smoothing inside single faces, a retriangulation should be triggered.
   Furthermore, in the context of this thesis, polyhedral surfaces are not understood to be approximations of smooth manifolds, it would not be consistent to allow arbitrarily bended curves inside a single face.
+
+  \begin{lemma}[Locally shortest geodesics are regular surface mesh curves]
+
+  \end{lemma}
 
   To make it possible to use regular surface mesh curves for the definition of discrete geodesics, \textcite{polthier2006} introduce the concept of discrete geodesic curvature.
 
@@ -676,7 +839,7 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   Also the interpretation of the total vertex angle for boundary points is different.
   This makes a generalization of the oriented discrete curvature at boundary points difficult.
 
-  \begin{figure}[h]
+  \begin{figure}[t]
     \centering
     \begin{subfigure}[b]{0.49\linewidth}
       \centering
@@ -699,23 +862,40 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   \begin{definition}[Discrete Geodesic Curvature]
     Let $(S,ω)$ be an oriented polyhedral surface and γ be a regular surface mesh curve on $S$.
     Then for all control points of γ that lie on the interior of γ and $S$, the discrete geodesic curvature is defined as follows.
-
     \[
-      κ_\mathrm{g}(γ)(x) = π - \frac{2π}{ϑ_S(γ)}β_S(γ)(x)
+      κ_S(γ)(x) = -\frac{2π}{ϑ_S(x)} \roundBrackets{\frac{ϑ_S(x)}{2} - β_S(γ)(x)}
     \]
   \end{definition}
+  We have chosen a different sign.
+  This definition generalizes the discrete formulation of Gauss-Bonet theorem for polyhedral surfaces.
+  For boundaries, the discrete geodesic curvature is not easily extendable.
 
-  \begin{definition}[Discrete Geodesic Curvature for Boundaries]
+  For all points on $S$ but its vertices, the definition of the discrete geodesic curvature simplifies to the following equation as $ϑ_S(x) = 2π$ at these points.
+  \[
+    κ_S(γ)(x) = β_S(γ)(x) - π
+  \]
 
+  \begin{definition}[Discrete Straightest Geodesic]
+    Let $(S,ω)$ be an oriented polyhedral surface and γ be a regular surface mesh curve on $S$.
+    Then γ is called a (discrete) straightest geodesic if for all control points of γ that lie in the interior of γ and $S$, their discrete geodesic curvature is zero.
   \end{definition}
 
-  \begin{definition}[Discrete Geodesic Problems]
-
-  \end{definition}
-
-  \begin{lemma}[Straightest and shortest geodesics are surface mesh curves without artifacts.]
-
-  \end{lemma}
+  \begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/geodesic-on-boundary-discrete-1.pdf}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/geodesic-on-boundary-discrete-2.pdf}
+    \end{subfigure}
+    \caption[Discrete Geodesics on Polyhedral Surfaces with Boundary]{%
+      \textbf{Discrete Geodesics on Polyhedral Surfaces with Boundary}\\
+    }
+    \label{fig:discrete-geodesics-on-boundary}
+  \end{figure}
 
 % subsection polyhedral_surfaces (end)
 

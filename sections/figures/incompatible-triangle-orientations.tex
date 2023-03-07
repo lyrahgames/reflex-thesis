@@ -19,6 +19,9 @@
   \tkzDefPoint(1.7, 1.0){C}
   \tkzDefPoint(3.4, 0.0){D}
 
+  \tkzDrawPolygon[color=black,fill=black!5](A,B,C)
+  \tkzDrawPolygon[color=black,fill=black!5](B,C,D)
+
   \tkzInCenter(A,B,C)\tkzGetPoint{C1}
   \tkzDefPointOnCircle[R = center C1 angle 90 radius 0.3]\tkzGetPoint{U}
   \tkzDefPointOnCircle[R = center C1 angle 80 radius 0.3]\tkzGetPoint{V}
@@ -28,9 +31,6 @@
   \tkzDefPointOnCircle[R = center C2 angle 90 radius 0.3]\tkzGetPoint{U}
   \tkzDefPointOnCircle[R = center C2 angle 80 radius 0.3]\tkzGetPoint{V}
   \tkzDrawArc[color=black,<-](C2,U)(V)
-
-  \tkzDrawPolygon(A,B,C)
-  \tkzDrawPolygon(B,C,D)
 
   \tkzDefPointOnLine[pos=0.85](C1,B)\tkzGetPoint{L1}
   \tkzDefPointOnLine[pos=0.85](C1,C)\tkzGetPoint{L2}

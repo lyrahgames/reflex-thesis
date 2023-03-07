@@ -1,0 +1,51 @@
+\documentclass{standalone}
+
+\usepackage{tikz}
+\usepackage{tkz-euclide}
+\usetikzlibrary{calc}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows.meta}
+
+\usepackage{times}
+
+
+\begin{document}
+\begin{tikzpicture}[%
+  >={Stealth[scale=1.0]},
+  scale=2
+]
+
+  \tkzDefPoint(0.0, 0.0){x}
+
+  \tkzDefPointOnCircle[R = center x angle 3 radius 1]\tkzGetPoint{A}
+  \tkzDefPointOnCircle[R = center x angle 62 radius 1]\tkzGetPoint{B}
+  \tkzDefPointOnCircle[R = center x angle 121 radius 1]\tkzGetPoint{C}
+  \tkzDefPointOnCircle[R = center x angle 180 radius 1]\tkzGetPoint{D}
+  \tkzDefPointOnCircle[R = center x angle 239 radius 1]\tkzGetPoint{E}
+  \tkzDefPointOnCircle[R = center x angle 298 radius 1]\tkzGetPoint{F}
+  \tkzDefPointOnCircle[R = center x angle -3 radius 1]\tkzGetPoint{G}
+  \tkzDefPointOnCircle[R = center x angle 56 radius 1]\tkzGetPoint{H}
+
+  \tkzFillPolygon[color=black!10,opacity=0.5](x,A,B)
+  \tkzFillPolygon[color=black!10,opacity=0.5](x,B,C)
+  \tkzFillPolygon[color=black!10,opacity=0.5](x,C,D)
+  \tkzFillPolygon[color=black!10,opacity=0.5](x,D,E)
+  \tkzFillPolygon[color=black!10,opacity=0.5](x,E,F)
+  \tkzFillPolygon[color=black!10,opacity=0.5](x,F,G)
+  \tkzFillPolygon[color=black!10,opacity=0.5](x,G,H)
+
+  \tkzFillSector[R with nodes,fill=black!20,opacity=0.5](x,0.5)(A,G)
+  \tkzFillSector[R with nodes,fill=black!20,opacity=0.5](x,0.5)(G,H)
+  \tkzDrawArc[R with nodes,dashed](x,0.5)(A,G)
+  \tkzDrawArc[R with nodes,dashed](x,0.5)(G,H)
+
+  % \tkzDefPointOnLine[pos=0.5](x,A)\tkzGetPoint{tmp}
+  % \tkzFillCircle[color=black!10,opacity=0.5,R](x)
+  % \tkzDrawCircle[black,dashed,fill=black!10,opacity=0.8](x,tmp)
+
+  \tkzDrawSegments(x,A x,B x,C x,D x,E x,F x,G x,H)
+  \tkzDrawSegments(A,B B,C C,D D,E E,F F,G G,H)
+  \tkzDrawPoints(x,A,B,C,D,E,F,G,H)
+
+\end{tikzpicture}
+\end{document}
