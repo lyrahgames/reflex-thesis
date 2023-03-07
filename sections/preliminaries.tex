@@ -307,9 +307,9 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   For an intrinsic observer positioned in the ambient submanifold, the curve will be straight if it does not exhibit any geodesic curvature, because then it neither bends to the right nor to the left at any point.
   This is one of the characterizing properties of geodesics in classical and modern differential geometry and, for us, will serve as a definition and generalization \autocite{goldhorn2009,carmo2016,kuehnel2013,polthier2006}.
 
-  \begin{definition}[Geodesic]
-    Let $M$ be a Riemannian submanifold embedded in Euclidean space and γ be a curve embedded in $M$ and parameterized by arc length.
-    Then γ is called a geodesic if $\bar{κ}_\mathrm{g}(M,γ) = 0$.
+  \begin{definition}[Straightest Geodesic]
+    Let $M$ be a Riemannian submanifold embedded in Euclidean space and γ be a curve embedded in $M^\circ$ and parameterized by arc length.
+    Then γ is called a (straightest) geodesic if $\bar{κ}_\mathrm{g}(M,γ) = 0$.
   \end{definition}
   The problem of finding a geodesic for a given ambient submanifold, a starting point, and a starting direction is called the geodesic initial value problem.
   In a rigorous formulation, it breaks down to a system of second-order ordinary differential equations for which it can be proven that a locally unique solution exists in some sense \autocite{polthier2006}.
@@ -320,13 +320,23 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   \autocite{goldhorn2009,carmo2016,kuehnel2013}
 
   Another important alternative characterization states that geodesics are a critical point of their length functional with respect to variations tangential to the ambient submanifold \autocite{polthier2006}.
-  In general, this is understood to mean that a curve is locally shortest, that is, a slight change of the trajectory at any point will only increase the overall length of the curve.
+  In general, this is understood as the concept of locally shortest geodesics and means that a slight change of the trajectory at any point will only increase the overall length of the curve.
+
+  \begin{definition}[Locally Shortest Geodesic]
+    Let $M$ be a Riemannian submanifold embedded in Euclidean space and γ be a curve embedded in $M$ and parameterized by arc length.
+
+    Then γ is called a (locally shortest) geodesic if the following statement is fulfilled.
+    \[
+      \forall φ\in\mathrm{C}^\infty(\mathscr{D}(γ),\mathrm{T}M), φ\vert_{\partial\mathscr{D}(γ)} = 0 \colon\quad
+      \left.\frac{\partial}{\partial ε}L(γ + εφ)\right|_{ε=0} = 0
+    \]
+  \end{definition}
   Unfortunately, a critical point is not necessarily a local minimum of the length of a curve and by no means a global minimum.
-  Working with smooth submanifolds, this property is equivalent to our defining geodesic property.
-  Embedding a curve in a polyhedral non-differentiable submanifold, the characterizing properties of geodesics are no longer equivalent \autocite{polthier2006}.
+  Regarding smooth submanifolds without boundary, the concept of locally shortest geodesics is equivalent to the concept of straightest geodesics.
+  But embedding a curve in a polyhedral non-differentiable submanifold, these characterizing properties of geodesics are no longer equivalent \autocite{polthier2006}.
   In such a context, multiple non-trivial generalizations of geodesics are possible.
 
-  \begin{figure}
+  \begin{figure}[t]
     \centering
     \includegraphics[width=0.8\linewidth]{figures/geodesic-on-boundary-smooth.pdf}
     \caption[Geodesics on Smooth Manifolds with Boundary]{%
@@ -334,6 +344,18 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
     }
     \label{fig:geodesic-on-manifold-with-boundary-smooth}
   \end{figure}
+
+  In the context of submanifolds with an actual boundary, the concept of straightest geodesics is not as easy to generalize as for locally shortest geodesics.
+  Alas, in terms of mathematical literature about differential geometry, manifolds with boundary are either treated as an afterthought or not at all \autocite{goldhorn2009,carmo2016,kuehnel2013}.
+  But regarding the application of differential geometry to computer geometry and mesh processing, the analysis and handling of boundaries is inevitable.
+  For example, figure~\ref{fig:geodesic-on-manifold-with-boundary-smooth} schematically shows the Euclidean plane $M\define \setReal^2\setminus U_1(0)$ where the open unit disk has been removed.
+  The boundary $\partial M$ is given by the unit circle.
+  Hence, $M$ is a smooth Riemannian manifold with a non-empty boundary.
+  For the two given points in $M$, their geodesic connection can no longer be obtained by using the straight line as it is no longer a part of $M$.
+  So, in the sense of locally shortest geodesics, the connection needs to partially adapt to the boundary \autocite{albrecht1991}.
+  A simple calculation then shows that locally shortest geodesics are only of class $\mathrm{C}^1$ and no longer smooth \autocite{alexander1981}.
+  Thus, they fail to satisfy the requirements of straightest geodesics.
+  As a consequence, the Cauchy uniqueness regarding the initial value problem clearly fails and the description of geodesics in terms of differential equations, as it was done for straightest geodesics, becomes infeasible \autocite{alexander1986,alexander1987}.
 
   % \begin{definition}[Geodesics Problems]
   %   Let $M$ be a two-dimensional Riemannian submanifold embedded in $\setReal^3$.
@@ -529,7 +551,8 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   The definition makes sure that each pair of triangles may only share a common vertex or edge and does not overlap in any other way.
   Additionally, requiring that the polyhedral surface is a topological 2-manifold, lets neighborhoods of any point be parameterized by two-dimensional charts.
   So, an edge, for example, may only belong either to one or two triangles at the same time.
-  Figure~\ref{fig:polyhedral-surface-examples} shows four examples of polyhedral surfaces that show the potential of complexity a surface may reach.
+  Figure~\ref{fig:polyhedral-surface-examples} shows four examples of polyhedral surfaces that show the potential of the complexity a surface may reach.
+  It is also clear by definition, that the topological triangle is a polyhedral surface itself.
 
   I also included a rather uncommon distinction of surface meshes and polyhedral surfaces.
   Whereas the polyhedral surface describes the topological manifold, the surface mesh is the topological model of the underlying graph connecting the vertices of the surface by edges.
@@ -572,6 +595,7 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   \end{definition}
   \noindent
   % To construct an orientation for a whole polyhedral surface, orientations for all its faces need to be selected first.
+  As before, oriented topological triangles are by definition oriented polyhedral surfaces and show a certain consistency in the definition.
   In the case of compatible orientations, two adjacent triangles exhibit the same outer normal when unfolded into the Euclidean plane.
   For connected polyhedral surfaces without boundary, the outer normal of each face then consistently points to the outside or inside of the circumscribed volume depending on the chosen orientation.
   But as polyhedral surfaces are not required to be connected, in general, more than two orientations might exist.
@@ -720,13 +744,19 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
       % \forall k\in\setNatural,k\leq n\colon x_k\neq x_{k+1} \land \exists \triangle\in\mathscr{F}(S)\colon x_k, x_{k+1}\in\triangle
       \forall k\in\setNatural,k\leq n\colon \exists \triangle\in\mathscr{F}(S)\colon \quad x_k, x_{k+1}\in\triangle
     \]
-    The (topological) curve given by connecting adjacent points by a straight line is called the surface mesh curve.
+    The set of points given by connecting adjacent control points by a straight line is called the (topological) surface mesh curve $\Gamma(x)$ generated by $x$.
+    Any piecewise continuously differentiable parameterization $\function{γ}{\mathscr{D}(γ)}{\Gamma(x)}$, that is equivalent the following, is called a (parameterized) surface mesh curve generated by $x$.
     \[
       \function{γ}{[0,n]}{S}
       \separate
       γ(t) \define \roundBrackets{\floorBrackets{1+t} - t} x_{1 + \floorBrackets{t}} + \roundBrackets{t - \floorBrackets{t}} x_{1 + \ceilBrackets{t}}
     \]
+    The length of $\Gamma(x)$ or γ is then defined to be the following expression.
+    \[
+      L(\Gamma(x)) \define L(γ) \define \sum_{i=0}^n \norm{x_i - x_{i+1}}
+    \]
   \end{definition}
+  \noindent
   To provide a proper distinction from the vertices of the surface, I called the vertices of a surface mesh curve its control points.
   Please note that there is no further meaning to that.
   In this definition, control points of a surface mesh curve are only allowed to lie on edges or vertices of the underlying polyhedral surface.
@@ -742,7 +772,17 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
 
   Unfortunately, surface mesh curves may still exhibit artifacts, as many adjacent control points might be defined as part of the same triangle.
   These artificial cases do not facilitate the design of curves for mesh processing or other applications and, in general, cannot be handled in an efficient way by algorithms.
-  So, I will strive for using surface mesh curves without artifacts.
+  So, I will strive for using surface mesh curves with a certain regularity.
+  An example of such can be seen in figure~\ref{fig:surface-mesh-curve-example}.
+
+  \begin{figure}[t]
+    \centering
+    \includegraphics[width=0.8\linewidth,trim={15px 20 25 50},clip]{images/surface-mesh-curve-torus.png}
+    \caption[Example of a Regular Surface Mesh Curve on a Torus]{%
+      \textbf{Example of a Regular Surface Mesh Curve on a Torus}\\
+    }
+    \label{fig:surface-mesh-curve-example}
+  \end{figure}
 
   \begin{definition}[Regular Surface Mesh Curve]
     Let $S$ be a polyhedral surface and γ be a surface mesh curve characterized by the control point sequence $x\in\mathscr{M}(S)^{n+1}$ with $n\in\setNatural$.
@@ -758,28 +798,51 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
       \forall \triangle\in\mathscr{F}(S) \colon \quad x_{2}\not\in\triangle \ \vee\  x_{n}\not\in\triangle
     \]
   \end{definition}
-  By forbidding three adjacent control points to lie on the same triangle, surface mesh curves without artifacts are representable a by a sequence of $n$ triangles, $n-1$ real values, and start/end points.
-  In this representation, control points lie on the common edges of two adjacent triangles.
+  \noindent
+  By forbidding three adjacent control points to lie on the same triangle, regular surface mesh curves always become parameterizable by their arc length as in the smooth case in the previous subsection.
+  This stems from the fact that the set of discontinuities in $\norm{γ'}$ is a null set and does not change integral values when computing the arc length.
+  As a result, the length functional directly allows for a generalization of locally shortest geodesics to the discrete case of polyhedral surfaces.
+  It is then clear by the triangle inequality for metrics, that a locally shortest geodesic given by a surface mesh curve is a regular surface mesh curve.
+  This statement can be generalized to hold for arbitrary locally shortest geodesic on polyhedral surfaces as these always need to be surface mesh curves.
 
-  \begin{figure}
+  In analogy to the smooth case, as the underlying topology of closed surface mesh curves changes to a torus, the discretized variant of regularity also needs to forbid points at the start and end to lie on the same triangle.
+  Also, regular surface mesh curves will never contain points that lie on the interior of a boundary edge but instead only allow for boundary vertices.
+  This is especially useful for the discretization of geodesics in the presence of boundaries.
+  Referring to \textcite{albrecht1991}, a discrete geodesic touching the boundary of the underlying polyhedral surface can be partitioned into interior curves with zero geodesic curvature and boundary curves whose control points are solely given by boundary vertices.
+  Figure~\ref{fig:discrete-geodesics-on-boundary} picks up on the boundary example given in previous subsection and figure~\ref{fig:geodesic-on-manifold-with-boundary-smooth}.
+  It shows two discretized versions to emphasize on the previous statement.
+  % Here, it can the previous can be seen for locally shortest geodesics.
+  % representable a by a sequence of $n$ triangles, $n-1$ real values, and start/end points.
+  % In this representation, control points lie on the common edges of two adjacent triangles.
+
+  \begin{figure}[t]
     \centering
-    \includegraphics[width=0.8\linewidth,trim={15px 20 25 50},clip]{images/surface-mesh-curve-torus.png}
-    \caption[Example of a Regular Surface Mesh Curve on a Torus]{%
-      \textbf{Example of a Regular Surface Mesh Curve on a Torus}\\
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/geodesic-on-boundary-discrete-1.pdf}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/geodesic-on-boundary-discrete-2.pdf}
+    \end{subfigure}
+    \caption[Discrete Geodesics on Polyhedral Surfaces with Boundary]{%
+      \textbf{Discrete Geodesics on Polyhedral Surfaces with Boundary}\\
     }
-    \label{fig:surface-mesh-curve-example}
+    \label{fig:discrete-geodesics-on-boundary}
   \end{figure}
 
   At first, the concept of discrete surface mesh curves is much more restricted than the standard practice of using piecewise continuously differentiable curves as it was done by \textcite{polthier2006}.
-  Still, regular surface mesh curves can represent all geodesics, are robust when it comes to singularities, and more efficient.
-  Should there be need for more fine-grained curve smoothing inside single faces, a retriangulation should be triggered.
-  Furthermore, in the context of this thesis, polyhedral surfaces are not understood to be approximations of smooth manifolds, it would not be consistent to allow arbitrarily bended curves inside a single face.
+  Still, regular surface mesh curves can represent all geodesics, are robust when it comes to singularities, and are more efficient to handle.
+  Should there be need for a more fine-grained curve smoothing inside single faces, a retriangulation should be triggered.
+  Furthermore, in the context of this thesis, polyhedral surfaces are not understood to be approximations of smooth manifolds.
+  So, it would not be consistent to allow for arbitrarily bended curves inside a single face.
 
-  \begin{lemma}[Locally shortest geodesics are regular surface mesh curves]
+  % \begin{lemma}[Locally shortest geodesics are regular surface mesh curves]
+  %   Let
+  % \end{lemma}
 
-  \end{lemma}
-
-  To make it possible to use regular surface mesh curves for the definition of discrete geodesics, \textcite{polthier2006} introduce the concept of discrete geodesic curvature.
+  To make it possible to use regular surface mesh curves for the definition of discrete geodesics, I will rely on the procedure given by \textcite{polthier2006} to discretize the geodesic curvature of smooth curves to regular surface mesh curves.
 
   % \begin{definition}[Total Vertex Angle]
   %   % Let $\triangle$ be a triangle with vertices $A$, $B$, and $C$.
@@ -791,9 +854,6 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
   %     \mathscr{F}_v(S) \define \set{\triangle\in\mathscr{F}(S)}{v\in\triangle}
   %   \]
   % \end{definition}
-
-  Surface mesh curves without artifacts will never contain points that lie on the inside of a boundary edge.
-  They may contain boundary vertices.
 
   \begin{definition}[Oriented Curve Angle]
     Let $(S,ω)$ be an oriented polyhedral surface and γ be a regular surface mesh curve on $S$.
@@ -879,23 +939,6 @@ For convenience, section~\ref{sec:analysis_on_manifolds} in the appendix provide
     Let $(S,ω)$ be an oriented polyhedral surface and γ be a regular surface mesh curve on $S$.
     Then γ is called a (discrete) straightest geodesic if for all control points of γ that lie in the interior of γ and $S$, their discrete geodesic curvature is zero.
   \end{definition}
-
-  \begin{figure}
-    \centering
-    \begin{subfigure}[b]{0.49\linewidth}
-      \centering
-      \includegraphics[width=\linewidth]{figures/geodesic-on-boundary-discrete-1.pdf}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.49\linewidth}
-      \centering
-      \includegraphics[width=\linewidth]{figures/geodesic-on-boundary-discrete-2.pdf}
-    \end{subfigure}
-    \caption[Discrete Geodesics on Polyhedral Surfaces with Boundary]{%
-      \textbf{Discrete Geodesics on Polyhedral Surfaces with Boundary}\\
-    }
-    \label{fig:discrete-geodesics-on-boundary}
-  \end{figure}
 
 % subsection polyhedral_surfaces (end)
 
