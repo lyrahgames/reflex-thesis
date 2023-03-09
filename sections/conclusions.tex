@@ -3,5 +3,47 @@
 \section{Conclusions, Limitations, and Future Work} % (fold)
 \label{sec:conclusions}
 
+  During the course of this thesis, I build on the theory of \textcite{polthier2006} and formulated a rigorous mathematical foundation for the handling of discrete geodesics and curve smoothing algorithms on polyhedral surfaces.
+  Hereby, special emphasis has been put on the consideration of boundaries which are are often neglected by the general literature.
+  Even on smooth manifolds, in the presence of boundaries the concept of locally shortest geodesics no longer agrees with the definition of straightest geodesics.
+  This problem cannot be eliminated by simply redefining geodesic curvature on boundaries to be zero as this would lead to unintuitive results.
+  State-of-the-art literature concerned with algorithms to generate geodesic paths and distances considers the concepts for discrete locally shortest and straightest geodesics as the de facto standard for the generalization of geodesics onto polyhedral surfaces.
+  Regarding future work, I also want to consider other formulations of geodesics which may lead to a more intuitive interpretation and the removal of inconsistencies.
+
+  Following the mathematical foundation, different metrics for measuring the smoothness and similarity of curves have been proposed to allow for objective and quantitative comparisons of different curve smoothing states and techniques.
+  The largest problem is the uniform weighting along the length of a curve.
+  A curve moving with respect to its curvature gets much shorter at parts with a higher curvature value.
+  A general length mapping would be more intuitive.
+
+  In the practical part of this work, I designed and implemented an algorithm for the smoothing of surface mesh curves.
+  All the implementation-specific details have been given as C++ code snippets to allow for reproducibility.
+  My algorithm builds on and improves the work of \textcite{martinez2005} and \textcite{lawonn2014} by using data structures from \textcite{mancinelli2022} and a consistent curvature propagation.
+  It is based on an iterative approach to locally optimize geodesic curvature values in conjunction with surface-dependent penalty values to keep the outcome close to its original.
+  As such, it can characterized to be part of the variational domain of solutions to curve smoothing.
+  % This also allows for more general considerations such as anisotropic surface metrics.
+  Together with the defined smoothing metrics, I was able to proof that the algorithm indeed smoothes an initial curve and that it converges.
+
+  I have stated the concrete data structures for polyhedral surfaces and surface mesh curves and also added primitive operations.
+  This allowed for general construction on how to move a surface mesh curve along a polyhedral surface.
+  Also, I propose a more robust method for generating desired geodesic curvature values by using a weighting stencil.
+  Instead of an inconsistent curvature propagation, I have introduce curvature mapping.
+  The largest limitation of consistently moving surface mesh curves along polyhedral surface is the lack of mathematical convergence properties concerning discrete geodesic curvature.
+
+  The algorithms have been implemented as parallelized version on the CPU and GPU with the standard thread library of the C++ STL and the compute shaders of OpenGL, respectively.
+  I have designed tests based on the \citetitle{thingi10k} dataset to evaluate their robustness and efficiency.
+  Even for polyhedral surfaces consisting of millions of triangles, surface mesh curves exhibit typically only exhibit thousands of control points.
+  Most of curve smoothing or straightening algorithms are not parallelizable.
+  Due to iterative nature and the convergence behavior, I was able to show that CPU-based and GPU-based parallelization indeed allows for faster determination of smoothed curves.
+  Still, the smoothing of curves seems not to be the bottleneck of the application.
+  So, a parallelization for only a few thousands points might quickly become infeasible.
+  As there are data and flow dependencies in a curve smoothing procedure, parallelization is limited as it needs to constantly communicate with the CPU.
+  A bigger emphasis should lie on the robustness.
+
+  In the future work, I want to apply the curve smoothing to segmentation of lung lobes.
+  Curves should not only be shortened but it should be possible to expand. The main problem here lies the proof of convergence.
+  Anisotropic metrics
+  More generic testing
+  More applications in medical domains
+
 % section conclusions (end)
 \end{document}
