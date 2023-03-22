@@ -134,14 +134,31 @@ The complete source code of the project, called \textit{nanoreflex}, is provided
     }
   \end{figure}
 
-  \begin{figure}
-    \begin{center}
-      \large
-      INSERT YOUR IMAGE HERE!
-    \end{center}
-    \caption[Examples of Polyhedral Surfaces]{%
-      \textbf{Examples of Polyhedral Surfaces}
-      The images shows oriented polyhedral surfaces with and without boundaries, also called models.
+  \begin{figure}[h]
+    \centering
+    \begin{subfigure}[c]{0.40\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/polyhedral-surface-separated.pdf}
+    \end{subfigure}
+    \hfill
+    $\longrightarrow$
+    \hfill
+    \begin{subfigure}[c]{0.40\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/polyhedral-surface-joint.pdf}
+    \end{subfigure}
+    \caption[Polyhedral Surface Data Structure]{%
+      \textbf{Polyhedral Surface Data Structure}\\
+      Scheme and Memory Layout of triangles and vertices
+    }
+  \end{figure}
+
+  \begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{figures/polyhedral-surface-topological-vertex-map.pdf}
+    \caption[Polyhedral Surface Data Structure]{%
+      \textbf{Polyhedral Surface Data Structure}\\
+      Scheme and Memory Layout of triangles and vertices
     }
   \end{figure}
 % subsection polyhedral_surface_data_structure (end)
