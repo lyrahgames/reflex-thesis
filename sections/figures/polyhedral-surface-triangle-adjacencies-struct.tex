@@ -1,0 +1,128 @@
+\documentclass{standalone}
+\usepackage{times}
+\usepackage{mathtools}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning,fit,shapes,calc,decorations.pathreplacing}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{shapes,snakes}
+
+\definecolor{processblue}{cmyk}{1,1,1,0}
+\definecolor{accent}{rgb}{0.6,0.6,0.6}
+\definecolor{accent2}{rgb}{0.9,0.9,0.9}
+
+\begin{document}
+\begin{tikzpicture}[
+  data/.style = {
+    draw,
+    rectangle,
+    fill = white,
+    minimum width = 1.0cm,
+    minimum height = 1.0cm,
+  },
+  next/.style = {
+    draw,
+    circle,
+    fill=black,
+  },
+  edge/.style = {
+    draw,
+    rectangle,
+    rounded corners,
+    minimum width = 0.5cm,
+    minimum height = 0.5cm,
+  },
+  vedge/.style = {
+    edge,
+    top color = black!5,
+    bottom color = black!5,
+  },
+  fedge/.style = {
+    edge,
+    top color = accent,
+    bottom color = accent,
+  },
+  >={Stealth[scale=1.8]},
+]
+
+  % \clip (-3.5,-3.0) rectangle (18,2.5);
+
+  % \node[data,label={\Large $0$}] (v0) {\Large $v_0$};
+  % \node[data,label={\Large $1$}] (v1) [right=1.45cm of v0] {\Large $v_1$};
+  % \node[data,label={\Large $2$}] (v2) [right=1.45cm of v1] {\Large $v_2$};
+  % \node[data,label={\Large $3$}] (v3) [right=1.45cm of v2] {\Large $v_3$};
+  % \node[data,label={\Large $4$}] (v4) [right=1.45cm of v3] {\Large $v_4$};
+  % \node[data,label={\Large $5$}] (v5) [right=1.45cm of v4] {\Large $v_5$};
+  % \node[data,label={\Large $6$}] (v6) [right=1.45cm of v5] {\Large $v_6$};
+  % \node[data,label={\Large $7$}] (v7) [right=1.45cm of v6] {\Large $v_7$};
+
+  \node[data] (f00) [] {\Large $0$};
+  \node[data] (f01) [right=0.2cm of f00] {\Large $1$};
+  \node[data] (f02) [right=0.2cm of f01] {\Large $4$};
+  \begin{scope}[on background layer]
+    \node[vedge,fit=(f00) (f02),inner sep=0.5cm,label={above: \huge $0$}] (f0) {};
+  \end{scope}
+
+  \node[data] (f10) [right=of f0] {\Large $1$};
+  \node[data] (f11) [right=0.2cm of f10] {\Large $2$};
+  \node[data] (f12) [right=0.2cm of f11] {\Large $4$};
+  \begin{scope}[on background layer]
+    \node[vedge,fit=(f10) (f12),inner sep=0.5cm,label={above: \huge $1$}] (f1) {};
+  \end{scope}
+
+  \node[data] (f20) [right=of f1] {\Large $2$};
+  \node[data] (f21) [right=0.2cm of f20] {\Large $3$};
+  \node[data] (f22) [right=0.2cm of f21] {\Large $4$};
+  \begin{scope}[on background layer]
+    \node[vedge,fit=(f20) (f22),inner sep=0.5cm,label={above: \huge $2$}] (f2) {};
+  \end{scope}
+
+  \node[data] (f30) [right=of f2] {\Large $5$};
+  \node[data] (f31) [right=0.2cm of f30] {\Large $6$};
+  \node[data] (f32) [right=0.2cm of f31] {\Large $7$};
+  \begin{scope}[on background layer]
+    \node[vedge,fit=(f30) (f32),inner sep=0.5cm,label={above: \huge $3$}] (f3) {};
+  \end{scope}
+
+  %
+  \node[data] (n00) [below=3cm of f00] {\Large $5$};
+  \node[data] (n01) [right=0.2cm of n00] {\Large $6$};
+  \node[data] (n02) [right=0.2cm of n01] {\Large $9$};
+  \begin{scope}[on background layer]
+    \node[vedge,fit=(n00) (n02),inner sep=0.5cm,label={above: \huge $0$}] (n0) {};
+  \end{scope}
+
+  \node[data] (n10) [right=of n0] {\Large $\times$};
+  \node[data] (n11) [right=0.2cm of n10] {\Large $\times$};
+  \node[data] (n12) [right=0.2cm of n11] {\Large $0$};
+  \begin{scope}[on background layer]
+    \node[vedge,fit=(n10) (n12),inner sep=0.5cm,label={above: \huge $1$}] (n1) {};
+  \end{scope}
+
+  \node[data] (n20) [right=of n1] {\Large $1$};
+  \node[data] (n21) [right=0.2cm of n20] {\Large $\times$};
+  \node[data] (n22) [right=0.2cm of n21] {\Large $\times$};
+  \begin{scope}[on background layer]
+    \node[vedge,fit=(n20) (n22),inner sep=0.5cm,label={above: \huge $2$}] (n2) {};
+  \end{scope}
+
+  \node[data] (n30) [right=of n2] {\Large $2$};
+  \node[data] (n31) [right=0.2cm of n30] {\Large $\times$};
+  \node[data] (n32) [right=0.2cm of n31] {\Large $\times$};
+  \begin{scope}[on background layer]
+    \node[vedge,fit=(n30) (n32),inner sep=0.5cm,label={above: \huge $3$}] (n3) {};
+  \end{scope}
+
+  \begin{scope}[on background layer]
+    % \node[vedge,fit=(v0) (v7),label={left: \huge $v$},inner sep=0.5cm,inner ysep=0.8cm] (v) {};
+    \node[edge,fit=(f0) (f3),label={left:\huge $\triangle$},inner sep=0.5cm,inner ysep=0.8cm] (f) {};
+    \node[edge,fit=(n0) (n3),label={left:\huge $N$},inner sep=0.5cm,inner ysep=0.8cm] (f) {};
+  \end{scope}
+
+  \path[<->] (n00) edge[out=-90,in=-90] node {} (n12);
+  \path[<->] (n01) edge[out=-90,in=-90] node {} (n20);
+  \path[<->] (n02) edge[out=-90,in=-90] node {} (n30);
+
+\end{tikzpicture}
+\end{document}

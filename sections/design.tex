@@ -85,6 +85,8 @@ The complete source code of the project, called \textit{nanoreflex}, is provided
   There are multiple well-known data structures, like Quad-Edge Algebras \autocite{guibas1985} and triangular neighbors \autocite{shewchuk1996}, for handling graphs that represent the topological structure of general 2D polyhedral surfaces.
   These data structures have successfully been used to efficiently construct Delaunay triangulations and encode the information of 3D surface meshes.
 
+  !!!!To only generate vertex neighbors is also possible but not as versatile as one can think.!!!!
+
   Regarding the implementation of surface mesh curves, I will use a flat adjacency list to store references to adjacent triangles of a given triangle in accordance to \textcite{mancinelli2022}.
   As each triangle may at most exhibit three other triangles that are adjacent to it, there is an upper storage bound for neighboring references of each triangle.
   In the case that a triangle is part of the boundary of the polyhedral surface, a non-existing neighbor is marked as an invalid reference.
@@ -159,6 +161,54 @@ The complete source code of the project, called \textit{nanoreflex}, is provided
     \caption[Polyhedral Surface Data Structure]{%
       \textbf{Polyhedral Surface Data Structure}\\
       Scheme and Memory Layout of triangles and vertices
+    }
+  \end{figure}
+
+  \begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.4\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/quad-edge-edge.pdf}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.4\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/quad-edge-dual.pdf}
+    \end{subfigure}
+    \caption[Quad-Edge Scheme]{
+      \textbf{Quad-Edge Scheme}\\
+    }
+  \end{figure}
+
+  \begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.31\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/quad-edge-rot.pdf}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.67\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/quad-edge-struct-rot.pdf}
+    \end{subfigure}
+    \caption[Quad-Edge Rotation Scheme]{
+      \textbf{Quad-Edge Rotation Scheme}\\
+    }
+  \end{figure}
+
+  \begin{figure}[h]
+    \centering
+    \begin{subfigure}[c]{0.38\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/polyhedral-surface-triangle-adjacencies.pdf}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[c]{0.60\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/polyhedral-surface-triangle-adjacencies-struct.pdf}
+    \end{subfigure}
+    \caption[Triangle Adjacencies Scheme]{
+      \textbf{Triangle Adjacencies Scheme}\\
     }
   \end{figure}
 % subsection polyhedral_surface_data_structure (end)
