@@ -1,0 +1,54 @@
+\documentclass{standalone}
+
+\usepackage{tikz}
+\usepackage{tkz-euclide}
+\usetikzlibrary{calc}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows.meta}
+
+\usepackage{times}
+
+
+\begin{document}
+\begin{tikzpicture}[%
+  >={Stealth[scale=1.0]},
+]
+
+  \tkzDefPoint(0.0, 0.0){A}
+  \tkzDefPoint(2.0, 0.0){B}
+  \tkzDefPoint(3.0, 1.5){C}
+  \tkzDefPoint(1.5, 3.0){D}
+  \tkzDefPoint(1.0, 1.5){E}
+
+  \tkzDefPoint(0.0, 1.5){F}
+  \tkzDefPoint(0.5, 3.0){G}
+  \tkzDefPoint(-1.5, 2.0){H}
+
+  \tkzFillPolygon[color=black!5](A,B,E)
+  \tkzFillPolygon[color=black!5](B,C,E)
+  \tkzFillPolygon[color=black!5](C,D,E)
+
+  \tkzDrawSegments(A,B B,C C,D)
+  \tkzDrawSegments(E,A E,B E,C E,D)
+  \tkzDrawSegments(F,G G,H H,F)
+
+  \tkzFillPolygon[color=black!5](F,G,H)
+
+  \tkzDrawPoints(A,B,C,D,E,F,G,H)
+
+  \tkzLabelPoint[below left](A){$v_0$}
+  \tkzLabelPoint[below right](B){$v_1$}
+  \tkzLabelPoint[right](C){$v_2$}
+  \tkzLabelPoint[above](D){$v_3$}
+  \tkzLabelPoint[above left](E){$v_4$}
+  \tkzLabelPoint[below right](F){$v_5$}
+  \tkzLabelPoint[above right](G){$v_6$}
+  \tkzLabelPoint[left](H){$v_7$}
+
+  \tkzLabelSegment[above](A,B){$\triangle_0$}
+  \tkzLabelSegment[above left](B,C){$\triangle_1$}
+  \tkzLabelSegment[below left](C,D){$\triangle_2$}
+  \tkzLabelSegment[below right](G,H){$\triangle_3$}
+
+\end{tikzpicture}
+\end{document}
