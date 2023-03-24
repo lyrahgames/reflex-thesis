@@ -1,7 +1,9 @@
 \documentclass{stdlocal}
 \begin{document}
-\section{Design} % (fold)
+\section{Design and Implementation} % (fold)
 \label{sec:design}
+
+The C++ code shown in this section does not provide the best design.
 
 \subsection{Polyhedral Surface Data Structure} % (fold)
 \label{sub:polyhedral_surface_data_structure}
@@ -48,22 +50,14 @@
   Over and over trying to determine adjacent neighbors of vertices or triangles with this data structure quickly becomes infeasible.
   So, further surface mesh preprocessing steps are needed to generate and store essential adjacency information.
 
-  In the context of computer graphics, vertices of a polyhedral surface must differ as soon as they exhibit at least one distinct attribute.
-  In the structure given above, this would mean even though triangles might reference the same vertex position their pseudo-normals might differ to model a crease in the surface and consequently they cannot reference the same vertex.
-  Even worse, it is allowed to use multiple instances of the same vertex inside the vertex list to improve cache efficiency.
-  In the extreme case of STL files, every triangle refers to vertices that cannot be referred by other triangles.
-  As a consequence, naively generating the graph or dual graph of the surface mesh solely based on the vertices and faces used for rendering will not result in the correct topological connectivity information.
-
-  Referring to surface mesh curves, the values for pseudo-normals or texture coordinates are unimportant and may be neglected as they do not change the topology of the underlying polyhedral surface.
-  Therefore curve algorithms would need to assume two vertices to be the same as long as they exhibit the same position.
-  In this sense, I call two vertices with this property to be topologically equivalent.
-  Two triangles are topologically adjacent to each other if for both there exists edges.
-
-
-
-  Unfortunately, the connectivity information provided by the faces and vertices are not suitable for surface mesh curves but only useful in the context of rendering.
-  The use of surface mesh curves and smoothing algorithms should not put a higher burden on the OpenGL pipeline or the computer storage.
-  As as consequence, a topological structure has to be generated to extend the connectivity given by the render structure.
+  Unfortunately, the connectivity information provided by the faces and vertices are not suitable for surface mesh curves and smoothing algorithms.
+  In an OpenGL-based rendering pipeline, the vertices of a polyhedral surface must differ as soon as they exhibit at least one distinct attribute.
+  Even though triangles could share the same vertex position, their respective vertices might contain different pseudo-normals to model a crease in the surface and, consequently, these triangles cannot reference the same vertex.
+  Even worse, for various reasons, it is allowed to use multiple instances of the same vertex inside the vertex list which also would lead to distinct vertex references.
+  Especially, in the extreme case of STL files, every triangle uniquely refers to vertices that cannot be referred by other triangles which is schematically visualized in figure~\ref{fig:polyhedral-surface-distinct-vertices}.
+  On the other hand, the values for additional attributes of a vertex, like pseudo-normals or texture coordinates, are unimportant for algorithms handling surface mesh curves and may be neglected as they do not change the topology of the underlying polyhedral surface.
+  Such an algorithm would need to assume two vertices to be equivalent as long as they exhibit the same position.
+  As a consequence, naively generating the graph or dual graph of the surface mesh solely based on the vertices and faces will not result in the correct topological connectivity needed for surface mesh curves.
 
   \begin{figure}[t]
     \centering
@@ -78,27 +72,39 @@
       \centering
       \includegraphics[width=\linewidth]{figures/polyhedral-surface-joint.pdf}
     \end{subfigure}
-    \caption[Polyhedral Surface Data Structure]{%
-      \textbf{Polyhedral Surface Data Structure}\\
-      Scheme and Memory Layout of triangles and vertices
+    \caption[Connectivity by Using Topological Vertices]{%
+      \textbf{Connectivity by Using Topological Vertices}\\
+      On the right, a simple polyhedral surface with six topological vertices and four faces is shown.
+      In a data structure suitable for OpenGL-based rendering, each triangle might reference its own unique vertices as shown on the left.
+      These vertices are distinct from each other which logically disconnects the four adjacent triangles.
     }
     \label{fig:polyhedral-surface-distinct-vertices}
   \end{figure}
 
-  The projection of vertices onto their positions can be modeled by the quotient space and its respective quotient map.
-  $\function{p}{\mathscr{V}}{\setReal^3}$
-  $v,w\in\mathscr{V}$
+  The use of surface mesh curves and smoothing algorithms should neither put a higher burden on the OpenGL pipeline nor require dramatic changes to data structures used for rendering.
+  My solution to that problem generates an additional topological structure that extends the connectivity information given by the basic structure.
+  Hereby, the main idea was that the projection of vertices onto their positions can be modeled by the quotient space and its respective quotient map.
+  In this sense, let $\mathscr{V}$ be the set of all vertices and $\function{p}{\mathscr{V}}{\setReal^3}$ be the function that maps a vertex to its position in space.
+  Two vertices $v,w\in\mathscr{V}$ are called to be topologically equivalent, denoted as $v\sim w$, if they exhibit the same position.
   \[
     v \sim w
-    \colon\iff
+    \quad :\iff\quad
     p(v) = p(w)
   \]
-  $\mathscr{V}/\sim$ is the quotient space which contains all topological vertices.
-  Its elements are classes that contain topologically equivalent vertices.
+  Then the quotient space $\mathscr{V}/\sim$ consists of equivalence classes whose elements are pairwise topologically equivalent vertices.
+  These equivalence classes will from now on be called topological vertices.
+  The respective quotient map τ of $\mathscr{V}/\sim$ is given as follows.
   \[
     \function{τ}{\mathscr{V}}{\mathscr{V}/\sim}
     \separate
     τ(v) \define [v]
+  \]
+  Two triangles are topologically adjacent to each other if they share a topological edge.
+  Using the quotient map, a rigorous formulation can be given as follows.
+  Let $n\in\setNatural$ be the number of vertices in the vertex list $\function{V}{\mathscr{I}}{\mathscr{V}}$ with $\mathscr{I}\define\set{k\in\setNatural_0}{k\leq n}$.
+  Two triangles given by index triples $(v_1,v_2,v_3)$ and $(w_1,w_2,w_3)$ are adjacent to each other if there are $i,j,p,q\in\set{1,2,3}{}$ with $i\neq j$ and $p\neq q$ such that
+  \[
+    (τ(V(v_i)),τ(V(v_j))) = (τ(V(w_p)),τ(V(w_q)))
   \]
 
   To solve this problem, I will use the triangle adjacencies to also encode neighborhoods in the case only the positions of vertices are the same.
