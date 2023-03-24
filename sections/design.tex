@@ -9,15 +9,15 @@
   In general, the choice and efficiency of algorithms highly depends on underlying data structures that represent the intermediate data of a program \autocite{knuth1997,mehlhorn2008,smed2006}.
   Thus, thorough design considerations for the data structures of polyhedral surfaces and surface mesh curves are mandatory to build fast and robust curve smoothing algorithms.
 
-  The easiest representation, mandatory for the visualization of triangular surface meshes with OpenGL, is to have two separate lists of vertices and faces of a polyhedral surface \autocite{opengl}.
-  Each vertex should at least store its position but will most likely also provide  a pseudo-normal and/or texture coordinates for improved rendering and shading capabilities.
-  Every face is a triangle, that refers to the three vertices it contains.
-  In this case, the order of vertex references determines the orientation of the triangle as described in section~\ref{sec:preliminaries} in the preliminaries.
-  % This is the minimal information that needs to be provided to create a polyhedral surface.
+  To be able to render a triangular surface mesh in OpenGL, a simple and versatile method is to provide two separate lists for vertices and triangles, respectively \autocite{opengl}.
+  Hereby, each triangle only references its three vertices by using indices that may be used to extract a vertex from the vertex list.
+  The orientation of a triangle is defined by the order of its vertex references based on the description given in section~\ref{sec:preliminaries} in the preliminaries.
+  Furthermore, vertices in OpenGL are quite general and may not only store their own positions.
+  Typically, attributes for pseudo-normals, colors, or texture coordinates are added to use sophisticated shading techniques and improve the quality of illustrations.
+  A concrete implementation of this can be seen in the following code snippet.
+  Additionally, figure~\ref{fig:polyhedral-surface-faces} shows an example to visualize the memory layout of the vertex and faces list.
 
-  \inputCodeBlock[title = Vertices and Faces]{code/vertices-and-faces.hpp}
-
-  \begin{figure}
+  \begin{figure}[b]
     \centering
     \begin{subfigure}[c]{0.35\linewidth}
       \centering
@@ -28,19 +28,90 @@
       \centering
       \includegraphics[width=\linewidth]{figures/polyhedral-surface-struct-base.pdf}
     \end{subfigure}
-    \caption[Polyhedral Surface Data Structure]{%
-      \textbf{Polyhedral Surface Data Structure}\\
-      Scheme and Memory Layout of triangles and vertices
+    \caption[Data Structure for Faces of a Polyhedral Surface]{%
+      \textbf{Data Structure for Faces of a Polyhedral Surface}\\
+      The figure shows a schematic example of how faces of a given polyhedral surface (left) are stored in memory.
+      The surface consists of eight enumerated vertices and four faces.
+      As it can be seen on the right, each face references three distinct vertices by their index in the order of their orientation.
+      This way one vertex can be used by multiple triangles.
     }
+    \label{fig:polyhedral-surface-faces}
   \end{figure}
 
+  \inputCodeBlock[title = Vertices and Faces]{code/vertices-and-faces.hpp}
   As polyhedral surfaces are a special form of 3D surface geometry, I will use file formats, such as STL \autocite{stl-file-format} and Wavefront OBJ \autocite{obj-file-format}, to provide the possibility for reading complex surface meshes from disk.
   Especially in the area of computer graphics in conjunction with the C++ programming language, the \textit{Assimp} library \autocite{assimp} is often used to load even more file formats that represent general surfaces and scenes.
   The facility makes it possible to test algorithms with very complex surface meshes from the \citetitle{thingi10k} dataset whose models are mainly provided as STL files.
 
-  Up to that point, none of the data representations allows to access the neighbors of vertices or faces.
-  As a consequence, it is not possible to move points arbitrarily along the surface which would hinder the implementation of a curve smoothing algorithm based on local optimization.
-  So, at least information about the local neighborhood of points need to be generated and stored properly.
+  This representation already allows for an OpenGL-based visualization of polyhedral surfaces with sufficient quality by adding GLSL shaders.
+  But in the context of this thesis, also the efficient movement of points and curves along the surface mesh needs to be possible.
+  Over and over trying to determine adjacent neighbors of vertices or triangles with this data structure quickly becomes infeasible.
+  So, further surface mesh preprocessing steps are needed to generate and store essential adjacency information.
+
+  In the context of computer graphics, vertices of a polyhedral surface must differ as soon as they exhibit at least one distinct attribute.
+  In the structure given above, this would mean even though triangles might reference the same vertex position their pseudo-normals might differ to model a crease in the surface and consequently they cannot reference the same vertex.
+  Even worse, it is allowed to use multiple instances of the same vertex inside the vertex list to improve cache efficiency.
+  In the extreme case of STL files, every triangle refers to vertices that cannot be referred by other triangles.
+  As a consequence, naively generating the graph or dual graph of the surface mesh solely based on the vertices and faces used for rendering will not result in the correct topological connectivity information.
+
+  Referring to surface mesh curves, the values for pseudo-normals or texture coordinates are unimportant and may be neglected as they do not change the topology of the underlying polyhedral surface.
+  Therefore curve algorithms would need to assume two vertices to be the same as long as they exhibit the same position.
+  In this sense, I call two vertices with this property to be topologically equivalent.
+  Two triangles are topologically adjacent to each other if for both there exists edges.
+
+
+
+  Unfortunately, the connectivity information provided by the faces and vertices are not suitable for surface mesh curves but only useful in the context of rendering.
+  The use of surface mesh curves and smoothing algorithms should not put a higher burden on the OpenGL pipeline or the computer storage.
+  As as consequence, a topological structure has to be generated to extend the connectivity given by the render structure.
+
+  \begin{figure}[t]
+    \centering
+    \begin{subfigure}[c]{0.40\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/polyhedral-surface-separated.pdf}
+    \end{subfigure}
+    \hfill
+    $\longrightarrow$
+    \hfill
+    \begin{subfigure}[c]{0.40\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/polyhedral-surface-joint.pdf}
+    \end{subfigure}
+    \caption[Polyhedral Surface Data Structure]{%
+      \textbf{Polyhedral Surface Data Structure}\\
+      Scheme and Memory Layout of triangles and vertices
+    }
+    \label{fig:polyhedral-surface-distinct-vertices}
+  \end{figure}
+
+  The projection of vertices onto their positions can be modeled by the quotient space and its respective quotient map.
+  $\function{p}{\mathscr{V}}{\setReal^3}$
+  $v,w\in\mathscr{V}$
+  \[
+    v \sim w
+    \colon\iff
+    p(v) = p(w)
+  \]
+  $\mathscr{V}/\sim$ is the quotient space which contains all topological vertices.
+  Its elements are classes that contain topologically equivalent vertices.
+  \[
+    \function{τ}{\mathscr{V}}{\mathscr{V}/\sim}
+    \separate
+    τ(v) \define [v]
+  \]
+
+  To solve this problem, I will use the triangle adjacencies to also encode neighborhoods in the case only the positions of vertices are the same.
+  For this, I first add all the vertices to hash map using their position as a key with a custom hash function.
+  This allows to find other vertices with the same position in an expected constant time.
+  The values of the vertex hash map will be a list of vertex indices referring to the same location in space.
+
+  In a following step, a hash map of directed edges will be constructed with a custom hash function for edges by iterating over the list of faces.
+  Hereby, each triangle will add three directed edges.
+  The values for each directed edge in the hash map will refer to its specific triangle and location inside that triangle.
+
+  Putting now together the use of the vertex and edge hash maps, the face neighbors can be constructed.
+  After the construction of face neighbors, the hash maps for vertices and edges are no longer needed and can be deleted.
 
   Computing and storing neighbor and adjacency information of surface meshes is a studied and vast area of computational geometry.
   There are multiple well-known data structures, like Quad-Edge Algebras \autocite{guibas1985} and triangular neighbors \autocite{shewchuk1996}, for handling graphs that represent the topological structure of general 2D polyhedral surfaces.
@@ -81,25 +152,6 @@
   After the construction of face neighbors, the hash maps for vertices and edges are no longer needed and can be deleted.
 
   \inputCodeBlock[title = Discrete Quotient Map]{code/discrete-quotient-map.hpp}
-
-  \begin{figure}[h]
-    \centering
-    \begin{subfigure}[c]{0.40\linewidth}
-      \centering
-      \includegraphics[width=\linewidth]{figures/polyhedral-surface-separated.pdf}
-    \end{subfigure}
-    \hfill
-    $\longrightarrow$
-    \hfill
-    \begin{subfigure}[c]{0.40\linewidth}
-      \centering
-      \includegraphics[width=\linewidth]{figures/polyhedral-surface-joint.pdf}
-    \end{subfigure}
-    \caption[Polyhedral Surface Data Structure]{%
-      \textbf{Polyhedral Surface Data Structure}\\
-      Scheme and Memory Layout of triangles and vertices
-    }
-  \end{figure}
 
   \begin{figure}
     \centering
