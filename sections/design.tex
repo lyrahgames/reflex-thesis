@@ -17,7 +17,7 @@ The C++ code shown in this section does not provide the best design.
   Furthermore, vertices in OpenGL are quite general and may not only store their own positions.
   Typically, attributes for pseudo-normals, colors, or texture coordinates are added to use sophisticated shading techniques and improve the quality of illustrations.
   A concrete implementation of this can be seen in the following code snippet.
-  Additionally, figure~\ref{fig:polyhedral-surface-faces} shows an example to visualize the memory layout of the vertex and faces list.
+  Additionally, figure~\ref{fig:polyhedral-surface-faces} shows an example to visualize the memory layout of the vertex and face list.
   \inputCodeBlock[title = Vertices and Faces]{code/vertices-and-faces.hpp}
 
   \begin{figure}
@@ -52,8 +52,17 @@ The C++ code shown in this section does not provide the best design.
   So, further surface mesh preprocessing steps are needed to generate and store essential adjacency information.
 
   Computing and storing neighbor and adjacency information of surface meshes is a studied and vast area of computational geometry.
-  There are multiple well-known data structures, like Quad-Edge Algebras \autocite{guibas1985} and triangular neighbors \autocite{shewchuk1996}, for handling graphs that represent the topological structure of general 2D polyhedral surfaces.
+  There are multiple well-known data structures, like Quad-Edge Algebras \autocite{guibas1985} and triangular adjacencies \autocite{shewchuk1996}, for handling graphs that represent the topological structure of general 2D polyhedral surfaces.
   These data structures have successfully been used to efficiently construct Delaunay triangulations and encode the information of 3D surface meshes.
+  The quad-edge algebra, described by \textcite{guibas1985}, is a versatile and complex data structure based on edges that represents both, the graph and the dual graph, of the surface at once and allows to easily and efficiently access the lists of adjacent vertices, edges, and faces.
+  A simple but efficient implementation that does not make use of any pointers is given in section~\ref{sec:quad_edge_algebra} in the appendix.
+  Figure~\ref{fig:quad-edge} and \ref{fig:quad-edge-rotation} schematically show the memory layout and rotation primitive of the data structure.
+  On the other hand, according to \textcite{shewchuk1996}, a flat adjacency list storing references to adjacent faces for each face offers a lower memory consumption and an expected efficiency higher than that of a quad-edge algebra at the cost of a higher programming complexity when used in algorithms.
+  It does not provide an easy way to access the graph but still incorporates the dual graph of the surface and is much easier to generate and handle than the quad-edge algebra.
+  As each triangle may at most exhibit three other triangles that are adjacent to it, there is an upper storage bound for adjacency references of each triangle.
+  Triangular adjacencies already have been used by \textcite{mancinelli2022} to implement one of the fastest geodesics tracing algorithms.
+  Still, the adjacencies itself make it hard to access the circular list of adjacent faces around a vertex.
+  My solution for triangular adjacencies, that will be explained in the following, uses insights gained from the quad-edge algebra and slightly changes the standard face references by adding locations to cope with this disadvantage.
 
   Unfortunately, the connectivity information provided by the faces and vertices are not suitable for surface mesh curves and smoothing algorithms.
   In an OpenGL-based rendering pipeline, the vertices of a polyhedral surface must differ as soon as they exhibit at least one distinct attribute.
@@ -151,24 +160,38 @@ The C++ code shown in this section does not provide the best design.
   As the quotient map is not bijective, an additional offset array is used to get the list of all vertices that refer to the same topological vertex.
 
   \inputCodeBlock[title = Inverse Topological Vertex Map]{code/inverse-topological-vertex-map.hpp}
+  First, the code snippet calculates the cardinality of the equivalence classes representing topological vertices.
+  Then by iteratively building the cumulative sum of cardinalities the data offset for each topological vertex has been determined.
+  This offset is then used to add backwards pointing vertex references to the inverse map.
+  As the offsets are changed by this operation, a final step shifts all the offsets to the left to repair the offset array.
+  Getting all the vertex references of a topological vertex then only means to iterate over indices starting at the respective offset and ending before the next offset.
 
-  \noindent
-  With the availability of topological vertices and their correspondence to vertices, an important intermediate construction step is the generation of all surface edges.
-  In a following step, a hash map of directed edges will be constructed with a custom hash function for edges by iterating over the list of faces.
-  Hereby, each triangle will add three directed edges.
-  The values for each directed edge in the hash map will refer to its specific triangle and location inside that triangle.
-  The hash map of directed edges provides an easy way to check for orientability and consistency whether or not the vertices and faces fulfill the requirements of a 2D topological manifold.
+  With the availability of topological vertices and their correspondence to vertices, the next important intermediate construction step is the generation of all surface edges.
+  During this construction step the given surface can be checked for orientability and consistency.
+  Hereby, consistency means whether or not the vertices and faces fulfill the requirements of a 2D topological manifold.
+  Furthermore, the intermediate representation of edges given below allows to determine nearly all the adjacency structures for vertices, edges, and faces.
+  For this, a hash map of directed edges with a custom hash function for edges will be constructed by iterating over the list of faces.
+  Hereby, each face will interpreted as an oriented triangle that adds all of its three directed edges to the hash map.
+  The values for each directed edge in the hash map will refer to its specific triangle and its location inside that triangle.
 
   \inputCodeBlock[title = Intermediate Topological Edges]{code/topological-directed-edges.hpp}
+  At the start of the code snippet structures for face adjacency references and directed edges are defined to simplify the implementation of edge generation.
+  Directed edges are simply represented by two references to topological vertices.
+  As they need to be added to a hash map, an information structure and a hash function have been added.
+  The information structure only stores two face adjacencies to let the directed edge know from which face and at which location it originated.
+  A face adjacency reference refers to a face in the face list and additionally to the edge location inside that face at which the adjacency occurs.
+  As there are only three possible locations, only two bits are used to encode this information in the standard face reference by using the bit-field feature of C++.
+  This reduces the amount of referencable faces to $2^{30}$ which is a little over 1~billion triangles.
+  The memory consumption for this case would be $36\appendUnit{GiB}$ at minimum for the vertex and face list implementations provided here.
+  Even nowadays graphics cards customary in trade are not able to handle this huge amount of data at once.
+  Hence, the implementation does not impose serious constraints on the data it can handle.
 
-  \noindent
   % Putting now together the use of the vertex and edge hash maps, the face neighbors can be constructed.
   % After the construction of face neighbors, the hash maps for vertices and edges are no longer needed and can be deleted.
-  Regarding the implementation of surface mesh curves, I will use a flat adjacency list to store references to adjacent triangles of a given triangle in accordance to \textcite{mancinelli2022}.
-  As each triangle may at most exhibit three other triangles that are adjacent to it, there is an upper storage bound for neighboring references of each triangle.
+  % Regarding the implementation of surface mesh curves, I will use a flat adjacency list to store references to adjacent triangles of a given triangle in accordance to \textcite{mancinelli2022}.
+  % This representation also comes in handy for the implementation of parallel smoothing algorithms on the GPU.
+  Now, to generate the topological face adjacencies, all that is to do is to iterate over all edges and add their mapped information to the face adjacencies.
   In the case that a triangle is part of the boundary of the polyhedral surface, a non-existing neighbor is marked as an invalid reference.
-  This representation also comes in handy for the implementation of parallel smoothing algorithms on the GPU.
-  To generate the topological face adjacencies, all that is to do is to basically iterate over all edges and add their mapped information to the face adjacencies.
   The following code snippet demonstrates this.
   In figure~\ref{fig:polyhedral-surface-face-adjacencies}, a scheme that visualizes the memory layout of the topological face adjacencies can be seen.
 
@@ -195,11 +218,17 @@ The C++ code shown in this section does not provide the best design.
   \end{figure}
 
   \inputCodeBlock[title = Topological Face Adjacencies]{code/topological-face-adjacencies.hpp}
+  During the iteration over all directed edges, the code snippet distinguishes between oriented and unoriented edges.
+  In the case of an oriented edge, the information structure only provides one valid face adjacency reference.
+  Thus, the hash map of edges is queried for the reverse edge to get its information structure and with it the reference to the adjacent face.
+  If the reverse edge does not exist, the current edge must be part of the boundary.
 
   Incorporating the location values into face adjacencies allows for an easy navigation along oriented polyhedral surfaces.
-  Figure~\ref{fig:polyhedral-surface-face-adjacency-rotation} shows the basic operation for face adjacencies that rotates the current direction of the adjacency counterclockwise.
+  Figure~\ref{fig:polyhedral-surface-face-adjacency-rotation} shows the basic operation for face adjacencies that rotates the current direction of the adjacency counterclockwise similar to quad-edge rotations of figure~\ref{fig:quad-edge-rotation}.
   It can be implemented by adding $1$ to the location and afterwards taking its modulus base $3$.
-  This primitive enables us to easily run through the list of triangles around a vertex in clockwise and counterclockwise order.
+  This primitive enables the code to easily run through the list of triangles around a vertex in clockwise and counterclockwise order.
+  Furthermore, for an algorithm which makes only use of the flat list of face adjacencies, the quotient map for topological vertices and the hash map for directed edges can be destroyed.
+  In fact, the topological face adjacencies have been generated by the use of topological vertices but their data do not reference these anymore.
 
   \begin{figure}
     \centering
@@ -220,13 +249,16 @@ The C++ code shown in this section does not provide the best design.
     \label{fig:polyhedral-surface-face-adjacency-rotation}
   \end{figure}
 
-  !!!!To only generate vertex neighbors is also possible but not as versatile as one can think.!!!!
-
-  As already described in section~\ref{sec:preliminaries} in the preliminaries, the vertices and edges of a polyhedral surface model a graph which characterizes the vertex adjacencies.
+  As already described in section~\ref{sec:preliminaries} in the preliminaries, the vertices and edges of a polyhedral surface model a vertex-based graph which characterizes the vertex adjacencies.
   Looking at a polyhedral surface in this way, storing the triangle adjacencies makes the corresponding dual graph available.
-  Using the vertex-based graph, the boundaries of a surface mesh need to be handled by additional facilities as the graph itself does not exhibit a way to encode them.
-  On the other hand, its dual graph copes with boundaries by marking references to be invalid.
-  Furthermore, adding orientation to the vertex-based graph can be cumbersome whereas the orientation for the triangle-based dual graph is given by orientation of the triangle itself.
+  For the vertex-based graph, the adjacent vertices of each vertex would need be determined first.
+  An efficient structure to store vertex neighbors is a sparse matrix in the compressed sparse row format without an extra array for matrix entries.
+  The construction of counterclockwise oriented neighbor entries can be done by using the face adjacencies.
+  Still, the boundary of a surface mesh needs to be handled by additional facilities as the vertex-based graph structure itself does not exhibit a way to simply encode them.
+  Furthermore, the vertex-based graph needs to reference topological vertices and each vertex might have arbitrary many neighbors.
+
+  % On the other hand, its dual graph copes with boundaries by marking references to be invalid.
+  % Furthermore, adding orientation to the vertex-based graph can be cumbersome whereas the orientation for the triangle-based dual graph is given by orientation of the triangle itself.
 
   % \inputCodeBlock[title = Polyhedral Surface]{code/polyhedral_surface/polyhedral_surface.hpp}
 
@@ -253,14 +285,14 @@ The C++ code shown in this section does not provide the best design.
 
 % subsection polyhedral_surface_data_structure (end)
 
-Experimenting with various designs and implementations of algorithms, that robustly and efficiently smooth discrete curves on surface meshes, requires us to use a whole program pipeline or framework for loading input data, intuitively working with user interaction, and visualizing any intermediate results.
-As changing specific parts of such a pipeline may affect the performance, outcomes, and overall behavior of an algorithm or program, a brief overview over all of its components is essential to allow for reproducible results and will therefore be given in the following subsections.
-This will also make it possible for readers to simply reconstruct, adjust, and improve the pipeline for their own domain-specific projects.
-Afterwards, I will thoroughly elaborate on the design and implementation of chosen data structures and algorithms together with their mathematical primitives for curve smoothing.
+% Experimenting with various designs and implementations of algorithms, that robustly and efficiently smooth discrete curves on surface meshes, requires us to use a whole program pipeline or framework for loading input data, intuitively working with user interaction, and visualizing any intermediate results.
+% As changing specific parts of such a pipeline may affect the performance, outcomes, and overall behavior of an algorithm or program, a brief overview over all of its components is essential to allow for reproducible results and will therefore be given in the following subsections.
+% This will also make it possible for readers to simply reconstruct, adjust, and improve the pipeline for their own domain-specific projects.
+% Afterwards, I will thoroughly elaborate on the design and implementation of chosen data structures and algorithms together with their mathematical primitives for curve smoothing.
 
-The pipeline or framework, described in this thesis, has been manually implemented with the C++ programming language and the OpenGL graphics API using some external libraries to handle low-level tasks.
-Already described in the introduction in section~\ref{sec:introduction}, this choice is well suited for open-source graphics applications and provides programmers with a large freedom when it comes to the implementation of data structures and algorithms.
-The complete source code of the project, called \textit{nanoreflex}, is provided as an open-source repository on GitHub.
+% The pipeline or framework, described in this thesis, has been manually implemented with the C++ programming language and the OpenGL graphics API using some external libraries to handle low-level tasks.
+% Already described in the introduction in section~\ref{sec:introduction}, this choice is well suited for open-source graphics applications and provides programmers with a large freedom when it comes to the implementation of data structures and algorithms.
+% The complete source code of the project, called \textit{nanoreflex}, is provided as an open-source repository on GitHub.
 
 \subsection{Overview of the Program Pipeline} % (fold)
 \label{sub:program_pipeline}
