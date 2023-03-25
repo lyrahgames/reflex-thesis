@@ -106,9 +106,9 @@
   \node[data,label={below:\Large $6$}] (r6) [right=0.9cm of r5] {\Large $13$};
 
   \begin{scope}[on background layer]
-    \node[vedge,fit=(v0) (v11),label={left: \huge $\pi(v)$},inner sep=0.5cm,inner ysep=0.8cm] (v) {};
-    \node[edge,fit=(p0) (p5),label={left:\huge $p$},inner sep=0.5cm,inner ysep=0.8cm] (f) {};
-    \node[vedge,fit=(r0) (r6),label={left: \huge $n$},inner sep=0.5cm,inner ysep=0.6cm,inner xsep=0.5cm] (r) {};
+    \node[vedge,fit=(v0) (v11),label={left: \huge $\tau$},inner sep=0.5cm,inner ysep=0.8cm] (v) {};
+    \node[edge,fit=(p0) (p5),label={left:\huge $\tau^{-1}$},inner sep=0.5cm,inner ysep=0.8cm] (f) {};
+    \node[vedge,fit=(r0) (r6),label={left: \huge $\tau^{-1}_\mathrm{o}$},inner sep=0.5cm,inner ysep=0.6cm,inner xsep=1.0cm] (r) {};
   \end{scope}
 
   \path[<->] (v0) edge[out=-90,in=90] node {} (p10);

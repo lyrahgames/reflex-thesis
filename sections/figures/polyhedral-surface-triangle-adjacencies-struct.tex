@@ -57,30 +57,30 @@
   % \node[data,label={\Large $6$}] (v6) [right=1.45cm of v5] {\Large $v_6$};
   % \node[data,label={\Large $7$}] (v7) [right=1.45cm of v6] {\Large $v_7$};
 
-  \node[data] (f00) [] {\Large $0$};
-  \node[data] (f01) [right=0.2cm of f00] {\Large $1$};
+  \node[data] (f00) [] {\Large $1$};
+  \node[data] (f01) [right=0.2cm of f00] {\Large $2$};
   \node[data] (f02) [right=0.2cm of f01] {\Large $4$};
   \begin{scope}[on background layer]
     \node[vedge,fit=(f00) (f02),inner sep=0.5cm,label={above: \huge $0$}] (f0) {};
   \end{scope}
 
   \node[data] (f10) [right=of f0] {\Large $1$};
-  \node[data] (f11) [right=0.2cm of f10] {\Large $2$};
-  \node[data] (f12) [right=0.2cm of f11] {\Large $4$};
+  \node[data] (f11) [right=0.2cm of f10] {\Large $0$};
+  \node[data] (f12) [right=0.2cm of f11] {\Large $2$};
   \begin{scope}[on background layer]
     \node[vedge,fit=(f10) (f12),inner sep=0.5cm,label={above: \huge $1$}] (f1) {};
   \end{scope}
 
-  \node[data] (f20) [right=of f1] {\Large $2$};
-  \node[data] (f21) [right=0.2cm of f20] {\Large $3$};
-  \node[data] (f22) [right=0.2cm of f21] {\Large $4$};
+  \node[data] (f20) [right=of f1] {\Large $4$};
+  \node[data] (f21) [right=0.2cm of f20] {\Large $2$};
+  \node[data] (f22) [right=0.2cm of f21] {\Large $5$};
   \begin{scope}[on background layer]
     \node[vedge,fit=(f20) (f22),inner sep=0.5cm,label={above: \huge $2$}] (f2) {};
   \end{scope}
 
-  \node[data] (f30) [right=of f2] {\Large $5$};
-  \node[data] (f31) [right=0.2cm of f30] {\Large $6$};
-  \node[data] (f32) [right=0.2cm of f31] {\Large $7$};
+  \node[data] (f30) [right=of f2] {\Large $1$};
+  \node[data] (f31) [right=0.2cm of f30] {\Large $4$};
+  \node[data] (f32) [right=0.2cm of f31] {\Large $3$};
   \begin{scope}[on background layer]
     \node[vedge,fit=(f30) (f32),inner sep=0.5cm,label={above: \huge $3$}] (f3) {};
   \end{scope}
