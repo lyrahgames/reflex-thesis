@@ -15,35 +15,60 @@
   % A curve moving with respect to its curvature gets much shorter at parts with a higher curvature value.
   % A general length mapping would be more intuitive.
 
-  In the practical part of this work, I designed and implemented an algorithm for the smoothing of surface mesh curves.
+  In the practical part of this work, I successfully designed and implemented various data structures to represent surface mesh curves as well as algorithmical primitives for their general movement and smoothing along polyhedral surfaces.
   All the implementation-specific details have been given as C++ code snippets to allow for reproducibility.
-  My algorithm builds on and improves the work of \textcite{martinez2005} and \textcite{lawonn2014} by using data structures from \textcite{mancinelli2022} and a consistent curvature propagation.
-  It is based on an iterative approach to locally optimize geodesic curvature values in conjunction with surface-dependent penalty values to keep the outcome close to its original.
-  As such, it can characterized to be part of the variational domain of solutions to curve smoothing.
+  The algorithmical primitives for smoothing surface mesh curves build on the work of \textcite{martinez2005} and \textcite{lawonn2014} by using data structures from \textcite{mancinelli2022} and a consistent curvature propagation.
+  Additionally, the calculation of desired geodesic curvature values has been improved by using a weighted stencil of adjacent geodesic curvature values and applying it multiple times to geodesic curvatures of the initially given curve.
+  % The main smoothing algorithm is based on an iterative approach to locally optimize geodesic curvature values in conjunction with surface-dependent penalty values to keep the outcome close to its original.
+  The main smoothing algorithm is based on an iterative approach to locally optimize these geodesic curvature values.
+  As such, it is part of the variational domain of solutions to curve smoothing.
   % This also allows for more general considerations such as anisotropic surface metrics.
-  Together with the defined smoothing metrics, I was able to proof that the algorithm indeed smoothes an initial curve and that it converges.
+  % Together with the defined smoothing metrics, I was able to proof that the algorithm indeed smoothes an initial curve and that it converges.
 
-  I have stated the concrete data structures for polyhedral surfaces and surface mesh curves and also added primitive operations.
-  This allowed for general construction on how to move a surface mesh curve along a polyhedral surface.
-  Also, I propose a more robust method for generating desired geodesic curvature values by using a weighting stencil.
-  Instead of an inconsistent curvature propagation, I have introduce curvature mapping.
-  The largest limitation of consistently moving surface mesh curves along polyhedral surface is the lack of mathematical convergence properties concerning discrete geodesic curvature.
+  % I have stated the concrete data structures for polyhedral surfaces and surface mesh curves and also added primitive operations.
+  % This allowed for general construction on how to move a surface mesh curve along a polyhedral surface.
+  % Also, I propose a more robust method for generating desired geodesic curvature values by using a weighting stencil.
+  % Instead of an inconsistent curvature propagation, I have introduce curvature mapping.
+  % The largest limitation of consistently moving surface mesh curves along polyhedral surface is the lack of mathematical convergence properties concerning discrete geodesic curvature.
 
-  The algorithms have been implemented as parallelized version on the CPU and GPU with the standard thread library of the C++ STL and the compute shaders of OpenGL, respectively.
-  I have designed tests based on the \citetitle{thingi10k} dataset to evaluate their robustness and efficiency.
-  Even for polyhedral surfaces consisting of millions of triangles, surface mesh curves exhibit typically only exhibit thousands of control points.
-  Most of curve smoothing or straightening algorithms are not parallelizable.
-  Due to iterative nature and the convergence behavior, I was able to show that CPU-based and GPU-based parallelization indeed allows for faster determination of smoothed curves.
-  Still, the smoothing of curves seems not to be the bottleneck of the application.
-  So, a parallelization for only a few thousands points might quickly become infeasible.
-  As there are data and flow dependencies in a curve smoothing procedure, parallelization is limited as it needs to constantly communicate with the CPU.
-  A bigger emphasis should lie on the robustness.
+  % The algorithms have been implemented as parallelized version on the CPU and GPU with the standard thread library of the C++ STL and the compute shaders of OpenGL, respectively.
+  % I have designed tests based on the \citetitle{thingi10k} dataset to evaluate their robustness and efficiency.
+  % Even for polyhedral surfaces consisting of millions of triangles, surface mesh curves exhibit typically only exhibit thousands of control points.
+  % Most of curve smoothing or straightening algorithms are not parallelizable.
+  % Due to iterative nature and the convergence behavior, I was able to show that CPU-based and GPU-based parallelization indeed allows for faster determination of smoothed curves.
+  % Still, the smoothing of curves seems not to be the bottleneck of the application.
+  % So, a parallelization for only a few thousands points might quickly become infeasible.
+  % As there are data and flow dependencies in a curve smoothing procedure, parallelization is limited as it needs to constantly communicate with the CPU.
+  % A bigger emphasis should lie on the robustness.
 
-  In the future work, I want to apply the curve smoothing to segmentation of lung lobes.
-  Curves should not only be shortened but it should be possible to expand. The main problem here lies the proof of convergence.
-  Anisotropic metrics
-  More generic testing
-  More applications in medical domains
+  As the movement of surface mesh curves depends on the topology of the polyhedral surface, the movement speed and convergence of algorithms can be slow for high-resolution surface meshes.
+  Each iteration, a surface mesh curve may only propagate one vertex ahead.
+  Especially for geodesics tracing, where the accumulated amount a curve may change is maximal, this process might be inefficient.
+  Furthermore, the algorithmical primitives and smoothing procedure cannot considered to be robust if the polyhedral surface exhibits faces or vertices that are numerically extreme.
+  Other methods, based on freely moving a curve in space followed by a projection onto the surface, could exhibit a better convergence rate.
+
+  Even for high-resolution polyhedral surfaces consisting of millions of triangles, surface mesh curves typically exhibit a few thousand control points.
+  As such, the process of smoothing surface mesh curves does not appear to be the bottleneck of the overall program pipeline.
+  Besides, most of the provided primitives for algorithms exhibit more complicated data and flow dependencies which hinder a parallelization on the CPU and GPU.
+  As a result, the parallelization of the smoothing algorithm is expected to be unsuitable for general applications due to the high complexity of programming involved in comparison to the benefits of efficiency gain.
+  Instead, future work should put serious focus on a robust implementation that would be able to handle many artificial and degenerate case of polyhedral surfaces that often arise as smaller artifacts in real-world surface meshes.
+  Such an implementation should be thoroughly tested by constructing generic tests that can be applied to a whole set of polyhedral surfaces such as the \citetitle{thingi10k} dataset.
+  % Apart from that, regarding the iterative nature of the main smoothing algorithm, a parallelization on the CPU could be realized by using a pipeline which
+
+  Another problem that arises when dealing with general smoothing algorithms for surface mesh curves is the fact that smoothing a curve is not a clear goal.
+  There is no universally agreed-upon metric to measure the quality of a smoothing process.
+  Implementing stopping criteria for algorithms or assigning desired geodesic curvature values are subjective processes and only provide heuristics to make an initially given curve intuitively smoother.
+  However, for a rigorous design of smoothing, future work should involve the research on the generalization of norms that complete the spaces of $\mathrm{C^k}$-curves.
+  Not only taking the maximum, average, mean-squared geodesic curvature into account but also the values of its first or second derivative could allow to construct improved algorithms whose smoothing capabilities are provable.
+  Also the proof of convergence for alternative smoothing algorithms, as it was done by \textcite{lawonn2014}, should be part of future work.
+
+  Expansion of curves, not only shortening
+
+  Alternative Smoothing Algorithms: Your algorithm to lift the polyhedral surface into four dimensions by adding a scalar potential for geodesics.
+
+  Anisotropic Metrics
+
+  Application to medicine
 
 % section conclusions (end)
 \end{document}
