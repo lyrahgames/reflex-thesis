@@ -3,9 +3,18 @@
 \section{Design and Implementation} % (fold)
 \label{sec:design}
 
+% Experimenting with various designs and implementations of algorithms, that robustly and efficiently smooth discrete curves on surface meshes, requires us to use a whole program pipeline or framework for loading input data, intuitively working with user interaction, and visualizing any intermediate results.
+% As changing specific parts of such a pipeline may affect the performance, outcomes, and overall behavior of an algorithm or program, a brief overview over all of its components is essential to allow for reproducible results and will therefore be given in the following subsections.
+% This will also make it possible for readers to simply reconstruct, adjust, and improve the pipeline for their own domain-specific projects.
+% Afterwards, I will thoroughly elaborate on the design and implementation of chosen data structures and algorithms together with their mathematical primitives for curve smoothing.
+
+% The pipeline or framework, described in this thesis, has been manually implemented with the C++ programming language and the OpenGL graphics API using some external libraries to handle low-level tasks.
+% Already described in the introduction in section~\ref{sec:introduction}, this choice is well suited for open-source graphics applications and provides programmers with a large freedom when it comes to the implementation of data structures and algorithms.
+% The complete source code of the project, called \textit{nanoreflex}, is provided as an open-source repository on GitHub.
+
 The C++ code shown in this section does not provide the best design.
 
-\subsection{Polyhedral Surface Data Structure} % (fold)
+\subsection{Data Structures for Polyhedral Surfaces} % (fold)
 \label{sub:polyhedral_surface_data_structure}
 
   In general, the choice and efficiency of algorithms highly depends on underlying data structures that represent the intermediate data of a program \autocite{knuth1997,mehlhorn2008,smed2006}.
@@ -186,10 +195,6 @@ The C++ code shown in this section does not provide the best design.
   Even nowadays graphics cards customary in trade are not able to handle this huge amount of data at once.
   Hence, the implementation does not impose serious constraints on the data it can handle.
 
-  % Putting now together the use of the vertex and edge hash maps, the face neighbors can be constructed.
-  % After the construction of face neighbors, the hash maps for vertices and edges are no longer needed and can be deleted.
-  % Regarding the implementation of surface mesh curves, I will use a flat adjacency list to store references to adjacent triangles of a given triangle in accordance to \textcite{mancinelli2022}.
-  % This representation also comes in handy for the implementation of parallel smoothing algorithms on the GPU.
   Now, to generate the topological face adjacencies, all that is to do is to iterate over all edges and add their mapped information to the face adjacencies.
   In the case that a triangle is part of the boundary of the polyhedral surface, a non-existing neighbor is marked as an invalid reference.
   The following code snippet demonstrates this.
@@ -257,42 +262,165 @@ The C++ code shown in this section does not provide the best design.
   Still, the boundary of a surface mesh needs to be handled by additional facilities as the vertex-based graph structure itself does not exhibit a way to simply encode them.
   Furthermore, the vertex-based graph needs to reference topological vertices and each vertex might have arbitrary many neighbors.
 
-  % On the other hand, its dual graph copes with boundaries by marking references to be invalid.
-  % Furthermore, adding orientation to the vertex-based graph can be cumbersome whereas the orientation for the triangle-based dual graph is given by orientation of the triangle itself.
-
-  % \inputCodeBlock[title = Polyhedral Surface]{code/polyhedral_surface/polyhedral_surface.hpp}
-
-  % Following the specification of the data structure to represent a polyhedral surface, an algorithm for its generation needs to be provided.
-  % In the context of computer graphics, vertices of a polyhedral surface must differ as soon as they exhibit different positions, pseudo-normals, or texture coordinates because typical OpenGL shaders expect vertices to carry a known size of additional attribute data.
-  % In the extreme case of STL files, every triangle refers to vertices that cannot be referred by other triangles.
-  % For curve smoothing on the other hand, the values for pseudo-normals and texture coordinates do not change the topology of the polyhedral surface and are only used to improve the quality of rendering.
-  % Therefore curve algorithms and their respective data structures would need to ignore different values for pseudo-normals and texture coordinates as long as two vertices have the same position and a resulting topological connection.
-  % The use of surface mesh curves and smoothing algorithms should not put a higher burden on the OpenGL pipeline or the computer storage.
-
-  % To solve this problem, I will use the triangle adjacencies to also encode neighborhoods in the case only the positions of vertices are the same.
-  % For this, I first add all the vertices to hash map using their position as a key with a custom hash function.
-  % This allows to find other vertices with the same position in an expected constant time.
-  % The values of the vertex hash map will be a list of vertex indices referring to the same location in space.
-
-  % In a following step, a hash map of directed edges will be constructed with a custom hash function for edges by iterating over the list of faces.
-  % Hereby, each triangle will add three directed edges.
-  % The values for each directed edge in the hash map will refer to its specific triangle and location inside that triangle.
-
-  % Putting now together the use of the vertex and edge hash maps, the face neighbors can be constructed.
-  % After the construction of face neighbors, the hash maps for vertices and edges are no longer needed and can be deleted.
-
-  % \inputCodeBlock[title = Discrete Quotient Map]{code/discrete-quotient-map.hpp}
-
 % subsection polyhedral_surface_data_structure (end)
 
-% Experimenting with various designs and implementations of algorithms, that robustly and efficiently smooth discrete curves on surface meshes, requires us to use a whole program pipeline or framework for loading input data, intuitively working with user interaction, and visualizing any intermediate results.
-% As changing specific parts of such a pipeline may affect the performance, outcomes, and overall behavior of an algorithm or program, a brief overview over all of its components is essential to allow for reproducible results and will therefore be given in the following subsections.
-% This will also make it possible for readers to simply reconstruct, adjust, and improve the pipeline for their own domain-specific projects.
-% Afterwards, I will thoroughly elaborate on the design and implementation of chosen data structures and algorithms together with their mathematical primitives for curve smoothing.
+\subsection{Data Structures for Surface Mesh Curves} % (fold)
+\label{sub:discrete_surface_curve_data_structure}
 
-% The pipeline or framework, described in this thesis, has been manually implemented with the C++ programming language and the OpenGL graphics API using some external libraries to handle low-level tasks.
-% Already described in the introduction in section~\ref{sec:introduction}, this choice is well suited for open-source graphics applications and provides programmers with a large freedom when it comes to the implementation of data structures and algorithms.
-% The complete source code of the project, called \textit{nanoreflex}, is provided as an open-source repository on GitHub.
+  The representation of surface mesh curves via data structures may follow two main approaches and depends on the choice of data structures used to store topological adjacency information of the underlying polyhedral surface.
+
+  \paragraph{Edge-Based Data Structure}\hfill\\
+  On the one hand, surface mesh curves can solely be characterized by a list of control points over the surface mesh of a polyhedral surface.
+  As the surface mesh is the union of topological edges, a natural construction would be based on a list of edges which contain the control points of the curve, respectively.
+  To specify their exact position, an additional weighting parameter would need to be provided for every edge.
+  Furthermore, in essence, the smoothing process can also be described as the movement of the curve along the surface.
+  So, a feature is needed to map specific information of the initially given curve onto successive evolutions of the curve smoothing process.
+  The following code snippet shows a simple implementation of these ideas.
+
+  \inputCodeBlock[title = Edge-Based Surface Mesh Curve]{code/surface-mesh-curve-edge-based.hpp}
+  Presumably, the code snippet above describes one of the easiest possible data structures for surface mesh curves.
+  But the simple edge structure does not offer the ability to simply access adjacent edges or faces without the use of the temporary hash map of directed edges.
+  To cope with this problem, one could either use a quad-edge algebra or base all operations done with the curve on the vertex neighbor structure.
+  The edge uses references to topological vertices and will always point to the right side of the curve.
+  Closed curves can be characterized by making the last point the same as the first.
+  One bigger problem is the regularity condition check and regularization which does not seem to be possible without the undirected edge hash map.
+  To check for regularity, the next edge is not allowed to be the current, previous, or the difference edge.
+  If the control point needs to represent a single vertex of the surface, both edge references will point to the same topological vertex.
+
+  \paragraph{Face-Based Data Structure}\hfill\\
+  On the other hand, triangle-based data structures have been successfully used before to implement surface mesh curves.
+  The idea is basically to not directly reference edges but instead use their two adjacent triangles.
+  Using this, not a list of edges with their weights is used but a strip of adjacent faces.
+  Figure~\ref{fig:surface-mesh-curve-face-based} explains this principle by a schematic example.
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{figures/surface-mesh-curve.pdf}
+    \caption[Face-Based Surface Mesh Curve]{%
+      \textbf{Face-Based Surface Mesh Curve}\\
+      The figure schematically shows an unfolded strip of adjacent triangles that are part of a polyhedral surface.
+      Additionally, two surface mesh curves in black an blue are shown.
+      Their control points are part of the edges of each pair of adjacent triangles.
+      The blue surface mesh curve is also a discrete geodesic.
+    }
+    \label{fig:surface-mesh-curve-face-based}
+  \end{figure}
+
+  \inputCodeBlock[title = Face-Based Surface Mesh Curve]{code/surface-mesh-curve-face-based.hpp}
+  Each face reference additionally stores the location of its previous adjacency and whether or not a right turn is next.
+  As surface mesh curves do use essentially less points than polyhedral surfaces, it is not needed to encode the location information into the face reference itself.
+  Using face references of the polyhedral surface, requires the implementation to separate the edge weights from the triangle strip.
+  For a closed curve, only the last triangle needs to point to the first triangle and the first to the last.
+  Additionally, another edge weight parameter would need to be added.
+  The regularization of face-based surface mesh curves can be implemented in a much simpler way by making sure the next face is not the same as the previous or current face.
+  For this structure, no topological vertices, edge hash maps or boundary maps are needed.
+  A face-based representation is not generally applicable to surface mesh curves.
+  They would need to at least provide some sort of regularity.
+  But regular surface mesh are representable.
+
+  \begin{figure}
+    \centering
+    \begin{subfigure}[c]{0.4\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-artifact.pdf}
+    \end{subfigure}
+    \hfill
+    $\longrightarrow$
+    \hfill
+    \begin{subfigure}[c]{0.4\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-artifact-removed.pdf}
+    \end{subfigure}
+    \caption[Regularization of Irregular Triangle Paths]{
+      \textbf{Regularization of Irregular Triangle Paths}\\
+    }
+    \label{fig:surface-mesh-curves-face-based-regularization}
+  \end{figure}
+
+  \paragraph{Turn Compression}\hfill\\
+  With the use of appropriate adjacency structures for a polyhedral surface, a surface mesh curve can be represented in a compressed structure that only contains the count of turns.
+  Additionally, the first face adjacency needs to be stored as a starting point.
+  Figure~\ref{fig:surface-mesh-curve-turns} schematically shows the idea behind the turn of a surface mesh curve.
+  For the example given in figure~\ref{fig:surface-mesh-curve-face-based}, the turn scheme would be
+  \[
+    \textit{Right}
+    \ \longrightarrow\
+    \textit{Left}
+    \ \longrightarrow\
+    \textit{Right}
+    \ \longrightarrow\
+    \textit{Left}
+    \ \longrightarrow\
+    \textit{Left}
+    \ \longrightarrow\
+    \textit{Left}
+  \]
+  \[
+    1\times\textit{Right}
+    \ \longrightarrow\
+    1\times\textit{Left}
+    \ \longrightarrow\
+    1\times\textit{Right}
+    \ \longrightarrow\
+    3\times\textit{Left}
+  \]
+  This representation is not as efficient to use for general smoothing but provides theoretical insights.
+
+  \begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.45\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-rot-left.pdf}
+      \caption{Left}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-rot-right.pdf}
+      \caption{Right}
+    \end{subfigure}
+    \caption[Right and Left Turns of Surface Mesh Curves]{
+      \textbf{Right and Left Turns of Surface Mesh Curves}\\
+    }
+    \label{fig:surface-mesh-curve-turns}
+  \end{figure}
+
+  % We do not look at polyhedral surfaces as an approximation of a real-world smooth manifold.
+
+  % Advantages of discrete surface mesh curves over more general curves on polyhedral surfaces
+  % \begin{itemize}
+  %   \item Curve is provided in triangle precision. Better Compression. More points would be waste of memory.
+  %   \item Robust: Snap to vertex if points get arbitrary near to each other
+  %   \item curve is always a surface curve of the polyhedral surface and not violating mathematical properties. This also allows for direct rendering without projection.
+  %   \item Useful for mesh processing
+  %   \item Interpretation of Discretization is more consistent: surface mesh may be discretized approximationof real-world manifold with the mesh to be the finite grid. then it is only natural to discretize a real world surface curve in the same way.
+  % \end{itemize}
+
+  % Advantages of the triangular data structure over the edge-based one:
+  % \begin{itemize}
+  %   \item Triangles can be easier generalized to higher dimensions than edges.
+  %   \item Triangles do not need to handle boundaries in complicated ways.
+  %   \item Triangles allow easy and ordered access to fan around vertex.
+  %   \item Artifact removal routine for triangles is simpler than for edges.
+  %   \item Triangles do not exhibit data loss when handling reflex vertices
+  %   \item Triangles allow for a more general moving of points
+  % \end{itemize}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/unfolding-critical-vertex.pdf}
+    \caption[Unfolding Critical Vertex]{%
+      \textbf{Unfolding Critical Vertex}\\
+    }
+  \end{figure}
+
+% subsection discrete_surface_curve_data_structure (end)
+
+\subsection{Smoothing of Surface Mesh Curves} % (fold)
+\label{sub:smoothing_of_surface_mesh_curves}
+  The overall procedure consists of two main primitives.
+  Reflections at reflex vertices and local smoothing.
+% subsection smoothing_of_surface_mesh_curves (end)
 
 \subsection{Overview of the Program Pipeline} % (fold)
 \label{sub:program_pipeline}
@@ -378,86 +506,6 @@ The C++ code shown in this section does not provide the best design.
   \paragraph{Check for orientability and validity}
 
 % subsection mesh_preprocessing (end)
-
-\subsection{Discrete Surface Curve Data Structure} % (fold)
-\label{sub:discrete_surface_curve_data_structure}
-
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.8\linewidth]{figures/surface-mesh-curve.pdf}
-    \caption[Surface Mesh Curve]{%
-      \textbf{Surface Mesh Curve}\\
-    }
-  \end{figure}
-
-  \begin{figure}
-    \centering
-    \begin{subfigure}[b]{0.45\linewidth}
-      \centering
-      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-rot-left.pdf}
-      \caption{Left}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.45\linewidth}
-      \centering
-      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-rot-right.pdf}
-      \caption{Right}
-    \end{subfigure}
-    \caption[Right and Left Turn Scheme]{
-      \textbf{Right and Left Turn Scheme}\\
-    }
-  \end{figure}
-
-  \begin{figure}
-    \centering
-    \begin{subfigure}[c]{0.4\linewidth}
-      \centering
-      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-artifact.pdf}
-    \end{subfigure}
-    \hfill
-    $\longrightarrow$
-    \hfill
-    \begin{subfigure}[c]{0.4\linewidth}
-      \centering
-      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-artifact-removed.pdf}
-    \end{subfigure}
-    \caption[Regularization of Irregular Triangle Paths]{
-      \textbf{Regularization of Irregular Triangle Paths}\\
-    }
-  \end{figure}
-
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.5\linewidth]{figures/unfolding-critical-vertex.pdf}
-    \caption[Unfolding Critical Vertex]{%
-      \textbf{Unfolding Critical Vertex}\\
-    }
-  \end{figure}
-
-  There two main attempts for the construction of a data structure representing surface mesh curves.
-  One of them is based on edges and the other on triangles.
-
-  We do not look at polyhedral surfaces as an approximation of a real-world smooth manifold.
-
-  Advantages of discrete surface mesh curves over more general curves on polyhedral surfaces
-  \begin{itemize}
-    \item Curve is provided in triangle precision. Better Compression. More points would be waste of memory.
-    \item Robust: Snap to vertex if points get arbitrary near to each other
-    \item curve is always a surface curve of the polyhedral surface and not violating mathematical properties. This also allows for direct rendering without projection.
-    \item Useful for mesh processing
-    \item Interpretation of Discretization is more consistent: surface mesh may be discretized approximationof real-world manifold with the mesh to be the finite grid. then it is only natural to discretize a real world surface curve in the same way.
-  \end{itemize}
-
-  Advantages of the triangular data structure over the edge-based one:
-  \begin{itemize}
-    \item Triangles can be easier generalized to higher dimensions than edges.
-    \item Triangles do not need to handle boundaries in complicated ways.
-    \item Triangles allow easy and ordered access to fan around vertex.
-    \item Artifact removal routine for triangles is simpler than for edges.
-    \item Triangles do not exhibit data loss when handling reflex vertices
-    \item Triangles allow for a more general moving of points
-  \end{itemize}
-% subsection discrete_surface_curve_data_structure (end)
 
 \subsection{Initial Curve Selection} % (fold)
 \label{sub:initial_curve_selection}

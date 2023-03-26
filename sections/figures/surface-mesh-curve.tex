@@ -13,7 +13,7 @@
 
 \begin{document}
 \begin{tikzpicture}[%
-  >={Stealth[scale=1.0]},
+  >={Stealth[scale=0.65]},
   face/.style={star, star points = 8},
   scale=1.5,
 ]
@@ -58,10 +58,10 @@
   \tkzDrawSegments(v0,v1 v0,v2 v2,v3 v1,v4 v3,v5 v4,v6 v6,v7 v7,v8 v8,v9 v5,v9)
   \tkzDrawPoints(v0,v1,v2,v3,v4,v5,v6,v7,v8,v9)
 
-  \tkzDrawSegments[thick](e0,e1 e1,e2 e2,e3 e3,e4 e4,e5 e5,e6)
+  \tkzDrawSegments[thick,->](e0,e1 e1,e2 e2,e3 e3,e4 e4,e5 e5,e6)
   \tkzDrawPoints(e0,e1,e2,e3,e4,e5,e6)
 
-  \tkzDrawSegments[thick,myblue](g0,g1 g1,g2 g2,g3 g3,g4 g4,g5 g5,g6)
+  \tkzDrawSegments[thick,myblue,->](g0,g1 g1,g2 g2,g3 g3,g4 g4,g5 g5,g6)
   \tkzDrawPoints[star,star points=8,myblue,scale=1.5](g0,g1,g2,g3,g4,g5,g6)
 
   \tkzLabelSegment[below](v0,v1){$\triangle_0$}

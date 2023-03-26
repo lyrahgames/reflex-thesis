@@ -13,7 +13,7 @@
 
 \begin{document}
 \begin{tikzpicture}[%
-  >={Stealth[scale=1.0]},
+  >={Stealth[scale=0.8]},
   face/.style={star, star points = 8},
   scale=2.0,
 ]
@@ -46,7 +46,7 @@
   \tkzDrawArc[->,myblue,thin,R with nodes](f,0.25)(fl,fr)
   \tkzDrawPoints[star, star points = 8, scale = 1.0](fr,f,fl,fu)
 
-  \tkzDrawSegments[thick](e0,e1 e1,e2 e2,e3)
+  \tkzDrawSegments[thick,->](e0,e1 e1,e2 e2,e3)
   \tkzDrawPoints(e0,e1,e2,e3)
 
   \tkzLabelSegment[above right](v1,v2){$\triangle_{i+1}$}
