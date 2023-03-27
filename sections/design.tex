@@ -459,6 +459,131 @@ The C++ code shown in this section does not provide the best design.
   %   \item Triangles allow for a more general moving of points
   % \end{itemize}
 
+% subsection discrete_surface_curve_data_structure (end)
+
+\subsection{Smoothing of Surface Mesh Curves} % (fold)
+\label{sub:smoothing_of_surface_mesh_curves}
+  The overall procedure consists of two main primitives.
+  Reflections at reflex vertices and local smoothing.
+  I will only provide some code snippets and not the whole algorithm as it would not fit in this thesis.
+  We go from initial curve selection over to the loop of reflections and local smoothing and break out of that loop by some abort criteria.
+
+  \paragraph{Selection of Initial Surface Mesh Curves}\hfill\\
+  The curve smoothing algorithm described in this thesis can be viewed as an optimization process that alters the process of finding discrete locally shortest geodesics in the sense of the BVP to find smoothed curves.
+  For the treatment of optimization problems and BVPs, an initial value in general characterizes and determines the properties of an approximated solution.
+  If there is no unique solution to the problem, as it is most often the case for the discrete geodesic BVP, an initial surface mesh curve chooses the homology group in which the outcome must lie.
+  Furthermore, also the efficiency of algorithms solving these problems highly depends on chosen initial values.
+
+  To properly debug and test the smoothing algorithm in the application, I have added a facility to draw surface mesh curves on a rendered polyhedral surface.
+  For this, I have used a naive ray tracing approach to calculate intersections of the surface and rays that are shot from the camera origin through the mouse position.
+  If the face of a newly calculated intersection differs from the last one added to the main surface mesh curve, I first determine a shortest path over the dual graph of the surface mesh from the last face to this new face by using the barycenters of triangles as nodes, as it was done by \textcite{mancinelli2022}.
+  This path is then added to the surface mesh curve with some default edge weights by using a regularization routine that makes sure the resulting data represents a regular surface mesh curve.
+
+  \paragraph{Geodesic Unfolding of Two Adjacent Triangles}\hfill\\
+  The most basic primitive for the implementation of the local smoothing procedure is based on computing the geodesic of two points across a pair of adjacent triangles that runs over their common edge.
+  Figure~\ref{fig:geodesic-unfolding-folded} shows the situation to start with by a simple scheme.
+  Let there be two adjacent triangles $\triangle_1$ and $\triangle_2$ of a polyhedral surface $S$ whose common directed edge $e$ is given by its two vertices $v_1,v_2\in\setReal^3$.
+  Furthermore, let $\tilde{p}\in\triangle_1$ and $\tilde{q}\in\triangle_2$ be the points that shall be connected by a geodesic.
+  Now, the goal is to find the edge weight $λ\in[0,1]$ such that the following point $x\in e$ is the unique intersection of the edge $e$ and the line that connects $\tilde{p}$ and $\tilde{q}$ by a geodesic in $S$.
+  \[
+    x = (1-λ)v_1 + λv_2
+  \]
+  For this, figure~\ref{fig:geodesic-unfolding-unfolded} suggests to unfold the adjacent triangles into the 2D Euclidean plane and apply simple geometric statements.
+  First, $v_1$ will be moved to the center of the coordinate system.
+  \[
+    v \define \frac{v_2 - v_1}{\norm{v_2 - v_1}}
+    \separate
+    p \define \tilde{p} - v_1
+    \separate
+    q \define \tilde{q} - v_1
+  \]
+  Then the edge $e$ should completely lie on the $y$-axis of the coordinate system.
+  \[
+    p_y = \scalarProduct{v}{p}
+    \separate
+    q_y = \scalarProduct{v}{q}
+  \]
+  Unfolding two adjacent triangles that share a common edge from 3D space into the 2D plane is not unique as there are two cases.
+  In one case, the triangles might overlap.
+  For the calculation of the $x$-coordinates of the unfolded points, care needs to be taken to decide on which side each point lies by using a minus sign in front of one of them.
+  \[
+    p_x = -\norm{p - p_y v}
+    \separate
+    q_x = \norm{q - q_y v}
+  \]
+  With these expressions, the points have been unfolded into the Euclidean plane by mapping edge $e$ onto the $y$-axis.
+
+  \begin{figure}
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=0.9\linewidth]{figures/unfolding_geodesic.pdf}
+      \caption{Folded in 3D space}
+      \label{fig:geodesic-unfolding-folded}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/unfolding_unfolded.pdf}
+      \caption{Unfolded in 2D space}
+      \label{fig:geodesic-unfolding-unfolded}
+    \end{subfigure}
+    \caption[Geodesic Unfolding of Two Adjacent Triangles]{%
+      \textbf{Geodesic Unfolding of Two Adjacent Triangles}\\
+      The figures visualize the geodesic unfolding process for two adjacent triangles with their common directed edge $e$ represented by its two vertices $v_1$ and $v_2$.
+      The idea is to connect two given points $\tilde{p}$ and $\tilde{q}$ by a discrete geodesic that runs over $e$.
+      To unfold the setting, $v_1$ is moved to center of the Euclidean plane and $e$ is mapped onto the $y$-axis.
+    }
+    \label{fig:geodesic-unfolding}
+  \end{figure}
+
+  Now, to calculate the intersection point in 2D, I will assume that $p_x < q_x$ which should be the case in general.
+  Figure~\ref{fig:geodesic-unfolding-calculation} shows this calculation schematically.
+  Again, the following notations will become useful later.
+  \[
+    \Delta x = q_x - p_x
+    \separate
+    \Delta y = q_y - p_y
+    \separate
+    \Sigma x = p_x + q_x
+    \separate
+    \Sigma y = p_y + q_y
+  \]
+  The straight line function $\function{f}{\setReal}{\setReal}$ connecting the two unfolded points looks like the following.
+  \[
+    f(x) = \frac{q_y - p_y}{q_x - p_x}(x - p_x) + p_y = \frac{q_y - p_y}{q_x - p_x}x + \frac{p_yq_x - q_yp_x}{q_x - p_x}
+  \]
+  Please note that this function is well-defined, as I assumed $q_x - p_x > 0$.
+  To get the intersection point with the ordinate, the argument is set to zero.
+  \[
+    t\define f(0) = \frac{p_yq_x - q_yp_x}{q_x - p_x} = \frac{\Delta x \Sigma y - \Sigma x \Delta y}{2 \Delta x}
+  \]
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.6\linewidth]{figures/unfolding_geodesic_2d.pdf}
+    \caption[2D Unfolding Primitive]{%
+      \textbf{2D Unfolding Primitive}
+    }
+    \label{fig:geodesic-unfolding-calculation}
+  \end{figure}
+
+  \noindent
+  The last part of the calculation consists of scaling $t$ to fit the edge weight definition of λ.
+  \[
+    \tilde{λ} = \frac{t}{\norm{v_2-v_1}}
+  \]
+  It is important to note, that if $\tilde{λ}\not\in[0,1]$ then the points cannot be connected by a straightest geodesic that runs over the edge $e$.
+  To handle the situation for the implementation of a smoothing primitive, the clamp method would be used.
+  \[
+    λ =
+    \begin{cases}
+      0 &: \tilde{λ} < 0 \\
+      \tilde{λ} &: \tilde{λ}\in[0,1] \\
+      1 & : \tilde{λ} > 1
+    \end{cases}
+  \]
+  This will project the curve at this position onto one of the vertices of the common edge which would then be handled by another part of the algorithm.
+
   \begin{figure}
     \centering
     \includegraphics[width=0.5\linewidth]{figures/unfolding-critical-vertex.pdf}
@@ -467,12 +592,16 @@ The C++ code shown in this section does not provide the best design.
     }
   \end{figure}
 
-% subsection discrete_surface_curve_data_structure (end)
+  \begin{lemma}[Geodesic Unfolding leads to Geodesics]
+    Connecting $p$, $x$, and $q$ in that order by straight lines leads to locally shortest and straightest geodesics as long as $λ\in (0,1)$.
+    It solves the discrete boundary value problem for locally shortest and straightest geodesics when boundary points lie in the interior of adjacent triangles.
+  \end{lemma}
+  % \begin{proof}
+  %   According to \textcite{polthier2006} and \textcite{martinez2005}, locally shortest and straightest geodesics coincide on polyhedral if they do not contain any vertices.
+  %   So, it is sufficient to show that the discrete curvature at the crease is zero.
+  %   But this has be true by construction.
+  % \end{proof}
 
-\subsection{Smoothing of Surface Mesh Curves} % (fold)
-\label{sub:smoothing_of_surface_mesh_curves}
-  The overall procedure consists of two main primitives.
-  Reflections at reflex vertices and local smoothing.
 % subsection smoothing_of_surface_mesh_curves (end)
 
 % \subsection{Overview of the Program Pipeline} % (fold)
@@ -560,107 +689,25 @@ The C++ code shown in this section does not provide the best design.
 
 % % subsection mesh_preprocessing (end)
 
-\subsection{Initial Curve Selection} % (fold)
-\label{sub:initial_curve_selection}
-  As for the vast majority of optimization algorithms, the results and efficient working are highly dependent on the chosen starting values.
-  Curve smoothing itself is an optimization process and to solve the boundary value problem, we need an initial value.
-  So, choosing the initial curve in the right way will also heavily change the speed and quality of the algorithm.
-  The algorithm should be able to handle a vast amount unsmooth curves.
-  Still, the handling of artifacts will be taken care of at the start.
-  \paragraph{User Interface for Selecting and Controlling Initial Curves}
-  \paragraph{Drawing by Ray Tracing}
-  \paragraph{Connecting the Vertices}
-  \paragraph{Closed Initial Curves and Fixed Vertices}
-  \paragraph{Artifact Removal}
-  \paragraph{Smoothed Curvature Values by Stencil}
-    Stencil is discrete approximation of solution to Laplacian equation or heat equation which is smooth (infinitely differentiable).
-    Maybe it would be useful to keep the length of the curve and still smooth it.
-  \paragraph{Vertex Curves}
-  \paragraph{Face Curves}
-  \paragraph{Tracing Geodesics}
-% subsection initial_curve_selection (end)
-
-\subsection{Unfolding} % (fold)
-\label{sub:unfolding}
-To unfold two triangles along their common edge and find the shortest line connecting two points, we will first look back into two dimensions.
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.6\linewidth]{figures/unfolding_geodesic_2d.pdf}
-  \caption[2D Unfolding Primitive]{%
-    \textbf{2D Unfolding Primitive}
-  }
-\end{figure}
-
-Let $p,q\in\setReal^2$ such that $p_x < q_x$.
-\[
-  \Delta x = q_x - p_x
-  \separate
-  \Delta y = q_y - p_y
-  \separate
-  \Sigma x = p_x + q_x
-  \separate
-  \Sigma y = p_y + q_y
-\]
-The straight line function connecting these two points then looks like the following.
-\[
-  f(x) = \frac{q_y - p_y}{q_x - p_x}(x - p_x) + p_y = \frac{q_y - p_y}{q_x - p_x}x + \frac{p_yq_x - q_yp_x}{q_x - p_x}
-\]
-Please note that this function is well-defined, as $q_x - p_x > 0$.
-To get the intersection point with the ordinate, set the argument to zero.
-\[
-  t\define f(0) = \frac{p_yq_x - q_yp_x}{q_x - p_x} = \frac{\Delta x \Sigma y - \Sigma x \Delta y}{2 \Delta x}
-\]
-\begin{figure}[h]
-  \begin{subfigure}[b]{0.49\linewidth}
-    \centering
-    \includegraphics[width=0.9\linewidth]{figures/unfolding_geodesic.pdf}
-    \caption{Folded in 3D space}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[b]{0.49\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{figures/unfolding_unfolded.pdf}
-    \caption{Unfolded in 2D space}
-  \end{subfigure}
-  \caption[Unfolding of two Triangles]{%
-    \textbf{Unfolding of two Triangles}
-  }
-  \label{fig:design-triangle-unfolding}
-\end{figure}
-
-Applying this expression to the case of two triangles that needs to be unfolded, the following results.
-\[
-  e \define \frac{v_2 - v_1}{\norm{v_2 - v_1}}
-  \separate
-  p \define r_1 - v_1
-  \separate
-  q \define r_2 - v_1
-\]
-\[
-  p_y = \scalarProduct{e}{p}
-  \separate
-  q_y = \scalarProduct{e}{q}
-\]
-\[
-  p_x = -\norm{p - p_y e}
-  \separate
-  q_x = \norm{q - q_y e}
-\]
-Unfolding two adjacent triangles that share a common edge from three-dimensional space into the two-dimensional plane is not unique as there are two cases.
-In one case, the triangles might overlap and in the other not.
-The above sign for $p_x$ is therefore important.
-
-\begin{lemma}[Unfolding leads to geodesic]
-  Connecting $p$, $r$, and $q$ in that order by straight lines leads to locally shortest and straightest geodesics as long as $λ\in (0,1)$.
-  It solves the discrete boundary value problem for locally shortest and straightest geodesics when boundary points lie in the inside of adjacent triangles.
-\end{lemma}
-\begin{proof}
-  According to \textcite{polthier2006} and \textcite{martinez2005}, locally shortest and straightest geodesics coincide on polyhedral if they do not contain any vertices.
-  So, it is sufficient to show that the discrete curvature at the crease is zero.
-  But this has be true by construction.
-\end{proof}
-% subsection unfolding (end)
+% \subsection{Initial Curve Selection} % (fold)
+% \label{sub:initial_curve_selection}
+%   As for the vast majority of optimization algorithms, the results and efficient working are highly dependent on the chosen starting values.
+%   Curve smoothing itself is an optimization process and to solve the boundary value problem, we need an initial value.
+%   So, choosing the initial curve in the right way will also heavily change the speed and quality of the algorithm.
+%   The algorithm should be able to handle a vast amount unsmooth curves.
+%   Still, the handling of artifacts will be taken care of at the start.
+%   \paragraph{User Interface for Selecting and Controlling Initial Curves}
+%   \paragraph{Drawing by Ray Tracing}
+%   \paragraph{Connecting the Vertices}
+%   \paragraph{Closed Initial Curves and Fixed Vertices}
+%   \paragraph{Artifact Removal}
+%   \paragraph{Smoothed Curvature Values by Stencil}
+%     Stencil is discrete approximation of solution to Laplacian equation or heat equation which is smooth (infinitely differentiable).
+%     Maybe it would be useful to keep the length of the curve and still smooth it.
+%   \paragraph{Vertex Curves}
+%   \paragraph{Face Curves}
+%   \paragraph{Tracing Geodesics}
+% % subsection initial_curve_selection (end)
 
 \subsection{Unfolding with Desired Curvature} % (fold)
 \label{sub:unfolding_with_desired_curvature}
@@ -792,43 +839,43 @@ From the former computation, it is clear that their points on the ordinate have 
 % \]
 % subsection unfolding_with_desired_curvature (end)
 
-\subsection{Desired Curvature Stencil} % (fold)
-\label{sub:desired_curvature_stencil}
+% \subsection{Desired Curvature Stencil} % (fold)
+% \label{sub:desired_curvature_stencil}
 
-% subsection desired_curvature_stencil (end)
+% % subsection desired_curvature_stencil (end)
 
-\subsection{Desired Curvature Mapping} % (fold)
-\label{sub:desired_curvature_mapping}
+% \subsection{Desired Curvature Mapping} % (fold)
+% \label{sub:desired_curvature_mapping}
 
-% subsection desired_curvature_mapping (end)
+% % subsection desired_curvature_mapping (end)
 
-\subsection{Curve Smoothing Algorithm} % (fold)
-\label{sub:curve_smoothing_algorithm}
-  Curve smoothing is not a discrete problem.
-  Using only a finite amount of steps is probably not possible.
-  So, we use a process of convergence.
-  This has the advantage that not all triangles need to be unfolded at once.
-  This makes the implementation and parallelization much simpler.
-  The discrete algorithms for tracing geodesics are not easy to parallelize.
+% \subsection{Curve Smoothing Algorithm} % (fold)
+% \label{sub:curve_smoothing_algorithm}
+%   Curve smoothing is not a discrete problem.
+%   Using only a finite amount of steps is probably not possible.
+%   So, we use a process of convergence.
+%   This has the advantage that not all triangles need to be unfolded at once.
+%   This makes the implementation and parallelization much simpler.
+%   The discrete algorithms for tracing geodesics are not easy to parallelize.
 
-  \paragraph{Idea and Overview}
-  \paragraph{Edge Vertex Relaxation}
-    We need to take a look at topological and numerical robustness.
-  \paragraph{Vertex Vertex Relaxation}
-  \paragraph{Critical Vertex Handling}
-  \paragraph{Artifact Removal and Self-Intersection Handling}
-  \paragraph{Desired Curvature Mapping}
-    Desired curvatures need to be constant along edges.
-    Therefore interpolate on angle-basis around vertex.
-    We do not want to loose information of desired curvatures.
-  \paragraph{Curve Evaluation}
-  \paragraph{Correctness and Convergence}
-    Correctness can be shown by showing the convergence to the curvature values.
-    This by definition of the given curvature values smooths the curve.
-    The convergence might only be shown for contracting the curve by smoothing.
-    As the limit is the geodesic, the prove of its convergence is there.
-  \paragraph{Complexity}
-% subsection curve_smoothing_algorithm (end)
+%   \paragraph{Idea and Overview}
+%   \paragraph{Edge Vertex Relaxation}
+%     We need to take a look at topological and numerical robustness.
+%   \paragraph{Vertex Vertex Relaxation}
+%   \paragraph{Critical Vertex Handling}
+%   \paragraph{Artifact Removal and Self-Intersection Handling}
+%   \paragraph{Desired Curvature Mapping}
+%     Desired curvatures need to be constant along edges.
+%     Therefore interpolate on angle-basis around vertex.
+%     We do not want to loose information of desired curvatures.
+%   \paragraph{Curve Evaluation}
+%   \paragraph{Correctness and Convergence}
+%     Correctness can be shown by showing the convergence to the curvature values.
+%     This by definition of the given curvature values smooths the curve.
+%     The convergence might only be shown for contracting the curve by smoothing.
+%     As the limit is the geodesic, the prove of its convergence is there.
+%   \paragraph{Complexity}
+% % subsection curve_smoothing_algorithm (end)
 
 % section design (end)
 \end{document}
