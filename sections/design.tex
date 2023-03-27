@@ -295,9 +295,11 @@ The C++ code shown in this section does not provide the best design.
   Additionally, it must also not be part of the edge that connects the edges of the previous and current control points.
 
   \paragraph{Face-Based Data Structure}\hfill\\
-  On the other hand, triangle-based data structures have been successfully used before to implement surface mesh curves.
-  The idea is basically to not directly reference edges but instead use their two adjacent triangles.
+  On the other hand, face-based data structures have been successfully used before to implement surface mesh curves \autocite{mancinelli2022}.
+  The idea is basically to not directly reference edges but instead use references to their two adjacent faces.
   Using this, not a list of edges with their weights is used but a strip of adjacent faces.
+  Each pair of adjacent triangles represents their common edge that is used as the location of the control point.
+  As before, separate lists of edge weights and mapping parameters that directly correspond to the common edges are needed.
   Figure~\ref{fig:surface-mesh-curve-face-based} explains this principle by a schematic example.
 
   \begin{figure}
@@ -313,6 +315,53 @@ The C++ code shown in this section does not provide the best design.
     \label{fig:surface-mesh-curve-face-based}
   \end{figure}
 
+
+  A strip of adjacent triangles only needs to access the flat list of face adjacencies and can get rid of additional boundary information or references to topological vertices.
+  However, a face-based data structure for surface mesh curves does not come without problems, that are mostly overlooked in the literature \autocite{mancinelli2022}, but that still need to be addressed.
+
+  First, to get the common edge of two adjacent triangles by only using simple face references is a tedious task since every neighbor reference of a triangle would need to be checked.
+  This is a process that needs to be done many times for each iteration and as such would result in a large inefficiency.
+
+  Second, a face-based representation is not applicable to general surface mesh curves.
+  For this, refer to the left part of figure~\ref{fig:surface-mesh-curves-face-based-regularization}.
+  Representing control points by positions on the common edges of adjacent faces induces some regularity conditions on the curve.
+  Indeed, this is not too much of a problem as all further primitives will only deal with regular surface mesh curves whose topology is always representable by a strip of adjacent faces.
+
+  \begin{figure}
+    \centering
+    \begin{subfigure}[c]{0.38\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-artifact.pdf}
+    \end{subfigure}
+    $\quad\longrightarrow\quad$
+    \begin{subfigure}[c]{0.38\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-artifact-removed.pdf}
+    \end{subfigure}
+    \caption[Regularization of Irregular Triangle Paths]{
+      \textbf{Regularization of Irregular Triangle Paths}\\
+      Using a face-based data structure to represent surface mesh curves already imposes some regularity conditions.
+      As can be seen on the left side, irregular surface mesh curves still might originate when the next triangle in the face strip coincides with the previous one.
+      The regularization transformation removes $\triangle_1$ and $\triangle_2$ as soon as $\triangle_3$ is added.
+      The result can be seen on the right side.
+    }
+    \label{fig:surface-mesh-curves-face-based-regularization}
+  \end{figure}
+
+  Third, open surface mesh curves may provide start and end points on edges that are part of the boundary of the polyhedral surface.
+  Boundary edges do not have two adjacent faces that could represent their common edge.
+  To allow face-based curves to represent curves that start or end on boundaries, one could use the idea proposed by \textcite{shewchuk1996} to add so-called phantom triangles to each boundary edge that will not be rendered and are only used virtually.
+  In figure~\ref{fig:surface-mesh-curve-face-based}, these phantom triangles would correspond to the triangles $\triangle_0$ and $\triangle_7$ which are marked by a darker gray.
+
+  My face-based data structure for regular surface mesh curves on the other hand does not use phantom triangles and slightly changes the basic idea of a face strip.
+  Thinking of a doubly linked list, I let the face references of the strip also provide the locations to the previous and next virtual triangles.
+  In such a way, the faces represent the previous and next edge at the same time.
+  For consistency, the next edge of a given face in the strip must coincide with the previous edge of the next adjacent face.
+  In the case of boundary edges, it is clear from the observations of section~\ref{sec:preliminaries} about the mathematical preliminaries, that boundary edges apart from their vertices are only allowed to contain the first or last control point of a regular surface mesh curve.
+  Therefore start and end points on a boundary edge can be represented by the previous and next location of the first and last triangle in the strip, respectively.
+  Regarding the example given in figure~\ref{fig:surface-mesh-curve-face-based}, the face strip in this context would remove the triangles $\triangle_0$ and $\triangle_7$ and be given by $(\triangle_1,\triangle_2,\triangle_3,\triangle_4,\triangle_5,\triangle_6)$.
+  The following code snippet provides a simple implementation of this data structure.
+
   \inputCodeBlock[title = Face-Based Surface Mesh Curve]{code/surface-mesh-curve-face-based.hpp}
   Each face reference additionally stores the location of its previous adjacency and whether or not a right turn is next.
   As surface mesh curves do use essentially less points than polyhedral surfaces, it is not needed to encode the location information into the face reference itself.
@@ -320,29 +369,6 @@ The C++ code shown in this section does not provide the best design.
   For a closed curve, only the last triangle needs to point to the first triangle and the first to the last.
   Additionally, another edge weight parameter would need to be added.
   The regularization of face-based surface mesh curves can be implemented in a much simpler way by making sure the next face is not the same as the previous or current face.
-  For this structure, no topological vertices, edge hash maps or boundary maps are needed.
-  A face-based representation is not generally applicable to surface mesh curves.
-  They would need to at least provide some sort of regularity.
-  But regular surface mesh are representable.
-
-  \begin{figure}
-    \centering
-    \begin{subfigure}[c]{0.4\linewidth}
-      \centering
-      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-artifact.pdf}
-    \end{subfigure}
-    \hfill
-    $\longrightarrow$
-    \hfill
-    \begin{subfigure}[c]{0.4\linewidth}
-      \centering
-      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-artifact-removed.pdf}
-    \end{subfigure}
-    \caption[Regularization of Irregular Triangle Paths]{
-      \textbf{Regularization of Irregular Triangle Paths}\\
-    }
-    \label{fig:surface-mesh-curves-face-based-regularization}
-  \end{figure}
 
   \paragraph{Turn Compression}\hfill\\
   With the use of appropriate adjacency structures for a polyhedral surface, a surface mesh curve can be represented in a compressed structure that only contains the count of turns.

@@ -26,10 +26,11 @@
   \tkzDefPoint(-1.0, -1.7321){v5}
 
   \tkzDefPointOnLine[pos=0.2](v5,v2)\tkzGetPoint{e0}
-  \tkzDefPointOnLine[pos=0.3](v0,v2)\tkzGetPoint{e1}
-  \tkzDefPointOnLine[pos=0.5](v0,v1)\tkzGetPoint{e2}
-  \tkzDefPointOnLine[pos=0.3](v1,v2)\tkzGetPoint{e3}
-  \tkzDefPointOnLine[pos=0.8](v2,v4)\tkzGetPoint{e4}
+  \tkzDefPointOnLine[pos=0.2](v0,v2)\tkzGetPoint{e1}
+  \tkzDefPointOnLine[pos=0.4](v0,v1)\tkzGetPoint{e2}
+  \tkzDefPointOnLine[pos=0.6](v0,v1)\tkzGetPoint{e3}
+  \tkzDefPointOnLine[pos=0.2](v1,v2)\tkzGetPoint{e4}
+  \tkzDefPointOnLine[pos=0.8](v2,v4)\tkzGetPoint{e5}
 
   \tkzFillPolygon[color=black!5](v0,v1,v2)
   \tkzFillPolygon[color=black!5](v0,v1,v3)
@@ -40,8 +41,8 @@
   \tkzDrawSegments[dashed](v0,v1 v1,v2 v2,v0 v4,v2 v2,v5)
   \tkzDrawPoints(v0,v1,v2,v3,v4,v5)
 
-  \tkzDrawSegments[thick,->](e0,e1 e1,e2 e2,e3 e3,e4)
-  \tkzDrawPoints(e0,e1,e2,e3,e4)
+  \tkzDrawSegments[thick,->](e0,e1 e1,e2 e2,e3 e3,e4 e4,e5)
+  \tkzDrawPoints(e0,e1,e2,e3,e4,e5)
 
   \tkzLabelSegments[above](v5,v2){$\triangle_0$}
   \tkzLabelSegments[above=0.5](v0,v1){$\triangle_2$}
