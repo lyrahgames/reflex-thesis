@@ -19,6 +19,10 @@ The C++ code shown in this section does not provide the best design.
 
   In general, the choice and efficiency of algorithms highly depends on underlying data structures that represent the intermediate data of a program \autocite{knuth1997,mehlhorn2008,smed2006}.
   Thus, thorough design considerations for the data structures of polyhedral surfaces and surface mesh curves are mandatory to build fast and robust curve smoothing algorithms.
+  Regarding the context of this thesis, I will focus on orientable polyhedral surfaces.
+  As it was already explained before, this is not an actual restriction for the algorithm but will only speed up the implementation.
+  Typical surfaces are the boundary of volumes that can be viewed as 3D open submanifolds of the 3D Euclidean space.
+  These volumes must be oriented by construction and, hence, the boundary which represents the surface is oriented, too.
 
   To be able to render a triangular surface mesh in OpenGL, a simple and versatile method is to provide two separate lists for vertices and triangles, respectively \autocite{opengl}.
   Hereby, each triangle only references its three vertices by using indices that may be used to extract a vertex from the vertex list.
@@ -271,21 +275,24 @@ The C++ code shown in this section does not provide the best design.
 
   \paragraph{Edge-Based Data Structure}\hfill\\
   On the one hand, surface mesh curves can solely be characterized by a list of control points over the surface mesh of a polyhedral surface.
-  As the surface mesh is the union of topological edges, a natural construction would be based on a list of edges which contain the control points of the curve, respectively.
+  As the surface mesh is the union of topological edges, a natural construction would be based on a list of edges that contain the control points of the curve, respectively.
   To specify their exact position, an additional weighting parameter would need to be provided for every edge.
   Furthermore, in essence, the smoothing process can also be described as the movement of the curve along the surface.
   So, a feature is needed to map specific information of the initially given curve onto successive evolutions of the curve smoothing process.
   The following code snippet shows a simple implementation of these ideas.
 
   \inputCodeBlock[title = Edge-Based Surface Mesh Curve]{code/surface-mesh-curve-edge-based.hpp}
-  Presumably, the code snippet above describes one of the easiest possible data structures for surface mesh curves.
-  But the simple edge structure does not offer the ability to simply access adjacent edges or faces without the use of the temporary hash map of directed edges.
-  To cope with this problem, one could either use a quad-edge algebra or base all operations done with the curve on the vertex neighbor structure.
-  The edge uses references to topological vertices and will always point to the right side of the curve.
-  Closed curves can be characterized by making the last point the same as the first.
-  One bigger problem is the regularity condition check and regularization which does not seem to be possible without the undirected edge hash map.
-  To check for regularity, the next edge is not allowed to be the current, previous, or the difference edge.
-  If the control point needs to represent a single vertex of the surface, both edge references will point to the same topological vertex.
+  Presumably, the code snippet above describes one of the easiest possible data structures as it represents a surface mesh curve directly as a list of control points.
+  Hereby, the simple edge structure uses references to topological vertices and direction will always point to the right side of the curve on the surface.
+  Closed curves can be represented by letting the last and the first point coincide.
+  If the control point would need to represent a single vertex of the surface, both edge references should point to the same topological vertex.
+
+  Unfortunately, this edge structure does not offer the ability to simply access adjacent edges or faces.
+  Instead, all operations to change an edge and, as a consequence, the topology of the featured surface mesh curve are bound to either use the temporary hash map of directed edges or the adjacency structure for vertex neighbors in conjunction with a mask to identify boundary vertices.
+  But using a sparse matrix of vertex neighbors, it is again possible to check for regularity of the surface mesh curve.
+  In a regular surface mesh curve, three adjacent control points are not allowed to lie on the same triangle.
+  For this, the edge of the next control point is not allowed to be the same as the edges of the current or previous control points.
+  Additionally, it must also not be part of the edge that connects the edges of the previous and current control points.
 
   \paragraph{Face-Based Data Structure}\hfill\\
   On the other hand, triangle-based data structures have been successfully used before to implement surface mesh curves.
@@ -422,90 +429,90 @@ The C++ code shown in this section does not provide the best design.
   Reflections at reflex vertices and local smoothing.
 % subsection smoothing_of_surface_mesh_curves (end)
 
-\subsection{Overview of the Program Pipeline} % (fold)
-\label{sub:program_pipeline}
-  In the following, the stages of the implemented program pipeline are stated and summarized.
-  These stages naturally arise from an insight into the generation and tracing of geodesics on surface meshes, described in section~\ref{sec:previous_work}.
-  Locally shortest or straightest geodesics that follow as a solution from the discrete boundary value problem are in some sense the smoothest curves that cannot be made any smoother.
-  As we typically need to provide an initial curve for those geodesics to be found, the whole generation and tracing of geodesics can be looked at as an extreme smoothing process.
-  Adding parameters to let the user decide on when to stop this process then results in the pipeline given below and schematically shown in figure~\ref{fig:program-pipeline}.
+% \subsection{Overview of the Program Pipeline} % (fold)
+% \label{sub:program_pipeline}
+%   In the following, the stages of the implemented program pipeline are stated and summarized.
+%   These stages naturally arise from an insight into the generation and tracing of geodesics on surface meshes, described in section~\ref{sec:previous_work}.
+%   Locally shortest or straightest geodesics that follow as a solution from the discrete boundary value problem are in some sense the smoothest curves that cannot be made any smoother.
+%   As we typically need to provide an initial curve for those geodesics to be found, the whole generation and tracing of geodesics can be looked at as an extreme smoothing process.
+%   Adding parameters to let the user decide on when to stop this process then results in the pipeline given below and schematically shown in figure~\ref{fig:program-pipeline}.
 
-  \begin{figure}[h]
-    \begin{center}
-      \large
-      INSERT YOUR IMAGE HERE!
-    \end{center}
-    \caption[Program Pipeline Stages]{%
-      \textbf{Program Pipeline Stages}\\
-      The scheme shows all the stages of the implemented program pipeline.
-      The arrows indicate data flow and dependencies.
-    }
-    \label{fig:program-pipeline}
-  \end{figure}
+%   \begin{figure}[h]
+%     \begin{center}
+%       \large
+%       INSERT YOUR IMAGE HERE!
+%     \end{center}
+%     \caption[Program Pipeline Stages]{%
+%       \textbf{Program Pipeline Stages}\\
+%       The scheme shows all the stages of the implemented program pipeline.
+%       The arrows indicate data flow and dependencies.
+%     }
+%     \label{fig:program-pipeline}
+%   \end{figure}
 
-  \begin{enumerate}
-    \item \textbf{Surface Mesh Loading:}\\
-      Load a surface mesh given by a specific file format from the storage.
-    \item \textbf{Surface Mesh Preprocessing:}
-      \begin{enumerate}
-        \item Generate a connected mesh object to properly model the topology of the input.
-        \item Generate the pseudo-normals for each vertex.
-        \item Generate the dual graph for the neighbors of each triangle.
-        \item Check that the mesh is a valid orientable two-dimensional topological manifold.
-      \end{enumerate}
-    \item \textbf{Initial Curve Selection:} \\
-      Let the user choose an initial curve by drawing on the surface.
-    \item \textbf{Parameter Selection:} \\
-      Let the user choose parameters for the curve smoothing algorithm.
-    \item \textbf{Curve Smoothing:} \\
-      Smooth the initial curve according to the constraints given by the selected parameters.
-    \item \textbf{Postprocessing:} \\
-      Optionally apply the smoothed curve in a domain-specific context.
-  \end{enumerate}
-  According to figure~\ref{fig:program-pipeline}, the output of every stage is not only forwarded to the next stage but also specifically visualized and rendered to the screen to provide the user with visual feedback and to catch errors or exceptional behavior as early as possible.
-  Besides, additional user interactions will be processed for all stages to allow for measurements and adjustments and to be able to react to the output of previous stages.
-  The loading of surface meshes from different file formats is typically handled by loader libraries, such as \textit{Assimp}, and will not be further explained.
-  On the other hand, surface mesh preprocessing and the initial curve selection are crucial steps in the whole pipeline which remove geometric degeneracies and artifacts that would otherwise violate assertions needed for the correct execution of the algorithm.
-  Therefore both stages will be discussed in more detail in the following subsections.
-  The postprocessing in our case is optional and only provided for the sake of completeness.
-  The parameter selection is highly dependent on the implementation of the curve smoothing algorithm and, as a result, it will be described together with the curve smoothing itself.
-% subsection program_pipeline (end)
+%   \begin{enumerate}
+%     \item \textbf{Surface Mesh Loading:}\\
+%       Load a surface mesh given by a specific file format from the storage.
+%     \item \textbf{Surface Mesh Preprocessing:}
+%       \begin{enumerate}
+%         \item Generate a connected mesh object to properly model the topology of the input.
+%         \item Generate the pseudo-normals for each vertex.
+%         \item Generate the dual graph for the neighbors of each triangle.
+%         \item Check that the mesh is a valid orientable two-dimensional topological manifold.
+%       \end{enumerate}
+%     \item \textbf{Initial Curve Selection:} \\
+%       Let the user choose an initial curve by drawing on the surface.
+%     \item \textbf{Parameter Selection:} \\
+%       Let the user choose parameters for the curve smoothing algorithm.
+%     \item \textbf{Curve Smoothing:} \\
+%       Smooth the initial curve according to the constraints given by the selected parameters.
+%     \item \textbf{Postprocessing:} \\
+%       Optionally apply the smoothed curve in a domain-specific context.
+%   \end{enumerate}
+%   According to figure~\ref{fig:program-pipeline}, the output of every stage is not only forwarded to the next stage but also specifically visualized and rendered to the screen to provide the user with visual feedback and to catch errors or exceptional behavior as early as possible.
+%   Besides, additional user interactions will be processed for all stages to allow for measurements and adjustments and to be able to react to the output of previous stages.
+%   The loading of surface meshes from different file formats is typically handled by loader libraries, such as \textit{Assimp}, and will not be further explained.
+%   On the other hand, surface mesh preprocessing and the initial curve selection are crucial steps in the whole pipeline which remove geometric degeneracies and artifacts that would otherwise violate assertions needed for the correct execution of the algorithm.
+%   Therefore both stages will be discussed in more detail in the following subsections.
+%   The postprocessing in our case is optional and only provided for the sake of completeness.
+%   The parameter selection is highly dependent on the implementation of the curve smoothing algorithm and, as a result, it will be described together with the curve smoothing itself.
+% % subsection program_pipeline (end)
 
-\subsection{Surface Mesh Preprocessing} % (fold)
-\label{sub:mesh_preprocessing}
-  The goal of preprocessing a surface mesh which has been loaded from disk is to transform its data into a valid and efficient representation of a polyhedral surface that should exhibit functionality to draw and move points and discrete curves on its surface.
-  In the case that this transformation is not possible, the stage at least must check for the validity of the given data and emit an error if there might be any violations.
-  % On one hand, the preprocessing of a given surface mesh needs to make sure that the program or algorithm is actually dealing with a valid two-dimensional topological manifold.
+% \subsection{Surface Mesh Preprocessing} % (fold)
+% \label{sub:mesh_preprocessing}
+%   The goal of preprocessing a surface mesh which has been loaded from disk is to transform its data into a valid and efficient representation of a polyhedral surface that should exhibit functionality to draw and move points and discrete curves on its surface.
+%   In the case that this transformation is not possible, the stage at least must check for the validity of the given data and emit an error if there might be any violations.
+%   % On one hand, the preprocessing of a given surface mesh needs to make sure that the program or algorithm is actually dealing with a valid two-dimensional topological manifold.
 
-  A given Mesh for the algorithm can be quite general.
-  Providing triangles which will introduce numerical difficulties is out of the scope of this thesis.
+%   A given Mesh for the algorithm can be quite general.
+%   Providing triangles which will introduce numerical difficulties is out of the scope of this thesis.
 
-  We will focus on orientable meshes.
-  Please note, that is not an actual restriction for the algorithm but will only speed up the implementation.
-  Furthermore, we look at surfaces which are the boundary of volumes in three-dimensional Euclidean space which can be looked at as open submanifolds.
-  These volumes are therefore by definition oriented and, hence, their boundary needs to be, too.
-  Still, we need to look boundaries for surfaces as, for example, distance envelopes restrict the surface without boundary to be one.
-  The boundaries need to be handled properly.
-  Also, these requirements are only need to hold for the restriction to the distance envelope.
-  Often, lines will be drawn on oriented/orientable parts of the surface even if the surface is not orientable due to artifacts originating from scanning or generating meshes.
+%   We will focus on orientable meshes.
+%   Please note, that is not an actual restriction for the algorithm but will only speed up the implementation.
+%   Furthermore, we look at surfaces which are the boundary of volumes in three-dimensional Euclidean space which can be looked at as open submanifolds.
+%   These volumes are therefore by definition oriented and, hence, their boundary needs to be, too.
+%   Still, we need to look boundaries for surfaces as, for example, distance envelopes restrict the surface without boundary to be one.
+%   The boundaries need to be handled properly.
+%   Also, these requirements are only need to hold for the restriction to the distance envelope.
+%   Often, lines will be drawn on oriented/orientable parts of the surface even if the surface is not orientable due to artifacts originating from scanning or generating meshes.
 
-  \paragraph{Topological Connections}
-  We need the topological connections of a given surface mesh.
-  In the case of general file formats, a scene is typically separated into multiple meshes which are topologically but not smoothly connected.
-  For proper drawing of curves in a whole scene, the topological structure of connections needs to be generated first.
-  Using the STL file format, this is not needed.
+%   \paragraph{Topological Connections}
+%   We need the topological connections of a given surface mesh.
+%   In the case of general file formats, a scene is typically separated into multiple meshes which are topologically but not smoothly connected.
+%   For proper drawing of curves in a whole scene, the topological structure of connections needs to be generated first.
+%   Using the STL file format, this is not needed.
 
-  \paragraph{Generating the dual graph}
-   To generate such a dual graph we refer to this book.
-  It is assumed to be a solved problem.
-  First, we have created a hash map of oriented edges with a custom hash function to mangle vertex indices.
-  The mapped values store the faces indices and their location in the triangle.
-  By inverting the indices of a stored edge, one can easily access the neighboring triangle if it exists.
-  Furthermore, it is easy to check whether the mesh is oriented and a valid two-dimensional manifold.
+%   \paragraph{Generating the dual graph}
+%    To generate such a dual graph we refer to this book.
+%   It is assumed to be a solved problem.
+%   First, we have created a hash map of oriented edges with a custom hash function to mangle vertex indices.
+%   The mapped values store the faces indices and their location in the triangle.
+%   By inverting the indices of a stored edge, one can easily access the neighboring triangle if it exists.
+%   Furthermore, it is easy to check whether the mesh is oriented and a valid two-dimensional manifold.
 
-  \paragraph{Check for orientability and validity}
+%   \paragraph{Check for orientability and validity}
 
-% subsection mesh_preprocessing (end)
+% % subsection mesh_preprocessing (end)
 
 \subsection{Initial Curve Selection} % (fold)
 \label{sub:initial_curve_selection}
