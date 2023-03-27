@@ -561,8 +561,11 @@ The C++ code shown in this section does not provide the best design.
   \begin{figure}
     \centering
     \includegraphics[width=0.6\linewidth]{figures/unfolding_geodesic_2d.pdf}
-    \caption[2D Unfolding Primitive]{%
-      \textbf{2D Unfolding Primitive}
+    \caption[Geodesic Unfolding Calculation Sketch]{%
+      \textbf{Geodesic Unfolding Calculation Sketch}\\
+      The sketch shows the meaning of variables for the unfolded step in the calculation of the geodesic unfolding primitive.
+      The point $p$ is on the left side of the $y$-axis and the point $q$ on the right side.
+      The goal is to connect both points by a straight line and compute the value $t$ that represents the intersection with the ordinate.
     }
     \label{fig:geodesic-unfolding-calculation}
   \end{figure}
@@ -584,14 +587,6 @@ The C++ code shown in this section does not provide the best design.
   \]
   This will project the curve at this position onto one of the vertices of the common edge which would then be handled by another part of the algorithm.
 
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.5\linewidth]{figures/unfolding-critical-vertex.pdf}
-    \caption[Unfolding Critical Vertex]{%
-      \textbf{Unfolding Critical Vertex}\\
-    }
-  \end{figure}
-
   \begin{lemma}[Geodesic Unfolding leads to Geodesics]
     Connecting $p$, $x$, and $q$ in that order by straight lines leads to locally shortest and straightest geodesics as long as $λ\in (0,1)$.
     It solves the discrete boundary value problem for locally shortest and straightest geodesics when boundary points lie in the interior of adjacent triangles.
@@ -601,6 +596,167 @@ The C++ code shown in this section does not provide the best design.
   %   So, it is sufficient to show that the discrete curvature at the crease is zero.
   %   But this has be true by construction.
   % \end{proof}
+
+  \noindent
+  Please note, the geodesic unfolding is one of the two main operations \textcite{martinez2005} use to iteratively transform an initially given surface mesh curve into a locally shortest geodesic.
+
+  \paragraph{Curvature-Based Unfolding of Two Adjacent Triangles}\hfill\\
+    Assume the same setting as in the previous part about the geodesic unfolding of two adjacent triangles.
+    The curvature-based unfolding primitive does not try to find a geodesic in $S$ connecting the points $\tilde{p}$ and $\tilde{q}$.
+    Instead, its goal is to find a point $x_κ \in e$ with its edge weight $λ_κ\in[0,1]$ for an angle $κ\in(-π,π)$ such that the discrete geodesic curvature at $x_κ$ of the curve segment, given by the straight-line connection of $p$, $x_κ$, and $q$, coincides with the value of $κ$.
+    \[
+      x_κ = (1-λ_κ)v_1 + λ_κ v_2
+    \]
+    Using the same unfolding mechanism and notation as before, this setting is schematically visualized by figure~\ref{fig:curvature-unfolding} for positive and negative values of κ.
+    For $κ=0$, this primitive reduces to the previous case of geodesic unfolding.
+
+    \begin{figure}
+      \centering
+      \begin{subfigure}[b]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/unfolding_curvature_2d.pdf}
+        \caption{$κ < 0$}
+      \end{subfigure}
+      \hfill
+      \begin{subfigure}[b]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/unfolding_curvature_2d_positive.pdf}
+        \caption{$κ > 0$}
+      \end{subfigure}
+      \caption[Curvature-Based Unfolding Calculation Sketch]{%
+        \textbf{Curvature-Based Unfolding Calculation Sketch}\\
+        The sketches show the meaning of variables for the unfolded step in the calculation of the curvature-based unfolding primitive for positive and negative geodesic curvatures.
+        The point $p$ is on the left side of the $y$-axis and the point $q$ on the right side.
+        The goal is to find $t$ such that the line segments from $p$ over $(0,t)$ to $q$ exhibit a discrete geodesic curvature of $κ$ at $(0,t)$.
+      }
+      \label{fig:curvature-unfolding}
+    \end{figure}
+
+  As the derivation of this primitive is a little bit more involved,
+  % I will show the calculations only for $κ > 0$ and
+  I will start with an observation for both sides individually.
+  For this, I again assume $p_x < 0$ and $q_x > 0$.
+  As given in figure~\ref{fig:curvature-unfolding}, let $α,β\in(0,π)$ and $κ\in(-π,π)$ with $κ < α$ and $π+κ > α$.
+  Using the appropriate sign for κ, the following is always true.
+  \[
+    κ + π = α + β
+  \]
+  Now, the functions $f$ and $g$ of line segments, that connect $p$ with $(0,t)$ and $(0,t)$ with $q$, respectively, are given as follows.
+  \[
+    f(x) = p_y + (x - p_x)\cot α
+    \separate
+    g(x) = q_y - (x - q_x)\cot β
+  \]
+  Their value for the intersection with the ordinate can directly be inferred.
+  \[
+    f(0) = p_y - p_x \cot α
+    \separate
+    g(0) = q_y + q_x \cot β
+  \]
+  After the individual inspection of both sides, the following equation results from the equation $f(0)=t=g(0)$ that stems from the fact that both values at the ordinate need to coincide.
+  \[
+    p_y - p_x \cot α = q_y + q_x \cot β
+  \]
+  To solve this equation, I will express $\cot β$ with the use of $\cot α$ and κ and by the application of a trigonometric identity for the cotangent.
+  \[
+    \cot β = \cot(π-(α-κ)) = -\cot(α-κ) = - \frac{\cos κ \cot α + \sin κ}{\cos κ - \sin κ \cot α}
+  \]
+  % \[
+  %   \cot(α-κ) = \frac{\cot α \cot κ + 1}{\cot κ - \cot α}
+  % \]
+  % \[
+  %   p_y - p_x \cot α = q_y - q_x \frac{\cot α \cot κ + 1}{\cot κ - \cot α}
+  % \]
+  To shorten the notation, redefine $\cot α$ to be the variable that needs to be computed and insert everything into the main equation.
+  \[
+    φ\define \cot{α}
+    \separate
+    % K\define \cot κ
+    p_y - p_x φ = q_y - q_x \frac{φ \cos κ + \sin κ}{\cos κ - φ \sin κ}
+  \]
+  Put the fraction on the left side of the equation.
+  \[
+    q_x \frac{φ \cos κ + \sin κ}{\cos κ - φ \sin κ} = q_y - p_y + p_x φ
+  \]
+  Multiply both sides with the denominator.
+  \[
+    φ q_x \cos κ + q_x \sin κ
+    = (\Delta y + φ p_x)(\cos κ - φ \sin κ)
+  \]
+  And expand the resulting equation as follows.
+  \[
+    φ q_x \cos κ + q_x \sin κ
+    = \Delta y \cos κ - φ \Delta y \sin κ + φ p_x \cos κ - φ^2 p_x \sin κ
+  \]
+  Put it now into the form of a quadratic equation.
+  \[
+    φ^2 p_x \sin κ + φ (\Delta x \cos κ + \Delta y \sin κ) + q_x \sin κ - \Delta y \cos κ = 0
+  \]
+  The solution to this quadratic equation is given by the following expression.
+  \[
+    \begin{aligned}[t]
+      φ = \frac{1}{2 p_x \sin κ} \bigg[
+      &-(\Delta x \cos κ + \Delta y \sin κ) \\
+      &\pm \sqrt{(\Delta x \cos κ + \Delta y \sin κ)^2 - 4p_x \sin κ (q_x \sin κ - \Delta y \cos κ)} \bigg]
+    \end{aligned}
+  \]
+  Simplify the expression inside the square root.
+  \[
+    φ = \frac{1}{2 p_x \sin κ} \boxBrackets{-(\Delta x \cos κ + \Delta y \sin κ) \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
+  \]
+  Now, insert the equation for φ given above into $t = f(0) = p_y - p_x φ$ and get the following.
+  \[
+    t = \frac{1}{2 \sin κ} \boxBrackets{\Delta x \cos κ + \Sigma y \sin κ \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
+  \]
+  To get the difference to the previous unfolding primitive and being able to cope with the $κ=0$ singularity, let $t_0$ be the intersection value of the straight line connecting $p$ and $q$ with the $y$-axis and define $\Delta t \define t - t_0$ as the difference of the previous and the current primitive.
+  Put $t_0$ inside the expression for $t$ by adding zero.
+  \[
+    t = t_0 + \frac{1}{2 \sin κ} \boxBrackets{-2t_0\sin κ + \Delta x \cos κ + \Sigma y \sin κ \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
+  \]
+  Use the expression for $t_0$ from previous part about geodesic unfolding.
+  \[
+    t_0 = \frac{1}{2}\roundBrackets{\Sigma y - \Sigma x \frac{\Delta y}{\Delta x}}
+  \]
+  Put the expression for $t_0$ into the previous equation and deduce the expression $\Delta t$.
+  \[
+    \Delta t = \frac{1}{2 \sin κ} \boxBrackets{\Sigma x \frac{\Delta y}{\Delta x}\sin κ + \Delta x \cos κ \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
+  \]
+  For this expression, there is only one valid sign as $2 \Delta t \sin κ \leq 0$ must hold.
+  % Consequently, the following expression is the true solution.
+  % \[
+  %   2 \Delta t \sin κ \leq 0
+  % \]
+  \[
+    \Delta t = \frac{1}{2 \sin κ} \boxBrackets{\Sigma x \frac{\Delta y}{\Delta x}\sin κ + \Delta x \cos κ - \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
+  \]
+  If $κ=0$ then $t$ or $\Delta t$ would be undefined.
+  However, the expression for $\Delta t$ can simply be set to zero as $t_0$ is the correct solution in that case.
+  Similarly to the previous part, $\Delta t$ needs to be scaled to fit the definition of the edge weight.
+  \[
+    \tilde{λ}_κ \define \frac{t_0 + \Delta t}{\norm{v_2-v_1}} = \tilde{λ} + \frac{\Delta t}{\norm{v_2-v_1}}
+  \]
+  Again, we cannot find a valid point on the edge $e$ that fulfills the constraint, if $\tilde{λ}_κ\not\in[0,1]$.
+  Therefore the clamp routine is used again.
+  \[
+    λ_κ =
+    \begin{cases}
+      0 &: \tilde{λ}_κ < 0 \\
+      \tilde{λ}_κ &: \tilde{λ}_κ\in[0,1] \\
+      1 & : \tilde{λ}_κ > 1
+    \end{cases}
+  \]
+  Please note, this curvature-based unfolding of two adjacent triangles is very similar to the primitive used by \textcite{lawonn2014} to iteratively smooth surface mesh curves based on desired geodesic curvatures.
+  But \textcite{lawonn2014} derive their equation by using a different strategy with an non-oriented geodesic curvature which leads to an alternative formulation that could lead to numerical instabilities.
+  The derivation of the above primitive has been carried out by myself to provide a single formulation for all values of the oriented discrete geodesic curvature that is able to handle the $κ=0$ singularity.
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/unfolding-critical-vertex.pdf}
+    \caption[Unfolding Critical Vertex]{%
+      \textbf{Unfolding Critical Vertex}\\
+    }
+    \label{fig:unfolding-critical-vertex}
+  \end{figure}
 
 % subsection smoothing_of_surface_mesh_curves (end)
 
@@ -709,107 +865,106 @@ The C++ code shown in this section does not provide the best design.
 %   \paragraph{Tracing Geodesics}
 % % subsection initial_curve_selection (end)
 
-\subsection{Unfolding with Desired Curvature} % (fold)
-\label{sub:unfolding_with_desired_curvature}
 
-  \begin{figure}[h]
-    \centering
-    \begin{subfigure}[b]{0.49\linewidth}
-      \centering
-      \includegraphics[width=\linewidth]{figures/unfolding_curvature_2d.pdf}
-      \caption{$κ < 0$}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.49\linewidth}
-      \centering
-      \includegraphics[width=\linewidth]{figures/unfolding_curvature_2d_positive.pdf}
-      \caption{$κ > 0$}
-    \end{subfigure}
-    \caption[2D Unfolding Curvature Primitive]{%
-      \textbf{2D Unfolding Curvature Primitive}\\
-    }
-    \label{fig:}
-  \end{figure}
 
-Again, a two-dimensional primitive is used.
-\[
-  f(x) = -\cot α (x - p_x) + p_y
-\]
-\[
-  t = f(0) = p_y + \absolute{p_x}\cot α
-\]
-Now, combine two points to both sides with a desired discrete curvature.
-For this, assume $p_x < 0$ and $q_x > 0$.
-Furthermore, the desired curvature is positive $κ > 0$ and taken mathematically positive.
-$α,β\in(0,π)$ and $κ\in(-π,π)$ with $κ < α$ and $π+κ > α$
-\[
-  κ + π = α + β
-\]
-From the former computation, it is clear that their points on the ordinate have to coincide.
-\[
-  p_y - p_x \cot α = q_y + q_x \cot β
-\]
-\[
-  \cot β = \cot(π-(α-κ)) = -\cot(α-κ)
-\]
-\[
-  \cot(α-κ) = \frac{\cos κ \cot α + \sin κ}{\cos κ - \sin κ \cot α}
-\]
+%   \begin{figure}[h]
+%     \centering
+%     \begin{subfigure}[b]{0.49\linewidth}
+%       \centering
+%       \includegraphics[width=\linewidth]{figures/unfolding_curvature_2d.pdf}
+%       \caption{$κ < 0$}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}[b]{0.49\linewidth}
+%       \centering
+%       \includegraphics[width=\linewidth]{figures/unfolding_curvature_2d_positive.pdf}
+%       \caption{$κ > 0$}
+%     \end{subfigure}
+%     \caption[2D Unfolding Curvature Primitive]{%
+%       \textbf{2D Unfolding Curvature Primitive}\\
+%     }
+%     \label{fig:}
+%   \end{figure}
+
+% Again, a two-dimensional primitive is used.
 % \[
-%   \cot(α-κ) = \frac{\cot α \cot κ + 1}{\cot κ - \cot α}
+%   f(x) = -\cot α (x - p_x) + p_y
 % \]
 % \[
-%   p_y - p_x \cot α = q_y - q_x \frac{\cot α \cot κ + 1}{\cot κ - \cot α}
+%   t = f(0) = p_y + \absolute{p_x}\cot α
 % \]
-\[
-  φ\define \cot{α}
-  % \separate
-  % K\define \cot κ
-\]
-\[
-  p_y - p_x φ = q_y - q_x \frac{φ \cos κ + \sin κ}{\cos κ - φ \sin κ}
-\]
-\[
-  q_x \frac{φ \cos κ + \sin κ}{\cos κ - φ \sin κ} = q_y - p_y + p_x φ
-\]
-\[
-  φ q_x \cos κ + q_x \sin κ
-  = (\Delta y + φ p_x)(\cos κ - φ \sin κ)
-\]
-\[
-  φ q_x \cos κ + q_x \sin κ
-  = \Delta y \cos κ - φ \Delta y \sin κ + φ p_x \cos κ - φ^2 p_x \sin κ
-\]
-\[
-  φ^2 p_x \sin κ + φ (\Delta x \cos κ + \Delta y \sin κ) + q_x \sin κ - \Delta y \cos κ = 0
-\]
-\[
-  φ = \frac{1}{2 p_x \sin κ} \boxBrackets{-(\Delta x \cos κ + \Delta y \sin κ) \pm \sqrt{(\Delta x \cos κ + \Delta y \sin κ)^2 - 4p_x \sin κ (q_x \sin κ - \Delta y \cos κ)}}
-\]
-\[
-  φ = \frac{1}{2 p_x \sin κ} \boxBrackets{-(\Delta x \cos κ + \Delta y \sin κ) \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
-\]
-\[
-  t = \frac{1}{2 \sin κ} \boxBrackets{\Delta x \cos κ + \Sigma y \sin κ \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
-\]
-\[
-  t = t_0 + \Delta t
-\]
-\[
-  t = t_0 + \frac{1}{2 \sin κ} \boxBrackets{-2t_0\sin κ + \Delta x \cos κ + \Sigma y \sin κ \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
-\]
-\[
-  t_0 = \frac{1}{2}(\Sigma y - \Sigma x \frac{\Delta y}{\Delta x})
-\]
-\[
-  \Delta t = \frac{1}{2 \sin κ} \boxBrackets{\Sigma x \frac{\Delta y}{\Delta x}\sin κ + \Delta x \cos κ \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
-\]
-\[
-  2 \Delta t \sin κ \leq 0
-\]
-\[
-  \Delta t = \frac{1}{2 \sin κ} \boxBrackets{\Sigma x \frac{\Delta y}{\Delta x}\sin κ + \Delta x \cos κ - \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
-\]
+% Now, combine two points to both sides with a desired discrete curvature.
+% For this, assume $p_x < 0$ and $q_x > 0$.
+% Furthermore, the desired curvature is positive $κ > 0$ and taken mathematically positive.
+% $α,β\in(0,π)$ and $κ\in(-π,π)$ with $κ < α$ and $π+κ > α$
+% \[
+%   κ + π = α + β
+% \]
+% From the former computation, it is clear that their points on the ordinate have to coincide.
+% \[
+%   p_y - p_x \cot α = q_y + q_x \cot β
+% \]
+% \[
+%   \cot β = \cot(π-(α-κ)) = -\cot(α-κ)
+% \]
+% \[
+%   \cot(α-κ) = \frac{\cos κ \cot α + \sin κ}{\cos κ - \sin κ \cot α}
+% \]
+% % \[
+% %   \cot(α-κ) = \frac{\cot α \cot κ + 1}{\cot κ - \cot α}
+% % \]
+% % \[
+% %   p_y - p_x \cot α = q_y - q_x \frac{\cot α \cot κ + 1}{\cot κ - \cot α}
+% % \]
+% \[
+%   φ\define \cot{α}
+%   % \separate
+%   % K\define \cot κ
+% \]
+% \[
+%   p_y - p_x φ = q_y - q_x \frac{φ \cos κ + \sin κ}{\cos κ - φ \sin κ}
+% \]
+% \[
+%   q_x \frac{φ \cos κ + \sin κ}{\cos κ - φ \sin κ} = q_y - p_y + p_x φ
+% \]
+% \[
+%   φ q_x \cos κ + q_x \sin κ
+%   = (\Delta y + φ p_x)(\cos κ - φ \sin κ)
+% \]
+% \[
+%   φ q_x \cos κ + q_x \sin κ
+%   = \Delta y \cos κ - φ \Delta y \sin κ + φ p_x \cos κ - φ^2 p_x \sin κ
+% \]
+% \[
+%   φ^2 p_x \sin κ + φ (\Delta x \cos κ + \Delta y \sin κ) + q_x \sin κ - \Delta y \cos κ = 0
+% \]
+% \[
+%   φ = \frac{1}{2 p_x \sin κ} \boxBrackets{-(\Delta x \cos κ + \Delta y \sin κ) \pm \sqrt{(\Delta x \cos κ + \Delta y \sin κ)^2 - 4p_x \sin κ (q_x \sin κ - \Delta y \cos κ)}}
+% \]
+% \[
+%   φ = \frac{1}{2 p_x \sin κ} \boxBrackets{-(\Delta x \cos κ + \Delta y \sin κ) \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
+% \]
+% \[
+%   t = \frac{1}{2 \sin κ} \boxBrackets{\Delta x \cos κ + \Sigma y \sin κ \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
+% \]
+% \[
+%   t = t_0 + \Delta t
+% \]
+% \[
+%   t = t_0 + \frac{1}{2 \sin κ} \boxBrackets{-2t_0\sin κ + \Delta x \cos κ + \Sigma y \sin κ \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
+% \]
+% \[
+%   t_0 = \frac{1}{2}(\Sigma y - \Sigma x \frac{\Delta y}{\Delta x})
+% \]
+% \[
+%   \Delta t = \frac{1}{2 \sin κ} \boxBrackets{\Sigma x \frac{\Delta y}{\Delta x}\sin κ + \Delta x \cos κ \pm \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
+% \]
+% \[
+%   2 \Delta t \sin κ \leq 0
+% \]
+% \[
+%   \Delta t = \frac{1}{2 \sin κ} \boxBrackets{\Sigma x \frac{\Delta y}{\Delta x}\sin κ + \Delta x \cos κ - \sqrt{(\Sigma x \cos κ + \Delta y \sin κ)^2 - 4 p_x q_x}}
+% \]
 % \[
 %   Kq_xφ + q_x = \Delta y φ - K\Delta y + p_x φ^2 - Kp_x φ
 % \]
