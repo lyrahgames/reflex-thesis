@@ -283,7 +283,7 @@ The C++ code shown in this section does not provide the best design.
 
   \inputCodeBlock[title = Edge-Based Surface Mesh Curve]{code/surface-mesh-curve-edge-based.hpp}
   Presumably, the code snippet above describes one of the easiest possible data structures as it represents a surface mesh curve directly as a list of control points.
-  Hereby, the simple edge structure uses references to topological vertices and direction will always point to the right side of the curve on the surface.
+  Hereby, the simple edge structure uses references to topological vertices and its direction will always point to the right side of the curve on the surface.
   Closed curves can be represented by letting the last and the first point coincide.
   If the control point would need to represent a single vertex of the surface, both edge references should point to the same topological vertex.
 
@@ -401,10 +401,11 @@ The C++ code shown in this section does not provide the best design.
   \end{figure}
 
   \paragraph{Turn Compression}\hfill\\
-  With the use of appropriate adjacency structures for a polyhedral surface, a surface mesh curve can be represented in a compressed structure that only contains the count of turns.
-  Additionally, the first face adjacency needs to be stored as a starting point.
-  Figure~\ref{fig:surface-mesh-curve-turns} schematically shows the idea behind the turn of a surface mesh curve.
-  For the example given in figure~\ref{fig:surface-mesh-curve-face-based}, the turn scheme would be
+  With the use of appropriate adjacency structures for a polyhedral surface, such as the flat face adjacency list, the underlying topology of a surface mesh curve can be represented in a compressed structure.
+  Referring to figure~\ref{fig:surface-mesh-curve-turns}, this compression scheme contains the starting face adjacency and a list of right or left turns.
+  % Additionally, the first face adjacency needs to be stored as a starting point.
+  % Figure~\ref{fig:surface-mesh-curve-turns} schematically shows the idea behind the turn of a surface mesh curve.
+  For the example given in figure~\ref{fig:surface-mesh-curve-face-based}, the turn scheme can be formulated in the two following ways.
   \[
     \textit{Right}
     \ \longrightarrow\
@@ -427,7 +428,15 @@ The C++ code shown in this section does not provide the best design.
     \ \longrightarrow\
     3\times\textit{Left}
   \]
-  This representation is not as efficient to use for general smoothing but provides theoretical insights.
+  The turn scheme in its first formulation is already part of my face-based data structure and encoded in each face node as \textbf{\texttt{rot}}.
+  This compression scheme is mainly provided as a theoretical insight when moving surface mesh curves over a vertex of the underlying polyhedral surface.
+  This procedure is called \textit{reflection}.
+  Reflection is the core to the implementation of the movement of surface mesh curves.
+  Changing the topology of a curve around a vertex by reflection, all control points on this ring must be removed first.
+  All face nodes that are part of the ring of neighbors around a vertex must by definition exhibit the same turn and, as a consequence, be part of the same node in the second formulation of the turn compression scheme.
+  In such a way, the implementation of reflection can be simplified by using the turn compression first.
+
+  % This representation is not as efficient to use for general smoothing but provides theoretical insights.
 
   % We do not look at polyhedral surfaces as an approximation of a real-world smooth manifold.
 
