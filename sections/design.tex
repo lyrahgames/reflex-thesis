@@ -363,12 +363,42 @@ The C++ code shown in this section does not provide the best design.
   The following code snippet provides a simple implementation of this data structure.
 
   \inputCodeBlock[title = Face-Based Surface Mesh Curve]{code/surface-mesh-curve-face-based.hpp}
-  Each face reference additionally stores the location of its previous adjacency and whether or not a right turn is next.
+  It has already been figured out that using a face-based data structure, requires the implementation to separate the edge weights from the triangle strip.
+  As described above, in addition to a face reference, each face-based node in the code stores the location of its adjacency that points to the previous face and encodes the location to the adjacency that points to the next face.
+  Hereby, the location for the next face is given by its difference to the subsequent location for the previous face.
+  This encoding has been chosen because it can also be represented by a single bit and models the question whether the next edge of the current face turns to the left.
+  Figure~\ref{fig:surface-mesh-curve-turns} shows the idea behind right and left turns.
+  The difference between the previous and the next location inside a face node is either $1$ when the next edge turns to right or $2$ when the next edge turns to the left.
   As surface mesh curves do use essentially less points than polyhedral surfaces, it is not needed to encode the location information into the face reference itself.
-  Using face references of the polyhedral surface, requires the implementation to separate the edge weights from the triangle strip.
-  For a closed curve, only the last triangle needs to point to the first triangle and the first to the last.
-  Additionally, another edge weight parameter would need to be added.
-  The regularization of face-based surface mesh curves can be implemented in a much simpler way by making sure the next face is not the same as the previous or current face.
+  For the representation of closed surface mesh curves by the given face-based data structure only the last face's next location would need to point to the first face in the strip and the first face's previous location to the last face in the strip.
+  This way each edge would consistently be referenced twice inside the face strip.
+  For the edge weights, the same procedure as before is used.
+  The first parameter is copied to the end of the edge weight list.
+  Also the check for regular surface mesh curves is simplified.
+  One only needs to check that the next face in the strip is not the same as the current or previous face.
+  % The regularization of face-based surface mesh curves can be implemented in a much simpler way by making sure the next face is not the same as the previous or current face.
+
+  \begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.45\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-rot-right.pdf}
+      \caption{Right}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-rot-left.pdf}
+      \caption{Left}
+    \end{subfigure}
+    \caption[Right and Left Turns of Face-Based Surface Mesh Curves]{
+      \textbf{Right and Left Turns of Face-Based Surface Mesh Curves}\\
+      Regarding the face strip of a regular surface mesh curve, for each face in the strip there are only two possible triangles that may follow as adjacent faces.
+      For oriented polyhedral surfaces, these possibilities represent right and left turning of the next edge.
+      In the case of a right turning edge, the difference of the previous and next location in triangle $\triangle_i$ is $1$ and $2$ for a left turning edge.
+    }
+    \label{fig:surface-mesh-curve-turns}
+  \end{figure}
 
   \paragraph{Turn Compression}\hfill\\
   With the use of appropriate adjacency structures for a polyhedral surface, a surface mesh curve can be represented in a compressed structure that only contains the count of turns.
@@ -398,25 +428,6 @@ The C++ code shown in this section does not provide the best design.
     3\times\textit{Left}
   \]
   This representation is not as efficient to use for general smoothing but provides theoretical insights.
-
-  \begin{figure}
-    \centering
-    \begin{subfigure}[b]{0.45\linewidth}
-      \centering
-      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-rot-left.pdf}
-      \caption{Left}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.45\linewidth}
-      \centering
-      \includegraphics[width=\linewidth]{figures/surface-mesh-curve-rot-right.pdf}
-      \caption{Right}
-    \end{subfigure}
-    \caption[Right and Left Turns of Surface Mesh Curves]{
-      \textbf{Right and Left Turns of Surface Mesh Curves}\\
-    }
-    \label{fig:surface-mesh-curve-turns}
-  \end{figure}
 
   % We do not look at polyhedral surfaces as an approximation of a real-world smooth manifold.
 

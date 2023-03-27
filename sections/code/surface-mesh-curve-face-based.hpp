@@ -8,7 +8,7 @@ struct face_based_node {
   //
   face_id loc : 16;
 
-  // The amount that needs to be added to 'loc'
+  // The amount that needs to be added to 'loc + 1'
   // to get the location inside the adjacency of
   // the face given by the reference 'fid'
   // that points to the face adjacency
