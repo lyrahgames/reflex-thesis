@@ -45,30 +45,103 @@
   Each iteration, a surface mesh curve may only propagate one vertex ahead.
   Especially for geodesics tracing, where the accumulated amount a curve may change is maximal, this process might be inefficient.
   Furthermore, the algorithmical primitives and smoothing procedure cannot considered to be robust if the polyhedral surface exhibits faces or vertices that are numerically extreme.
-  Other methods, based on freely moving a curve in space followed by a projection onto the surface, could exhibit a better convergence rate.
+  Other methods, based on freely moving a curve in space followed by a projection onto the surface, could exhibit a better convergence rate would not suffer from numerically instabilities originating from the surface mesh \autocite{crane2020}.
 
   Even for high-resolution polyhedral surfaces consisting of millions of triangles, surface mesh curves typically exhibit a few thousand control points.
   As such, the process of smoothing surface mesh curves does not appear to be the bottleneck of the overall program pipeline.
   Besides, most of the provided primitives for algorithms exhibit more complicated data and flow dependencies which hinder a parallelization on the CPU and GPU.
   As a result, the parallelization of the smoothing algorithm is expected to be unsuitable for general applications due to the high complexity of programming involved in comparison to the benefits of efficiency gain.
-  Instead, future work should put serious focus on a robust implementation that would be able to handle many artificial and degenerate case of polyhedral surfaces that often arise as smaller artifacts in real-world surface meshes.
-  Such an implementation should be thoroughly tested by constructing generic tests that can be applied to a whole set of polyhedral surfaces such as the \citetitle{thingi10k} dataset.
+  Instead, future work should put serious focus on a robust implementation that would be able to handle many artificial and degenerate cases of polyhedral surfaces that often arise as smaller artifacts in real-world surface meshes.
+  Such an implementation should be thoroughly tested by constructing generic tests that can be applied to a whole set of polyhedral surfaces such as the \citetitle{thingi10k} dataset \autocite{thingi10k,mancinelli2022}.
   % Apart from that, regarding the iterative nature of the main smoothing algorithm, a parallelization on the CPU could be realized by using a pipeline which
 
-  Another problem that arises when dealing with general smoothing algorithms for surface mesh curves is the fact that smoothing a curve is not a clear goal.
+  Regarding surface mesh artifacts, further basic requirements, such as the orientability or the fulfillment of vertex or edge manifold properties, are not given naturally by all surface meshes \autocite{thingi10k}.
+  The violation of these constraints will most likely lead to program termination or other non-intuitive behavior.
+  To build alternatives that are able to robustly cope with a large amount of different polyhedral surfaces, future work should take a look back at the basic data structures to represent surface mesh curves and adjacency information of polyhedral surfaces.
+  The quad-edge algebra is an edge-based data structure to represent multiple adjacencies of a surface mesh in a versatile and efficient way.
+  According to \textcite{guibas1985}, it encodes the graph and the dual graph of a surface mesh and was defined to also handle non-orientable or degenerate surface meshes whose faces may not solely consist of triangles.
+  A quad-edge itself characterizes as a mixture of an edge and two adjacent faces at once and, consequently, should offer advantageous of both edge- and face-based data structures.
+  As such, it seems to be an ideal candidate to provide simple, efficient, and robust representations for adjacencies and curves.
+  On the other hand, quad-edge algebras are not as simple to generalize to higher dimensions as face-based data structures.
+
+  Another problem that arises when dealing with general smoothing algorithms for surface mesh curves is the fact that smoothing itself is not a clear goal.
   There is no universally agreed-upon metric to measure the quality of a smoothing process.
   Implementing stopping criteria for algorithms or assigning desired geodesic curvature values are subjective processes and only provide heuristics to make an initially given curve intuitively smoother.
   However, for a rigorous design of smoothing, future work should involve the research on the generalization of norms that complete the spaces of $\mathrm{C^k}$-curves.
-  Not only taking the maximum, average, mean-squared geodesic curvature into account but also the values of its first or second derivative could allow to construct improved algorithms whose smoothing capabilities are provable.
+  Not only taking the maximum, average, or mean-squared geodesic curvature into account but also the values of its first or second derivative could allow to construct improved algorithms whose smoothing capabilities are provable.
   Also the proof of convergence for alternative smoothing algorithms, as it was done by \textcite{lawonn2014}, should be part of future work.
 
-  Expansion of curves, not only shortening
+  The primitives involved to smooth a curve on a polyhedral surface, in general, incorporate locally-shortest geodesic tracing steps.
+  Consequently, these methods also inherently shorten a curve while smoothing it.
+  For methods that are solely based on geodesic curvature, this property is in general not true.
+  For example, the reduction of geodesic curvature of a circle on the sphere must lead to a bigger circle and eventually converge to a great circle of the sphere.
+  Indeed, with the use of the desired curvature stencil and a scaling parameter that is bigger or equal $1$, the length of the smoothing algorithm's result does not deviate too much from the original and might even be larger.
+  Still, using the contraction property of the geodesics steps, is key to prove the existence of a solution and the convergence of the algorithm \autocite{martinez2005,lawonn2014}.
+  For smoothing curves by expansion, future work should involve research to find the essential requirements that characterize the existence of an expanded curve.
+  Please note, that this also includes properties of the underlying surface.
+  Whereas in Euclidean space an expansion of a curve should always exist, in general surfaces this property is not fulfilled.
 
-  Alternative Smoothing Algorithms: Your algorithm to lift the polyhedral surface into four dimensions by adding a scalar potential for geodesics.
+  The smoothing algorithm of \textcite{lawonn2014} wants to guarantee that the resulting curve is close to its original.
+  It does this by using a distance envelope which suddenly forbids a moving curve to proceed at points that are too far away from the initial curve.
+  Mathematically, this uncontinuous constraint transforms the underlying polyhedral surface into a smaller polyhedral surface with boundary.
+  As for boundary vertices, it is not straight-forward to use geodesic curvatures, only the curve shortening approach is applicable at these points.
+  Unfortunately, this shortening approach does not reliably lead to a smoother curve.
+  Instead, strong corners in the resulting curve might originate if the distance envelope is too small.
 
-  Anisotropic Metrics
+  Taking into the account all the previous considerations, for future work, I am proposing an alternative algorithm to generate smoothed surface mesh curves that need to be close to its original.
+  Instead of using curvature-based transformations that may fail to be applied at boundary points, this algorithm would only use the generation of discrete locally shortest geodesics as its main primitive.
+  Hereby, its main idea is based on the generalizations of distance envelopes to scalar potentials, that are used as penalty functions, and the following observation that figure~\ref{fig:lifting} schematically visualizes.
+  Geodesics in the flat Euclidean plane as in figure~\ref{fig:lifting-flat} are given by straight lines.
+  Thinking of plotting a 2D scalar potential over the Euclidean plane as it is given in figure~\ref{fig:lifting-lifted}, the graph of the scalar potential is no longer a surface embedded in 2D space but has been lifted and is now embedded in the 3D Euclidean space.
+  As a direct consequence, locally shortest geodesics of the surface in figure~\ref{fig:lifting-lifted} are, in general, no longer straight lines.
+  The trajectories of geodesics connecting two opposite points are forced to move around the bump in the middle, just like rivers need to move around a chain of mountains.
 
-  Application to medicine
+  \begin{figure}[H]
+    \centering
+    \begin{subfigure}[c]{0.4\linewidth}
+      \centering
+      \includegraphics[width=\linewidth,trim={0mm 0 0 60},clip]{plots/plane.pdf}
+      \caption{Flat in 2D with no Potential}
+      \label{fig:lifting-flat}
+    \end{subfigure}
+    \hfill
+    $\longrightarrow$
+    \hfill
+    \begin{subfigure}[c]{0.4\linewidth}
+      \centering
+      \includegraphics[width=\linewidth,trim={0mm 0 0 60},clip]{plots/gauss.pdf}
+      \caption{Lifted to 3D with Potential}
+      \label{fig:lifting-lifted}
+    \end{subfigure}
+    \caption[Lifting of Polyhedral Surfaces by Using Scalar Potentials]{%
+      \textbf{Lifting of Polyhedral Surfaces by Using Scalar Potentials}\\
+      The left images shows a bounded approximation of the 2D Euclidean plane by a polyhedral surface.
+      As it can be seen on the right, constructing the graph of a scalar potential over this surface, leads to a lifting and an embedding in 3D Euclidean space.
+      The geodesics for the lifted surface are no longer straight lines and will adapt to the form of the potential, just like a river does near a chain of mountains.
+    }
+    \label{fig:lifting}
+  \end{figure}
+  \noindent
+  Constructing a scalar potential around an initially given curve, that penalizes farther distances with a higher potential value, the geodesics of its lifted surface embedded in 3D space when projected back onto the 2D plane should be smoothed curves that are close to the initial curve because the scalar potential was defined to fulfill this condition.
+  This whole procedure can be generalized to 2D topological manifolds embedded in 3D Euclidean space.
+  Using a scalar potential over such a surface, the graph of this potential is lifted into four dimensions and will describe a 2D topological manifold embedded in 4D Euclidean space.
+  At this point, determining the geodesic on the lifted surface followed by a projection back onto the original surface would also lead to a smoothed curve which is close to its original.
+
+  This method is not bound to use an iterative method but can make use of nearly all available algorithms for tracing geodesics or generating geodesic distance fields and may benefit from their robust and versatile implementation alternatives that have been found over the years.
+  When given a scalar potential, this method always computes a clear goal which can be reached in finitely many steps \autocite{mancinelli2022,sharp2020}.
+  Looking at it this way, this already proves the convergence of the algorithm as long as the geodesic primitive converges as well.
+  By varying the potential, not only the smoothing of curves but also their general trajectory can be adaptively controlled by the user.
+  To cope with existence of boundaries, scalar potentials could use very large values near the boundaries to push curves away from the boundary to prevent the appearance of strong corners.
+  As the moving curve should never be too far away from its original, the scalar potential would not even need to be evaluated for the whole surface mesh but only for vertices near to the current curve by using a dynamic programming paradigm.
+  The algorithm would benefit from the design and implementation of the algorithmical primitives given in this thesis.
+
+  % Alternative Smoothing Algorithms: Your algorithm to lift the polyhedral surface into four dimensions by adding a scalar potential for geodesics.
+  % Distance envelope is hard cut.
+  % Keeping the distance small to the original curve can be done by your new method.
+
+  % Anisotropic Metrics
+
+  % Application to medicine
 
 % section conclusions (end)
 \end{document}
