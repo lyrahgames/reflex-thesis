@@ -59,7 +59,7 @@ for (size_t i = 1; i < curve.w.size() - 1; ++i) {
   //
   const auto xw = curve.w[i];
   const auto xt = curve.t[i];
-  new_w[i] = unfold(p, q, v1, v2, xw, xt);
+  new_w[i] = unfold(p, q, v1, v2, xt);
 
   // For the next iteration, overwrite the values
   // for the previous and current control points
@@ -91,7 +91,7 @@ if (curve.closed()) {
   //
   const auto xw = curve.w[0];
   const auto xt = curve.t[0];
-  new_w[0] = unfold(p, q, v1, v2, xw, xt);
+  new_w[0] = unfold(p, q, v1, v2, xt);
   new_w.back() = new_w[0];
 }
 

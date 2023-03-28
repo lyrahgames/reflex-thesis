@@ -596,9 +596,12 @@ The C++ code shown in this section does not provide the best design.
   %   So, it is sufficient to show that the discrete curvature at the crease is zero.
   %   But this has be true by construction.
   % \end{proof}
-
   \noindent
   Please note, the geodesic unfolding is one of the two main operations \textcite{martinez2005} use to iteratively transform an initially given surface mesh curve into a locally shortest geodesic.
+  The following code snippet provides a straightforward implementation.
+
+  \inputCodeBlock[title = Geodesic Unfolding]{code/geodesic-unfolding.hpp}
+
 
   \paragraph{Curvature-Based Unfolding of Two Adjacent Triangles}\hfill\\
     Assume the same setting as in the previous part about the geodesic unfolding of two adjacent triangles.
@@ -748,15 +751,9 @@ The C++ code shown in this section does not provide the best design.
   Please note, this curvature-based unfolding of two adjacent triangles is very similar to the primitive used by \textcite{lawonn2014} to iteratively smooth surface mesh curves based on desired geodesic curvatures.
   But \citeauthor{lawonn2014} derive their equation by using a different strategy with an non-oriented geodesic curvature which leads to an alternative formulation that could lead to numerical instabilities.
   I have carried out the derivation of the above primitive to provide a single formulation for all values of the oriented discrete geodesic curvature that is able to handle the $κ=0$ singularity.
+  The following code snippet provides a straightforward implementation.
 
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.5\linewidth]{figures/unfolding-critical-vertex.pdf}
-    \caption[Unfolding Critical Vertex]{%
-      \textbf{Unfolding Critical Vertex}\\
-    }
-    \label{fig:unfolding-critical-vertex}
-  \end{figure}
+  \inputCodeBlock[title = Curvature-Based Unfolding]{code/curvature-unfolding.hpp}
 
   \paragraph{Local Smoothing}\hfill\\
   With the smoothing primitives in place, it is now possible to define the local smoothing procedure for a surface mesh curve.
@@ -781,6 +778,16 @@ The C++ code shown in this section does not provide the best design.
   On the other hand, all the outcomes before reaching a certain convergence tend to exhibit asymmetric changes in the curvature of the surface mesh curve.
   As for smoothing, algorithms may also be aborted without any convergence because the outcome is already smooth enough.
   By using the swapping mechanism, I make sure all applications of the local smoothing provide a consistent and symmetric smoothing.
+
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/unfolding-critical-vertex.pdf}
+    \caption[Unfolding Critical Vertex]{%
+      \textbf{Unfolding Critical Vertex}\\
+    }
+    \label{fig:unfolding-critical-vertex}
+  \end{figure}
 
 % subsection smoothing_of_surface_mesh_curves (end)
 
