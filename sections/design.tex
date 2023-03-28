@@ -746,8 +746,8 @@ The C++ code shown in this section does not provide the best design.
     \end{cases}
   \]
   Please note, this curvature-based unfolding of two adjacent triangles is very similar to the primitive used by \textcite{lawonn2014} to iteratively smooth surface mesh curves based on desired geodesic curvatures.
-  But \textcite{lawonn2014} derive their equation by using a different strategy with an non-oriented geodesic curvature which leads to an alternative formulation that could lead to numerical instabilities.
-  The derivation of the above primitive has been carried out by myself to provide a single formulation for all values of the oriented discrete geodesic curvature that is able to handle the $κ=0$ singularity.
+  But \citeauthor{lawonn2014} derive their equation by using a different strategy with an non-oriented geodesic curvature which leads to an alternative formulation that could lead to numerical instabilities.
+  I have carried out the derivation of the above primitive to provide a single formulation for all values of the oriented discrete geodesic curvature that is able to handle the $κ=0$ singularity.
 
   \begin{figure}
     \centering
@@ -757,6 +757,30 @@ The C++ code shown in this section does not provide the best design.
     }
     \label{fig:unfolding-critical-vertex}
   \end{figure}
+
+  \paragraph{Local Smoothing}\hfill\\
+  With the smoothing primitives in place, it is now possible to define the local smoothing procedure for a surface mesh curve.
+  The essential part of this routine is to iterate over the control points that lie in the curve's interior and apply one of the two unfolding primitives given above.
+  For that, each interior control point accesses the previous and next control point of the curve.
+  For closed curves, all control points are part of the interior and the first and last one coincide.
+  To updated a closed curve accordingly, let the first control point access the one before the last and also apply the unfolding primitive.
+  The underlying topology of the surface mesh curve given in the form of an edge sequence or face strip is not altered.
+  The following code snippet shows a simple implementation of this strategy for the face-based data structure.
+  The implementation for the edge-based structure is omitted because the retrieval of edge vertices and control points is only a subset of the face-based code.
+
+  \inputCodeBlock[title = Local Smoothing]{code/local-smoothing.hpp}
+  There is nothing special happening in the code above apart from the retrieval of edge vertices by using face nodes.
+  The face nodes of the face-based data structure use their \textbf{\texttt{loc}} and \textbf{\texttt{rot}} members to point to the edges of the previous and next adjacency edge.
+  The next directed edge that points to the right side cannot be part of the oriented triangle that describes the face.
+  Hence, its indices are exchanged to properly retrieve the next directed edge.
+
+  Another remark is that the code for the whole update iteration uses the old edge weights of the curve.
+  In a serial implementation that needs to converge fast, an in-place update of all the edge weights could be used instead of swapping all newly created edge weights with the old ones at end of the procedure.
+  In this scenario, all edge weights apart from the first one would use an updated control point on their left side.
+  In fact, this method has been used by \textcite{martinez2005} and \textcite{lawonn2014} and may lead to a faster convergence.
+  On the other hand, all the outcomes before reaching a certain convergence tend to exhibit asymmetric changes in the curvature of the surface mesh curve.
+  As for smoothing, algorithms may also be aborted without any convergence because the outcome is already smooth enough.
+  By using the swapping mechanism, I make sure all applications of the local smoothing provide a consistent and symmetric smoothing.
 
 % subsection smoothing_of_surface_mesh_curves (end)
 
