@@ -4,7 +4,7 @@
 \label{sec:conclusions}
 
   During the course of this thesis, I build on the theory of \textcite{polthier2006} and formulated a rigorous mathematical foundation for the handling of discrete geodesics and curve smoothing algorithms on polyhedral surfaces.
-  Hereby, special emphasis has been put on the consideration of boundaries which are are often neglected by the general literature.
+  Hereby, special emphasis has been put on the consideration of boundaries which are often neglected by the general literature.
   Even on smooth manifolds, in the presence of boundaries the concept of locally shortest geodesics no longer agrees with the definition of straightest geodesics.
   This problem cannot be eliminated by simply redefining geodesic curvature on boundaries to be zero as this would lead to unintuitive results.
   State-of-the-art literature concerned with algorithms to generate geodesic paths and distances considers the concepts for discrete locally shortest and straightest geodesics as the de facto standard for the generalization of geodesics onto polyhedral surfaces.
@@ -17,7 +17,8 @@
 
   In the practical part of this work, I successfully designed and implemented various data structures to represent surface mesh curves as well as algorithmical primitives for their general movement and smoothing along polyhedral surfaces.
   All the implementation-specific details have been given as C++ code snippets to allow for reproducibility.
-  The algorithmical primitives for smoothing surface mesh curves build on the work of \textcite{martinez2005} and \textcite{lawonn2014} by using data structures from \textcite{mancinelli2022} and a consistent curvature propagation.
+  The algorithmical primitives for smoothing surface mesh curves build on the work of \textcite{martinez2005} and \textcite{lawonn2014} by using data structures from \textcite{mancinelli2022}.
+   % and a consistent curvature propagation.
   Additionally, the calculation of desired geodesic curvature values has been improved by using a weighted stencil of adjacent geodesic curvature values and applying it multiple times to geodesic curvatures of the initially given curve.
   % The main smoothing algorithm is based on an iterative approach to locally optimize geodesic curvature values in conjunction with surface-dependent penalty values to keep the outcome close to its original.
   The main smoothing algorithm is based on an iterative approach to locally optimize these geodesic curvature values.
@@ -45,7 +46,7 @@
   Each iteration, a surface mesh curve may only propagate one vertex ahead.
   Especially for geodesics tracing, where the accumulated amount a curve may change is maximal, this process might be inefficient.
   Furthermore, the algorithmical primitives and smoothing procedure cannot considered to be robust if the polyhedral surface exhibits faces or vertices that are numerically extreme.
-  Other methods, based on freely moving a curve in space followed by a projection onto the surface, could exhibit a better convergence rate would not suffer from numerically instabilities originating from the surface mesh \autocite{crane2020}.
+  Other methods, based on freely moving a curve in space followed by a projection onto the surface, could exhibit a better convergence rate and would not suffer from numerical instabilities originating from the surface mesh \autocite{crane2020}.
 
   Even for high-resolution polyhedral surfaces consisting of millions of triangles, surface mesh curves typically exhibit a few thousand control points.
   As such, the process of smoothing surface mesh curves does not appear to be the bottleneck of the overall program pipeline.
@@ -54,6 +55,29 @@
   Instead, future work should put serious focus on a robust implementation that would be able to handle many artificial and degenerate cases of polyhedral surfaces that often arise as smaller artifacts in real-world surface meshes.
   Such an implementation should be thoroughly tested by constructing generic tests that can be applied to a whole set of polyhedral surfaces such as the \citetitle{thingi10k} dataset \autocite{thingi10k,mancinelli2022}.
   % Apart from that, regarding the iterative nature of the main smoothing algorithm, a parallelization on the CPU could be realized by using a pipeline which
+
+  Improving the iterative algorithm could be done by considering the funnel algorithm of \textcite{lee1984} that has been used by \textcite{mancinelli2022} to solve the discrete BVP for locally shortest geodesics in a finite amount of steps.
+  To use the 2D funnel algorithm, \textcite{mancinelli2022} apply the geodesic unfolding to the whole triangle strip of a surface mesh curve at once and directly trace a straight line from the start to end of the strip.
+  As the curvature-based unfolding primitive is a generalization of the geodesic unfolding, the funnel algorithm should also be applicable to the smoothing process based on desired geodesic curvatures as long as a solution exists.
+  This could lead to an overall simplification and speed-up of the whole algorithm.
+  However, future work would need to find a more general handling of the desired geodesic curvature.
+  It would no longer be possible to append discrete values to already given control points and to let them propagate by an iterative approach to move the curve across the surface.
+  Instead, one idea would be to offer a continuous geodesic curvature function and deducing discrete geodesic curvature values from it by integration.
+  The mapping of values could be done with respect to the length of the curve.
+
+  % For the implementation of curve smoothing inside a framework, further facilities should be provided.
+  The smoothing of curves should be a process with emphasis on adaptivity and user controllability.
+  In this sense, for an implementation of curve smoothing algorithms in more general frameworks, further facilities for the handling of fixed points would need to be added.
+  If the desired geodesic curvature of a fixed control point is not constrained, the overall surface mesh curve can be viewed as two curves separated by this fixed point.
+  In this case, both curve segments could be smoothed independently.
+  The introduction of fixed control points with a constrained desired geodesic curvature, on the other hand, is not as simple.
+  To handle such constraints, the curvature-based unfolding would also need to take adjacent geodesic curvatures into account.
+  Unfortunately, the problematic behavior of discrete geodesic curvatures at the boundary, in this case, might forbid to choose fixed control points with a constrained desired geodesic curvature at the boundary of the surface.
+
+  A framework incorporating surface mesh curves should also provide a sophisticated interface that allows a user to easily provide and manipulate initial curves.
+  Hereby, constructing regular surface mesh curves from drawing lines on surfaces seems to be the most intuitive suggestion.
+  To improve this process, future work should integrate the tracing of geodesics directly into the drawing of initial curves.
+  In such a way, the generated surface mesh curve would mimic the trajectory provided by the user more closely.
 
   Regarding surface mesh artifacts, further basic requirements, such as the orientability or the fulfillment of vertex or edge manifold properties, are not given naturally by all surface meshes \autocite{thingi10k}.
   The violation of these constraints will most likely lead to program termination or other non-intuitive behavior.
@@ -84,19 +108,20 @@
   The smoothing algorithm of \textcite{lawonn2014} wants to guarantee that the resulting curve is close to its original.
   It does this by using a distance envelope which suddenly forbids a moving curve to proceed at points that are too far away from the initial curve.
   Mathematically, this uncontinuous constraint transforms the underlying polyhedral surface into a smaller polyhedral surface with boundary.
-  As for boundary vertices, it is not straight-forward to use geodesic curvatures, only the curve shortening approach is applicable at these points.
+  As for boundary vertices, it is not straightforward to use geodesic curvatures, only the curve shortening approach is applicable at these points.
   Unfortunately, this shortening approach does not reliably lead to a smoother curve.
   Instead, strong corners in the resulting curve might originate if the distance envelope is too small.
 
-  Taking into the account all the previous considerations, for future work, I am proposing an alternative algorithm to generate smoothed surface mesh curves that need to be close to its original.
+  \paragraph{Smoothing of Surface Mesh Curves by Using Geodesics and Scalar Potentials}\hfill\\
+  Taking into account all the previous considerations, in the following, I am proposing an alternative algorithm for future work to generate smoothed surface mesh curves that need to be close to its original.
   Instead of using curvature-based transformations that may fail to be applied at boundary points, this algorithm would only use the generation of discrete locally shortest geodesics as its main primitive.
   Hereby, its main idea is based on the generalizations of distance envelopes to scalar potentials, that are used as penalty functions, and the following observation that figure~\ref{fig:lifting} schematically visualizes.
-  Geodesics in the flat Euclidean plane as in figure~\ref{fig:lifting-flat} are given by straight lines.
+  Geodesics in the flat Euclidean plane as shown in figure~\ref{fig:lifting-flat} are given by straight lines.
   Thinking of plotting a 2D scalar potential over the Euclidean plane as it is given in figure~\ref{fig:lifting-lifted}, the graph of the scalar potential is no longer a surface embedded in 2D space but has been lifted and is now embedded in the 3D Euclidean space.
   As a direct consequence, locally shortest geodesics of the surface in figure~\ref{fig:lifting-lifted} are, in general, no longer straight lines.
   The trajectories of geodesics connecting two opposite points are forced to move around the bump in the middle, just like rivers need to move around a chain of mountains.
 
-  \begin{figure}[H]
+  \begin{figure}
     \centering
     \begin{subfigure}[c]{0.4\linewidth}
       \centering
@@ -121,7 +146,7 @@
     }
     \label{fig:lifting}
   \end{figure}
-  \noindent
+
   Constructing a scalar potential around an initially given curve, that penalizes farther distances with a higher potential value, the geodesics of its lifted surface embedded in 3D space when projected back onto the 2D plane should be smoothed curves that are close to the initial curve because the scalar potential was defined to fulfill this condition.
   This whole procedure can be generalized to 2D topological manifolds embedded in 3D Euclidean space.
   Using a scalar potential over such a surface, the graph of this potential is lifted into four dimensions and will describe a 2D topological manifold embedded in 4D Euclidean space.
@@ -129,9 +154,9 @@
 
   This method is not bound to use an iterative method but can make use of nearly all available algorithms for tracing geodesics or generating geodesic distance fields and may benefit from their robust and versatile implementation alternatives that have been found over the years.
   When given a scalar potential, this method always computes a clear goal which can be reached in finitely many steps \autocite{mancinelli2022,sharp2020}.
-  Looking at it this way, this already proves the convergence of the algorithm as long as the geodesic primitive converges as well.
+  Looking at it this way, this already proves the convergence of the algorithm as long as the geodesic primitive converges.
   By varying the potential, not only the smoothing of curves but also their general trajectory can be adaptively controlled by the user.
-  To cope with existence of boundaries, scalar potentials could use very large values near the boundaries to push curves away from the boundary to prevent the appearance of strong corners.
+  To cope with existence of boundaries, scalar potentials could use very large values near the boundaries to push curves away and therefore prevent the appearance of strong corners.
   As the moving curve should never be too far away from its original, the scalar potential would not even need to be evaluated for the whole surface mesh but only for vertices near to the current curve by using a dynamic programming paradigm.
   The algorithm would benefit from the design and implementation of the algorithmical primitives given in this thesis.
 
