@@ -779,20 +779,137 @@ The C++ code shown in this section does not provide the best design.
   As for smoothing, algorithms may also be aborted without any convergence because the outcome is already smooth enough.
   By using the swapping mechanism, I make sure all applications of the local smoothing provide a consistent and symmetric smoothing.
 
-  \paragraph{Reflection}\hfill\\
+  \paragraph{Unfolding of Triangle Fans at a Critical Vertex}\hfill\\
+  Besides the unfolding of two adjacent triangles, the reflection procedure will also need a primitive which is able to unfold a whole strip of triangles that share a common vertex.
+  As soon as the reflection will move the topology of a curve to the other side of a reflex vertex, all weights for the new edges on the opposite triangle fan need to be assigned.
+  This can be seen in figure~\ref{fig:local-reflection}.
+  % Referring to the turn compression scheme, the triangles all describe the same turn.
+  The goal is to connect the previous point $p$ with the next point $q$ either by a geodesic, as in the geodesic unfolding primitive, or by a surface mesh curve with the desired geodesic curvatures as in the case of the curvature-based unfolding primitive.
+  Therefore it is not possible to independently assign weights to the edges between the points $p$ and $q$.
+  Figure~\ref{fig:unfolding-critical-vertex} schematically visualizes this scenario.
 
   \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{figures/unfolding-critical-vertex.pdf}
-    \caption[Unfolding Critical Vertex]{%
-      \textbf{Unfolding Critical Vertex}\\
+    \includegraphics[width=0.55\linewidth]{figures/unfolding-critical-vertex.pdf}
+    \caption[Unfolding of a Triangle Fan around a Critical Vertex]{%
+      \textbf{Unfolding of a Triangle Fan around a Critical Vertex}\\
     }
     \label{fig:unfolding-critical-vertex}
   \end{figure}
 
+  Let both the previous point $p$ and the next point $q$ be given relative to the inner vertex $v_0$.
+  Furthermore, for $n\in\setNatural$, let $v_1,\ldots,v_n\in \mathscr{S}$ be the outer vertices of the common edges of the triangle strip that shares $v_0$.
+  Define the edge vectors as follows.
+  \[
+    e_i \define \frac{v_i-v_0}{\norm{v_i-v_0}}
+  \]
+  All triangles need to be unfolded in the 2D Euclidean plane as it was already done in the case of the geodesic unfolding.
+  The only difference is that this time more than two triangles need to be unfolded.
+  Therefore I start with the points $p$ and $q$.
+  \[
+    p_x^1 \define \scalarProduct{p}{e_1}
+    \separate
+    p_y^1 \define \norm{p - p_x^1 e_1}
+    \separate
+    q_x^n \define \scalarProduct{q}{e_n}
+    \separate
+    q_y^n \define -\norm{q - q_x^n e_n}
+  \]
+  To get back to the previous cases, the point $p$ must be transformed into the coordinate system of $q$ whose $y$-axis is given by the edge $e_n$.
+  As the triangles are folded in 3D space, this needs to be done iteratively for the whole triangle fan.
+  Inside of a triangle, transforming one edge coordinate system to the other can be done by using an orthogonal 2D rotation matrix.
+  \[
+    \cos ϑ_i = \scalarProduct{e_i}{e_{i+1}}
+    \separate
+    \sin ϑ_i = \norm{e_i - e_{i+1} \cos ϑ_i}
+  \]
+  \[
+    R_i \define
+    \begin{pmatrix}
+      \cos ϑ_i & -\sin ϑ_i \\
+      \sin ϑ_i & \cos ϑ_i
+    \end{pmatrix}
+    \separate
+    R_i^{-1} = R_i^\mathrm{T}
+  \]
+  The last part then consists of using the rotation matrices to transform the coordinate representations of the points $p$ and $q$ to all edges.
+  \[
+    \begin{pmatrix}
+      p_x^{i+1} \\
+      p_y^{i+1}
+    \end{pmatrix}
+    = R_i
+    \begin{pmatrix}
+      p_x^{i} \\
+      p_y^i
+    \end{pmatrix}
+    \separate
+    \begin{pmatrix}
+      q_x^{i} \\
+      q_y^{i}
+    \end{pmatrix}
+    = R^{-1}_i
+    \begin{pmatrix}
+      q_x^{i+1} \\
+      q_y^{i+1}
+    \end{pmatrix}
+  \]
+  In such a way, all the unfolded $x$ and $y$ coordinates of $p$ and $q$ can be computed for every edge.
+  The geodesic unfolding can then again simply applied to every edge independently to determine the edge weights of the geodesic connecting $p$ and $q$.
+
+  To determine edge weights with the correct geodesic curvature, a slight change needs to be introduced.
+  As the curvature-based primitive is not linearly dependent of its adjacent control points, like in the case of the geodesic unfolding, the edge weights cannot be evaluated independently even after the transformation of coordinate representations.
+  % Furthermore, the desired curvatures for all edges need to be the same.
+  Instead, the right-most edge can be evaluated first.
+  Hereby, the desired curvature for the unfolding will be given by the sum of all desired curvatures.
+  After the unfolding step, the desired curvature for the next unfolding will be the current one reduced by the desired curvature of the current edge.
+  All other edges will then be done iteratively in the same way with an alternated point $\tilde{q}$ to the right that is given by the result of the previous edge computation.
+  This is the same process as given by \textcite{lawonn2014}.
+
+
+  \paragraph{Reflection}\hfill\\
+  The local reflection primitive retrieves the reflected topology of a curve which turns at a vertex.
+  Figure~\ref{fig:local-reflection} shows this schematically.
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.45\linewidth]{figures/local-reflection.pdf}
+    \caption[Local Reflection at a Critical Vertex]{%
+      \textbf{Local Reflection at a Critical Vertex}\\
+    }
+    \label{fig:local-reflection}
+  \end{figure}
+
+  All interior triangles in the strip need to provide the same turn.
+  The first and last triangles must provide opposite turns.
+  If the inner vertex is part of the boundary, no reflection exists.
+
+  The reflection will return a face strip of a temporary very short surface mesh curve.
+  The unfolding primitive for triangle fans can then evaluate the edge weights.
+  \[
+    (\triangle_p,\triangle_1,\triangle_2,\triangle_3,\triangle_4,\triangle_q)
+  \]
+  \[
+    (\triangle_p,\tilde{\triangle}_1,\triangle_q)
+  \]
+  This routine can deal with self-intersections but will need to make sure the curve keeps to regular afterwards.
+
+  \inputCodeBlock[title = Local Reflection]{code/local-reflection.hpp}
+
+
   \paragraph{Algorithm}\hfill\\
   The main algorithm only switches between reflection and local smoothing.
   The abort criterion was chosen in the same way as lawonn and martinez.
+
+  For open curves, iterate through the turn compression and apply unfolding of triangle fans.
+  For closed curves, ignore the first turn as it might also contain turns from the end.
+  When reaching the end, check whether the first turn belongs to the last.
+
+  Each turn unfolding might lead to a critical vertex.
+  Mark the turn.
+  After applying turn unfolding, check for marked vertices
+
+  As we are constantly changing the number of control points of triangles in the face strip, a queue-based approach seems to be most fitting.
 
   \paragraph{Smoothing via Geodesics Iterations}\hfill\\
   After a finite amount of iterations for geodesics generations the curve is already smooth.
@@ -800,6 +917,8 @@ The C++ code shown in this section does not provide the best design.
   \paragraph{Smoothing via Desired Geodesic Curvatures}\hfill\\
   I introduce the desired curvature stencil.
   This allows to smooth such that they keep very close to their original form.
+
+  \inputCodeBlock[title = Desired Curvature Stencil]{code/desired-curvature-stencil.hpp}
 
 
 % subsection smoothing_of_surface_mesh_curves (end)
