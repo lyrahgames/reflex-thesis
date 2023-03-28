@@ -779,6 +779,7 @@ The C++ code shown in this section does not provide the best design.
   As for smoothing, algorithms may also be aborted without any convergence because the outcome is already smooth enough.
   By using the swapping mechanism, I make sure all applications of the local smoothing provide a consistent and symmetric smoothing.
 
+  \paragraph{Reflection}\hfill\\
 
   \begin{figure}
     \centering
@@ -788,6 +789,18 @@ The C++ code shown in this section does not provide the best design.
     }
     \label{fig:unfolding-critical-vertex}
   \end{figure}
+
+  \paragraph{Algorithm}\hfill\\
+  The main algorithm only switches between reflection and local smoothing.
+  The abort criterion was chosen in the same way as lawonn and martinez.
+
+  \paragraph{Smoothing via Geodesics Iterations}\hfill\\
+  After a finite amount of iterations for geodesics generations the curve is already smooth.
+
+  \paragraph{Smoothing via Desired Geodesic Curvatures}\hfill\\
+  I introduce the desired curvature stencil.
+  This allows to smooth such that they keep very close to their original form.
+
 
 % subsection smoothing_of_surface_mesh_curves (end)
 
