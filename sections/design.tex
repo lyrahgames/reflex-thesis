@@ -910,6 +910,8 @@ Instead, all the following C++ code snippets represent simplified versions of pr
   Instead, it complies with a method described by \textcite{mancinelli2022}.
 
   \paragraph{Algorithm}\hfill\\
+  After the definition of all primitives, the main smoothing algorithm mainly uses the
+
   The main algorithm only switches between reflection and local smoothing.
   The abort criterion was chosen in the same way as lawonn and martinez.
 
@@ -922,9 +924,6 @@ Instead, all the following C++ code snippets represent simplified versions of pr
   After applying turn unfolding, check for marked vertices
 
   As we are constantly changing the number of control points of triangles in the face strip, a queue-based approach seems to be most fitting.
-
-  \paragraph{Smoothing via Geodesics Iterations}\hfill\\
-  After a finite amount of iterations for geodesics generations the curve is already smooth.
 
   \paragraph{Smoothing via Desired Geodesic Curvatures}\hfill\\
   I introduce the desired curvature stencil.
