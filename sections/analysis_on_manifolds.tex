@@ -3,7 +3,7 @@
 \section{Analysis on Manifolds} % (fold)
 \label{sec:analysis_on_manifolds}
 
-Topological manifolds are the basis of differentiable manifolds and describe the class polyhedral surfaces lie in.
+% Topological manifolds are the basis of differentiable manifolds and describe the class polyhedral surfaces lie in.
 
 \begin{definition}[Topological Manifold]
 \label{def:topological-manifold}
@@ -16,7 +16,7 @@ Topological manifolds are the basis of differentiable manifolds and describe the
   % or topological $n$-manifold for short.
   % For brevity, the dimension is left out if it is clear from the context or not referred to.
 \end{definition}
-
+\noindent
 For the purpose of this thesis, all spaces will be a second countable Hausdorff space.
 The definition is given for completeness.
 A topological manifold with boundary is generalization of the standard concept of topological manifolds without boundary.
@@ -71,13 +71,12 @@ For a chosen chart, we can easily construct basis vectors.
 Every tangential vector is a tangent vector of a curve running through that point.
 
 \begin{definition}[Differential]
+  Let $\function{F}{M}{N}$ be a smooth map from manifold $M$ to manifold $N$.
+  Then the definition for its differential $\function{\infinitesimal F}{\mathrm{T}M}{\mathrm{T}N}$ over the tangent bundles is given pointwise in the following sense.
   \[
     \function{\infinitesimal F(p)}{\mathrm{T}_pM}{\mathrm{T}_{F(p)}N}
     \separate
     \infinitesimal F(p)(X)(f) \define X(f\composition F)
-  \]
-  \[
-    \function{\infinitesimal F}{\mathrm{T}M}{\mathrm{T}N}
   \]
 \end{definition}
 
@@ -98,7 +97,7 @@ Every tangential vector is a tangent vector of a curve running through that poin
 \begin{theorem}[The image of an embedding is an embedded submanifold]
   The image of an embedding is an embedded submanifold.
 \end{theorem}
-
+\newpage
 \begin{definition}[Vector Bundle]
   Let $M$ be a manifold.
   Then a vector bundle $E$ rank $k$ over $M$ is a manifold equipped with differentiable and surjective projection $\function{π}{E}{M}$, such that the following properties hold.
@@ -122,7 +121,7 @@ Every tangential vector is a tangent vector of a curve running through that poin
   A Riemannian manifold is a smooth manifold $M$ equipped with a positive-definite inner product $g_p$ on the tangent space $\mathrm{T}_pM$ at each point $p\in M$.
   Thereby, for any chosen chart the coordinate functions of $g$ need to be smooth.
 \end{definition}
-The inner metric of a Riemannian manifold takes the place of the scalar product and measures angles.
+% The inner metric of a Riemannian manifold takes the place of the scalar product and measures angles.
 
 \begin{theorem}[For every smooth manifold, there exists a Riemannian metric]
   For every smooth manifold, there exists a Riemannian metric.
@@ -137,7 +136,7 @@ The inner metric of a Riemannian manifold takes the place of the scalar product 
 The normal space is the orthogonal complement and can in general only be defined for embedded manifolds.
 For orthogonality, we need a Riemannian manifold.
 A more general definition is possible by using quotient spaces.
-As a consequence, the normal space is isomorphic to $\setReal^{n-k}$.
+In this case, the normal space would be isomorphic to $\setReal^{n-k}$.
 
 % section analysis_on_manifolds (end)
 \end{document}
