@@ -46,7 +46,7 @@ Building on these research areas, significant applications can not only be found
   \end{subfigure}
   \caption[Application Examples for Smooth Curves on Surface Meshes]{%
     \textbf{Application Examples for Smooth Curves on Surface Meshes}\\
-    The images show typical applications for smooth curves on surface meshes, such as osteotomy planning in medicine (left) and surface mesh cutting (middle) and segmentation (right) in computer-aided geometric design and machine learning from other publications.
+    The images show typical applications for smooth curves on surface meshes, such as osteotomy planning in medicine (left), surface mesh cutting (middle), and segmentation (right) in computer-aided geometric design and machine learning.
   }
   \label{fig:introduction-examples}
 \end{figure}
@@ -80,7 +80,7 @@ As a consequence, the implementation and application programming interface (API)
 Previous solutions to these problems involving the use of energy-minimizing splines \autocite{hofer2004} and generalizations of Bézier splines to three-dimensional surfaces \autocite{martinez2007,mancinelli2022}, while offering a general approach and sophisticated tools, either suffer from poor performance and numerical instabilities or are not sufficient for applications in a medical context.
 Using an iterative method that is based on the reduction of local geodesic curvature, \textcite{lawonn2014} were able to construct a robust curve smoothing algorithm which preserves closeness to the initial curve.
 They successfully applied it to the decomposition of cerebral aneurysms and the resection planning for liver surgery.
-Unfortunately, the initial selection and propagation of desired curvature values when handling critical or splitting vertices is not provided or at least inconsistent.
+% Unfortunately, the initial selection and propagation of desired curvature values when handling critical or splitting vertices is not provided or at least inconsistent.
 
 % All the above references define their algorithm and explain its properties in great detail.
 % For the above methods, programming procedures were provided as pseudocode and quality in comparison to similar algorithms has been evaluated
@@ -91,34 +91,40 @@ This makes the comparison of the performance and robustness of algorithms much h
 %, because custom implementations would need to be used.
 Furthermore, there is no widely accepted metric to compare the smoothness of two given curves which leads to a highly subjective treatment and evaluation of different smoothing algorithms.
 
-For the implementation of curve smoothing algorithms that allow for high-performance, reproducibility, and robustness, adequate candidates would be the modern standards of the C++ programming language in conjunction with the OpenGL graphics API.
-C++ is a multi-paradigm language that integrates many different programming styles, such as object-oriented, functional, and data-oriented programming.
-It is still the de-facto standard for graphics applications and well-known to be one of the fastest languages in the world which incorporates low-level programming facilities, such as inline assembly, and efficient high-level abstraction mechanisms, like template meta programming.
+% For the implementation of curve smoothing algorithms that allow for high-performance, reproducibility, and robustness, adequate candidates would be the modern standards of the C++ programming language.
+%  % in conjunction with the OpenGL graphics API.
+% C++ is a multi-paradigm language that integrates many different programming styles, such as object-oriented, functional, and data-oriented programming.
+% It is still the de-facto standard for graphics applications and well-known to be one of the fastest languages in the world which incorporates low-level programming facilities, such as inline assembly, and efficient high-level abstraction mechanisms, like template meta programming.
 % The design of the whole language keeps on advancing to make programs faster and easier to develop.
 % In the most common cases, C++ can be seen as a superset of the older C programming language which is typically used by other programming languages to provide the possibility of code being called from different languages.
 % Therefore the users of the framework are not even restricted to use C++ but instead are able to use other languages, like Python, to communicate with a C interface to achieve similar results.
-OpenGL is the open-source graphics API that allows programs to efficiently communicate and interact with the driver of the graphics card to visualize given data.
-Through the use of so-called compute shaders, written code is able to run concurrently on the GPU independently of the graphics card's manufacturer or the operating system.
+% OpenGL is the open-source graphics API that allows programs to efficiently communicate and interact with the driver of the graphics card to visualize given data.
+% Through the use of so-called compute shaders, written code is able to run concurrently on the GPU independently of the graphics card's manufacturer or the operating system.
 % By using them, no strong constraints are imposed on the software environment that the software framework is running on.
 % Both tools allow for a sophisticated modularization of the whole framework.
 % So, no user needs to pay for features that are not needed.
-\autocite{stroustrup2014,meyers2014,vandevoorde2018,reddy2011,cppreference,isocpp,opengl}
+% \autocite{stroustrup2014,meyers2014,vandevoorde2018,reddy2011,cppreference,isocpp}
 
 % In this thesis, precisely in sections \ref{sec:design} and \ref{sec:implementation}, we develop a new library and program, called \citetitle{nanoreflex}\footfullcite{nanoreflex}, using the C++ programming language in conjunction with the OpenGL graphics API.
-In this thesis, precisely in sections \ref{sec:design} and \ref{sec:implementation}, a robust and efficient algorithm, called \citetitle{nanoreflex}\footfullcite{nanoreflex}, to smooth discrete curves on triangular surface meshes is developed using the C++ programming language in conjunction with the OpenGL graphics API.
+In this thesis, precisely in section~\ref{sec:design}, I will elaborate on the design and implementation of data structures and algorithms used to smooth curves on triangular surface meshes based on their geodesic curvature.
+The implementations are realized and shown as simplified C++ code snippets.
+Additionally, comprehensive source code is provided in the open-source repositories \citetitle{nanoreflex}\footfullcite{nanoreflex} and \citetitle{reflex}\footfullcite{reflex} on GitHub.
+% , called \citetitle{nanoreflex}\footfullcite{nanoreflex}, to smooth discrete curves on triangular surface meshes is developed using the C++ programming language in conjunction with the OpenGL graphics API.
 The method described here is based on the work of \textcite{lawonn2014} which seems to be the most promising approach for medical purposes.
-It improves their initial selection and propagation of desired curvatures by using weighted stencils and curvature textures.
-Incorporating efficient data structures and heuristics shown to work by \textcite{mancinelli2022}, \citetitle{nanoreflex} implements parallelized versions on the CPU and GPU which should be applicable in a wide variety of cases.
+Furthermore, the choice of data structures and specific implementation strategies is influenced by \textcite{mancinelli2022}.
+% It improves their initial selection and propagation of desired curvatures by using weighted stencils and curvature textures.
+% Incorporating efficient data structures and heuristics shown to work by \textcite{mancinelli2022}, \citetitle{nanoreflex} implements parallelized versions on the CPU and GPU which should be applicable in a wide variety of cases.
 % Hereby, a special emphasis lies on the design for medical purposes.
-The source code is provided as an open-source repository on GitHub.
+% The source code is provided as an open-source repository on GitHub.
 % It is easily installable on every operating system.
 The necessary theoretical background to understand the design- and the implementation-specific aspects is given in section~\ref{sec:preliminaries}.
-Here, we will give a brief introduction to differential geometry and polyhedral manifolds.
-A mathematical rigorous discussion about the algorithm will be part of section~\ref{sec:design} to properly encapsulate all the information specific to the implementations.
+Here, I will give a brief but mathematically rigorous introduction to the differential geometry of curves, polyhedral surfaces, and surface mesh curves.
+% A mathematically rigorous discussion about the algorithm will be part of section~\ref{sec:design} to properly encapsulate all the information specific to the implementations.
 Section~\ref{sec:previous_work} refers to some related work concerning general curves, geodesics and the smoothing of curves on surfaces.
-Afterwards, in section~\ref{sec:application}, \citetitle{nanoreflex} is applied to the segmentation of lung lobes \autocite{park2019}.
-In section~\ref{sec:evaluation}, the algorithm will be used on the \citetitle{thingi10k} dataset and other test cases to evaluate its robustness and efficiency.
-At the end, in section~\ref{sec:conclusions}, I will give a brief summary of the thesis and a discussion dealing with advantages, disadvantages, and further improvements.
+% Afterwards, in section~\ref{sec:application}, \citetitle{nanoreflex} is applied to the segmentation of lung lobes \autocite{park2019}.
+In section~\ref{sec:evaluation}, the constructed algorithms will be evaluated by applying it to various surface meshes.
+% used on the \citetitle{thingi10k} dataset and other test cases to evaluate its robustness and efficiency.
+At the end, in section~\ref{sec:conclusions}, I will give a brief summary of the thesis and discuss the algorithm's limitations to specify the focus of future work.
 
 % section introduction (end)
 \end{document}
