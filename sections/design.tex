@@ -3,7 +3,9 @@
 \section{Design and Implementation} % (fold)
 \label{sec:design}
 
-% Experimenting with various designs and implementations of algorithms, that robustly and efficiently smooth discrete curves on surface meshes, requires us to use a whole program pipeline or framework for loading input data, intuitively working with user interaction, and visualizing any intermediate results.
+Experimenting with various designs and implementations of algorithms, that robustly and efficiently smooth discrete curves on surface meshes, requires to use a whole program pipeline or framework for loading input data, intuitively working with user interaction, and visualizing any intermediate results.
+Unfortunately, providing a code base for such a framework in the appendix or the following subsections is out of the scope of this thesis.
+Instead, all the following C++ code snippets represent simplified versions of program parts and do not strive for the best API design or implementation but rather a concise illustration on how to implement the provided data structures and primitives.
 % As changing specific parts of such a pipeline may affect the performance, outcomes, and overall behavior of an algorithm or program, a brief overview over all of its components is essential to allow for reproducible results and will therefore be given in the following subsections.
 % This will also make it possible for readers to simply reconstruct, adjust, and improve the pipeline for their own domain-specific projects.
 % Afterwards, I will thoroughly elaborate on the design and implementation of chosen data structures and algorithms together with their mathematical primitives for curve smoothing.
@@ -11,8 +13,6 @@
 % The pipeline or framework, described in this thesis, has been manually implemented with the C++ programming language and the OpenGL graphics API using some external libraries to handle low-level tasks.
 % Already described in the introduction in section~\ref{sec:introduction}, this choice is well suited for open-source graphics applications and provides programmers with a large freedom when it comes to the implementation of data structures and algorithms.
 % The complete source code of the project, called \textit{nanoreflex}, is provided as an open-source repository on GitHub.
-
-The C++ code shown in this section does not provide the best design.
 
 \subsection{Data Structures for Polyhedral Surfaces} % (fold)
 \label{sub:polyhedral_surface_data_structure}
@@ -31,9 +31,8 @@ The C++ code shown in this section does not provide the best design.
   Typically, attributes for pseudo-normals, colors, or texture coordinates are added to use sophisticated shading techniques and improve the quality of illustrations.
   A concrete implementation of this can be seen in the following code snippet.
   Additionally, figure~\ref{fig:polyhedral-surface-faces} shows an example to visualize the memory layout of the vertex and face list.
-  \inputCodeBlock[title = Vertices and Faces]{code/vertices-and-faces.hpp}
 
-  \begin{figure}
+  \begin{figure}[b]
     \centering
     \begin{subfigure}[c]{0.35\linewidth}
       \centering
@@ -54,6 +53,8 @@ The C++ code shown in this section does not provide the best design.
     \label{fig:polyhedral-surface-faces}
   \end{figure}
 
+  \inputCodeBlock[title = Vertices and Faces]{code/vertices-and-faces.hpp}
+
   \noindent
   As polyhedral surfaces are a special form of 3D surface geometry, I will use file formats, such as STL \autocite{stl-file-format} and Wavefront OBJ \autocite{obj-file-format}, to provide the possibility for reading complex surface meshes from disk.
   Especially in the area of computer graphics in conjunction with the C++ programming language, the \textit{Assimp} library \autocite{assimp} is often used to load even more file formats that represent general surfaces and scenes.
@@ -70,6 +71,7 @@ The C++ code shown in this section does not provide the best design.
   The quad-edge algebra, described by \textcite{guibas1985}, is a versatile and complex data structure based on edges that represents both, the graph and the dual graph, of the surface at once and allows to easily and efficiently access the lists of adjacent vertices, edges, and faces.
   A simple but efficient implementation that does not make use of any pointers is given in section~\ref{sec:quad_edge_algebra} in the appendix.
   Figure~\ref{fig:quad-edge} and \ref{fig:quad-edge-rotation} schematically show the memory layout and rotation primitive of the data structure.
+
   On the other hand, according to \textcite{shewchuk1996}, a flat adjacency list storing references to adjacent faces for each face offers a lower memory consumption and an expected efficiency higher than that of a quad-edge algebra at the cost of a higher programming complexity when used in algorithms.
   It does not provide an easy way to access the graph but still incorporates the dual graph of the surface and is much easier to generate and handle than the quad-edge algebra.
   As each triangle may at most exhibit three other triangles that are adjacent to it, there is an upper storage bound for adjacency references of each triangle.
@@ -126,6 +128,19 @@ The C++ code shown in this section does not provide the best design.
     \separate
     τ(v) \define [v]
   \]
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figures/polyhedral-surface-topological-vertex-map.pdf}
+    \caption[Topological Quotient Map]{%
+      \textbf{Topological Quotient Map}\\
+      The figure schematically shows the quotient map τ of the polyhedral surface given in figure~\ref{fig:polyhedral-surface-distinct-vertices} which maps vertices onto their topological counterparts.
+      As this map is not bijective, its inverse $τ^{-1}$ must use another array $τ^{-1}_\mathrm{o}$ of offsets.
+    }
+    \label{fig:polyhedral-surface-topological-vertex-map}
+  \end{figure}
+
+  \noindent
   Two triangles are topologically adjacent to each other if they share a topological edge and are not identical.
   Using the quotient map, a rigorous formulation can be given as follows.
   Let $n\in\setNatural$ be the number of vertices in the vertex list $\function{V}{\mathscr{I}}{\mathscr{V}}$ with $\mathscr{I}\define\set{k\in\setNatural_0}{k\leq n}$ as the index set.
@@ -142,7 +157,7 @@ The C++ code shown in this section does not provide the best design.
   Still, the naive evaluation of the topological equivalence relation $\sim$ for all vertices is quadratic in complexity.
   For high-resolution polyhedral surfaces with millions of triangles, this is infeasible and needs to be addressed.
 
-  My solution is based on a hash map in which all vertices will be inserted with respect to their position in space.
+  For this, my solution is based on a hash map in which all vertices will be inserted with respect to their position in space.
   As 3D vectors do not provide a natural order, a custom hash function needs to be used.
   Furthermore, the standard equality comparison is exchanged with the topological equivalence relation.
   This way topologically equivalent vertices are assumed to be the same by the hash map and are inserted at identical positions.
@@ -150,17 +165,6 @@ The C++ code shown in this section does not provide the best design.
   As a result, the insertion of all vertices exhibits a linear time complexity and offers a more efficient alternative to the naive method of checking pairwise equivalences.
   The following code snippet demonstrates a simple implementation of this method in C++.
   Additionally, figure~\ref{fig:polyhedral-surface-topological-vertex-map} schematically visualizes how the quotient map for the example given in figure~\ref{fig:polyhedral-surface-distinct-vertices} would look.
-
-  \begin{figure}
-    \centering
-    \includegraphics[width=\linewidth]{figures/polyhedral-surface-topological-vertex-map.pdf}
-    \caption[Topological Quotient Map]{%
-      \textbf{Topological Quotient Map}\\
-      The figure schematically shows the quotient map τ of the polyhedral surface given in figure~\ref{fig:polyhedral-surface-distinct-vertices} which maps vertices onto their topological counterparts.
-      As this map is not bijective, its inverse $τ^{-1}$ must use another array $τ^{-1}_\mathrm{o}$ of offsets.
-    }
-    \label{fig:polyhedral-surface-topological-vertex-map}
-  \end{figure}
 
   \inputCodeBlock[title = Topological Vertex Map]{code/topological-vertex-map.hpp}
 
@@ -188,7 +192,7 @@ The C++ code shown in this section does not provide the best design.
   The values for each directed edge in the hash map will refer to its specific triangle and its location inside that triangle.
 
   \inputCodeBlock[title = Intermediate Topological Edges]{code/topological-directed-edges.hpp}
-  At the start of the code snippet structures for face adjacency references and directed edges are defined to simplify the implementation of edge generation.
+  At the start of the code snippet, structures for face adjacency references and directed edges are defined to simplify the implementation of edge generation.
   Directed edges are simply represented by two references to topological vertices.
   As they need to be added to a hash map, an information structure and a hash function have been added.
   The information structure only stores two face adjacencies to let the directed edge know from which face and at which location it originated.
@@ -463,10 +467,10 @@ The C++ code shown in this section does not provide the best design.
 
 \subsection{Smoothing of Surface Mesh Curves} % (fold)
 \label{sub:smoothing_of_surface_mesh_curves}
-  The overall procedure consists of two main primitives.
-  Reflections at reflex vertices and local smoothing.
-  I will only provide some code snippets and not the whole algorithm as it would not fit in this thesis.
-  We go from initial curve selection over to the loop of reflections and local smoothing and break out of that loop by some abort criteria.
+  % The overall procedure consists of two main primitives.
+  % Reflections at reflex vertices and local smoothing.
+  % I will only provide some code snippets and not the whole algorithm as it would not fit in this thesis.
+  % We go from initial curve selection over to the loop of reflections and local smoothing and break out of that loop by some abort criteria.
 
   \paragraph{Selection of Initial Surface Mesh Curves}\hfill\\
   The curve smoothing algorithm described in this thesis can be viewed as an optimization process that alters the process of finding discrete locally shortest geodesics in the sense of the BVP to find smoothed curves.
@@ -586,6 +590,9 @@ The C++ code shown in this section does not provide the best design.
     \end{cases}
   \]
   This will project the curve at this position onto one of the vertices of the common edge which would then be handled by another part of the algorithm.
+  The following code snippet provides a straightforward implementation.
+
+  \inputCodeBlock[title = Geodesic Unfolding]{code/geodesic-unfolding.hpp}
 
   \begin{lemma}[Geodesic Unfolding leads to Geodesics]
     Connecting $p$, $x$, and $q$ in that order by straight lines leads to locally shortest and straightest geodesics as long as $λ\in (0,1)$.
@@ -598,9 +605,6 @@ The C++ code shown in this section does not provide the best design.
   % \end{proof}
   \noindent
   Please note, the geodesic unfolding is one of the two main operations \textcite{martinez2005} use to iteratively transform an initially given surface mesh curve into a locally shortest geodesic.
-  The following code snippet provides a straightforward implementation.
-
-  \inputCodeBlock[title = Geodesic Unfolding]{code/geodesic-unfolding.hpp}
 
 
   \paragraph{Curvature-Based Unfolding of Two Adjacent Triangles}\hfill\\
@@ -779,7 +783,7 @@ The C++ code shown in this section does not provide the best design.
   As for smoothing, algorithms may also be aborted without any convergence because the outcome is already smooth enough.
   By using the swapping mechanism, I make sure all applications of the local smoothing provide a consistent and symmetric smoothing.
 
-  \paragraph{Unfolding of Triangle Fans at a Critical Vertex}\hfill\\
+  \paragraph{Unfolding of Triangle Fans around a Reflex Vertex}\hfill\\
   Besides the unfolding of two adjacent triangles, the reflection procedure will also need a primitive which is able to unfold a whole strip of triangles that share a common vertex.
   As soon as the reflection will move the topology of a curve to the other side of a reflex vertex, all weights for the new edges on the opposite triangle fan need to be assigned.
   This can be seen in figure~\ref{fig:local-reflection}.
@@ -791,8 +795,10 @@ The C++ code shown in this section does not provide the best design.
   \begin{figure}
     \centering
     \includegraphics[width=0.55\linewidth]{figures/unfolding-critical-vertex.pdf}
-    \caption[Unfolding of a Triangle Fan around a Critical Vertex]{%
-      \textbf{Unfolding of a Triangle Fan around a Critical Vertex}\\
+    \caption[Unfolding of a Triangle Fan around a Reflex Vertex]{%
+      \textbf{Unfolding of a Triangle Fan around a Reflex Vertex}\\
+      The scheme illustrates the unfolded triangle fan around a reflex vertex $v_0$ and surface mesh curve given as thick, black line.
+      The blue line represents the resulting surface mesh curve after the application of the triangle fan unfolding primitive and connects the previous point $p$ and the next point $q$ by a straight line in the unfolding plane.
     }
     \label{fig:unfolding-critical-vertex}
   \end{figure}
@@ -868,34 +874,40 @@ The C++ code shown in this section does not provide the best design.
 
 
   \paragraph{Reflection}\hfill\\
-  The local reflection primitive retrieves the reflected topology of a curve which turns at a vertex.
-  Figure~\ref{fig:local-reflection} shows this schematically.
+  The local reflection primitive retrieves the reflected topology at a reflex vertex.
+  For that, assume that the turn compression of the surface mesh curve has already been computed and is available for use.
+  A reflection can only be applied to a compressed turn node as I expect the first and the last triangle given for the reflection to exhibit an edge rotation that is opposite to the triangle fan which in figure~\ref{fig:local-reflection} is illustrated.
+  The reflection primitive returns a new temporary face strip for the current turn of the curve.
+  For the example in figure~\ref{fig:local-reflection}, it would look like the following.
+  \[
+    (\triangle_p,\triangle_1,\triangle_2,\triangle_3,\triangle_4,\triangle_q)
+    \separate
+    \longrightarrow
+    \separate
+    (\triangle_p,\tilde{\triangle}_1,\triangle_q)
+  \]
+  By applying the previous unfolding primitive for triangle fans, the new weights of the common edges of the new triangle strip can be evaluated.
+  After the computation, triangle strip and edge weights may be exchanged with the old triangle fan and its edge weights.
+  Please note, for reflex vertices that are part of the boundary, no reflected path exists.
 
   \begin{figure}
     \centering
     \includegraphics[width=0.45\linewidth]{figures/local-reflection.pdf}
-    \caption[Local Reflection at a Critical Vertex]{%
-      \textbf{Local Reflection at a Critical Vertex}\\
+    \caption[Local Reflection at a Reflex Vertex]{%
+      \textbf{Local Reflection at a Reflex Vertex}\\
+      The image illustrates how the face strip of a surface mesh curve, shown as thick and black line, changes when the local reflection primitive is applied.
+      Its result is given by the blue line.
     }
     \label{fig:local-reflection}
   \end{figure}
 
-  All interior triangles in the strip need to provide the same turn.
-  The first and last triangles must provide opposite turns.
-  If the inner vertex is part of the boundary, no reflection exists.
-
-  The reflection will return a face strip of a temporary very short surface mesh curve.
-  The unfolding primitive for triangle fans can then evaluate the edge weights.
-  \[
-    (\triangle_p,\triangle_1,\triangle_2,\triangle_3,\triangle_4,\triangle_q)
-  \]
-  \[
-    (\triangle_p,\tilde{\triangle}_1,\triangle_q)
-  \]
-  This routine can deal with self-intersections but will need to make sure the curve keeps to regular afterwards.
-
   \inputCodeBlock[title = Local Reflection]{code/local-reflection.hpp}
-
+  The code above implements the local reflection for the face-based data structure with the use of the generated face adjacency structure.
+  Conveniently, this routine deals with self-intersections of surface mesh curves that get to small by removing them.
+  In this case, when exchanging the old triangle strip with the reflected one, care needs to be taken as the the transformed surface mesh curve may violate the regularity condition.
+  It is important to remove triangles that are doubled or returning to the previous one.
+  This primitive is a major deviation from the design shown by \textcite{lawonn2014} because no projections of control points to vertices of the surfaces are used.
+  Instead, it complies with a method described by \textcite{mancinelli2022}.
 
   \paragraph{Algorithm}\hfill\\
   The main algorithm only switches between reflection and local smoothing.
