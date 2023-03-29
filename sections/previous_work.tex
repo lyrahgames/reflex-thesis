@@ -15,25 +15,24 @@ In this section, a brief overview of their major contributions is given.
   \begin{subfigure}[t]{0.30\linewidth}
     \centering
     \includegraphics[height=3cm]{images/polthier2006-1.png}
-    \caption{\textcite{polthier2006}}
+    \caption{\scriptsize From \textcite{polthier2006}.}
     \label{fig:polthier2006}
   \end{subfigure}
   \begin{subfigure}[t]{0.38\linewidth}
     \centering
     \includegraphics[height=3cm]{images/martinez2005-1.png}
-    \caption{\textcite{martinez2005}}
+    \caption{\scriptsize From \textcite{martinez2005}.}
     \label{fig:martinez2005}
   \end{subfigure}
   \begin{subfigure}[t]{0.30\linewidth}
     \centering
     \includegraphics[height=3cm]{images/surazhsky2005-1.png}
-    \caption{\textcite{surazhsky2005}}
+    \caption{\scriptsize From \textcite{surazhsky2005}.}
     \label{fig:surazhsky2005}
   \end{subfigure}
   \caption[Examples of Discrete Geodesics]{%
     \textbf{Examples of Discrete Geodesics}\\
     The images show examples of the different approaches for the generation of geodesics on polyhedral surfaces described by \textcite{polthier2006}, \textcite{martinez2005}, and \textcite{surazhsky2005}.
-    All the images have been provided by the authors themselves.
   }
   \label{fig:related-work-geodesics}
 \end{figure}
@@ -47,7 +46,7 @@ Additionally, \textcite{mitchell1987} built an algorithm to solve the discrete b
 Furthermore, \textcite{polthier2006} provided an iterative algorithm to solve the discrete initial value problem of finding the unique straightest geodesic given a starting point and a direction for which an example can be seen in figure~\ref{fig:polthier2006}.
 Hereby, they have proven its correctness and also introduced the notion for parallel translation of vectors along polyhedral surfaces for particle transportation and differential equations.
 
-Based on the results of \textcite{mitchell1987}, \citeauthor{kimmel1998} introduced the so-called fast marching approach (FMM) to efficiently approximate the shortest geodesic connecting two given points, which used the eikonal equation to build propagating fronts and therefore more efficiently generate distance fields \autocite{sethian1996,kimmel1996,kimmel1998}.
+Based on the results of \textcite{mitchell1987}, \citeauthor{kimmel1998} introduced the so-called fast marching method (FMM) to efficiently approximate the shortest geodesic connecting two given points, which used the eikonal equation to build propagating fronts and therefore more efficiently generate distance fields \autocite{sethian1996,kimmel1996,kimmel1998}.
 \textcite{surazhsky2005} followed with a formulation of exact and approximate algorithms to solve the discrete initial and boundary value problem, which could be evaluated efficiently by the use of such distance fields.
 Figure~\ref{fig:surazhsky2005} shows an example of their work.
 Extending the idea of distance fields as an intermediate step to the generation of geodesics, \textcite{crane2013} also used the gradient of the heat kernel to reconstruct a distance field by solving the Poisson equation and \textcite{bommes2007} generalized the algorithm of \textcite{surazhsky2005} to not only handle isolated starting points but also general starting polygons on polyhedral surfaces.
@@ -60,18 +59,17 @@ Extending the idea of distance fields as an intermediate step to the generation 
       \includegraphics[width=\linewidth]{images/sharp2020-2.png} \\
       \includegraphics[width=\linewidth]{images/sharp2020-1.png}
     \end{minipage}
-    \caption{\textcite{sharp2020}}
+    \caption{From \textcite{sharp2020}.}
   \end{subfigure}
   \begin{subfigure}[b]{0.58\textwidth}
     \centering
     \includegraphics[width=\linewidth]{images/mancinelli2022-2.png}
-    \caption{\textcite{mancinelli2022}}
+    \caption{From \textcite{mancinelli2022}.}
   \end{subfigure}
   \caption[State-of-the-Art Discrete Geodesic Tracing]{%
     \textbf{State-of-the-Art Discrete Geodesic Tracing}\\
     The left images shows the approaches for the computation and tracing of geodesics on polyhedral surfaces described by \textcite{sharp2020}.
     The right image shows the funnel algorithm scheme of \textcite{mancinelli2022}.
-    All the images have been provided by the authors themselves.
   }
   \label{fig:related-work-geodesics-schemes}
 \end{figure}
@@ -106,11 +104,11 @@ Additional literature covering topics concerned with discrete geodesics on polyh
     \centering
     \includegraphics[height=2.5cm]{images/morera2008-4.png}
   \end{subfigure}
-  \caption[Examples of Subdivision Curves by \textcite{morera2008}]{%
-    \textbf{Examples of Subdivision Curves by \textcite{morera2008}}\\
+  \caption[Examples of Subdivision Curves from \textcite{morera2008}]{%
+    \textbf{Examples of Subdivision Curves from \textcite{morera2008}}\\
     The images show examples of the curve smoothing approach given by \textcite{morera2008} which used subdivision schemes.
-    All images have been provided by the authors themselves.
     Red lines indicate the initially chosen curve and blue lines the resulting smoothed curve.
+    Images from \textcite{morera2008}.
   }
   \label{fig:morera2008}
 \end{figure}
@@ -138,10 +136,10 @@ The objective to construct a robust curve smoothing algorithm dictates that for 
     \centering
     \includegraphics[height=3.8cm]{images/lee2002-3.png}
   \end{subfigure}
-  \caption[Examples of Snakes by \textcite{lee2002}]{%
-    \textbf{Examples of Snakes by \textcite{lee2002}}\\
+  \caption[Examples of Snakes from \textcite{lee2002}]{%
+    \textbf{Examples of Snakes from \textcite{lee2002}}\\
     The images show examples of the curve smoothing approach given by \textcite{lee2002} which used a generalization of snakes to detect surface features.
-    All images have been provided by the authors themselves.
+    Images from \textcite{lee2002}.
   }
   \label{fig:lee2002}
 \end{figure}
@@ -157,10 +155,10 @@ The objective to construct a robust curve smoothing algorithm dictates that for 
     \centering
     \includegraphics[height=4cm]{images/hofer2004-2.png}
   \end{subfigure}
-  \caption[Examples of Energy-Minimizing Splines by \textcite{hofer2004}]{%
-    \textbf{Examples of Energy-Minimizing Splines by \textcite{hofer2004}}\\
+  \caption[Examples of Energy-Minimizing Splines from \textcite{hofer2004}]{%
+    \textbf{Examples of Energy-Minimizing Splines from \textcite{hofer2004}}\\
     The images show examples of the design of smooth curves given by \textcite{hofer2004} that used a variational approach to minimize an energy-like functional on the curve.
-    All images have been provided by the authors themselves.
+    Images from \textcite{hofer2004}.
   }
   \label{fig:hofer2004}
 \end{figure}
@@ -186,11 +184,11 @@ According to \textcite{mancinelli2022}, the variational approach to solve the op
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{images/mancinelli2022-1.png}
-  \caption[Examples of Bézier Splines by \textcite{mancinelli2022}]{%
-    \textbf{Examples of Bézier Splines by \textcite{mancinelli2022}}\\
+  \caption[Examples of Bézier Splines from \textcite{mancinelli2022}]{%
+    \textbf{Examples of Bézier Splines from \textcite{mancinelli2022}}\\
     The images show examples of the design of smooth curves given by \textcite{mancinelli2022} that used generalized Bézier splines to represent a surface curve.
     Blue lines indicate the initially chosen curve and red lines the resulting spline-based curve.
-    All images have been provided by the authors themselves.
+    From \textcite{mancinelli2022}.
   }
   \label{fig:mancinelli2022}
 \end{figure}
@@ -206,25 +204,6 @@ A whole gallery of examples that has been provided by \textcite{mancinelli2022} 
 Nevertheless, their approach exhibits similar issues compared to the variational spline approach in that only the use of many control points will make sure that the resulting curve will be near to the initially defined curve.
 In this sense, the approach of \textcite{mancinelli2022} does not fit our need by being specialized for vector graphics on surface meshes.
 
-\begin{figure}[t]
-  \centering
-  \begin{subfigure}[b]{0.29\linewidth}
-    \centering
-    \includegraphics[height=3.8cm]{images/lawonn2014-1.png}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.69\linewidth}
-    \centering
-    \includegraphics[height=3.8cm]{images/lawonn2014-2.png}
-  \end{subfigure}
-  \caption[Examples of Curve Smoothing by \textcite{lawonn2014}]{%
-    \textbf{Examples of Curve Smoothing by \textcite{lawonn2014}}\\
-    The images show examples of the curve smoothing algorithm given by \textcite{lawonn2014} that uses a generalization of the algorithm given by \textcite{martinez2005} to fit curvature values.
-    Red lines indicate the initially chosen curve and green lines the resulting smoothed curve.
-    All images have been provided by the authors themselves.
-  }
-  \label{fig:lawonn2014}
-\end{figure}
-
 Generalizing on the iterative algorithm of \textcite{martinez2005}, \textcite{lawonn2014} created an algorithm for curve smoothing based on curvature values given for each trajectory point.
 Each iteration, the algorithm tries to locally fulfill the given curvature constraint, eventually converging to its final smooth curve.
 The algorithm guarantees a close distance to the initial curve and can also be used with a simplified user interaction where only one parameter has to be adjusted.
@@ -238,8 +217,28 @@ Unfortunately, \textcite{lawonn2014} do not provide any language-specific implem
 
 According to the explanations and descriptions above, for the purpose of this thesis, our design and implementation will mainly focus on the approach given by \textcite{lawonn2014}.
 Their algorithm seems to fit our needs in nearly all important aspects.
-To solve the potential performance issue and get real-time behavior, a parallelization on the CPU and GPU will be carried out.
-We will also strive for an optimized curve initialization and geodesics generation that builds upon the basic building blocks of the approach given by \textcite{mancinelli2022}.
+% To solve the potential performance issue and get real-time behavior, a parallelization on the CPU and GPU will be carried out.
+Additionally, I will strive for an optimized curve initialization and geodesics generation that builds upon the basic building blocks of the approach given by \textcite{mancinelli2022}.
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[b]{0.29\linewidth}
+    \centering
+    \includegraphics[height=3.8cm]{images/lawonn2014-1.png}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.69\linewidth}
+    \centering
+    \includegraphics[height=3.8cm]{images/lawonn2014-2.png}
+  \end{subfigure}
+  \caption[Examples of Curve Smoothing from \textcite{lawonn2014}]{%
+    \textbf{Examples of Curve Smoothing from \textcite{lawonn2014}}\\
+    The images show examples of the curve smoothing algorithm given by \textcite{lawonn2014} that uses a generalization of the algorithm given by \textcite{martinez2005} to fit curvature values.
+    Red lines indicate the initially chosen curve and green lines the resulting smoothed curve.
+    Images from \textcite{lawonn2014}.
+  }
+  \label{fig:lawonn2014}
+\end{figure}
+
 
 % \autocite{ma2007}
 % \autocite{levy2002}
