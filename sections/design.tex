@@ -910,26 +910,54 @@ Instead, all the following C++ code snippets represent simplified versions of pr
   Instead, it complies with a method described by \textcite{mancinelli2022}.
 
   \paragraph{Algorithm}\hfill\\
-  After the definition of all primitives, the main smoothing algorithm mainly uses the
+  The algorithm follows a quite simple structure and consists of three steps:
+  \begin{enumerate}
+    \item The local smoothing routine
+    \item The reflection routine for critical vertices
+    \item The abortion criterion, which is used similar to \textcite{martinez2005} and \textcite{lawonn2014} and will not be described in detail here.
+  \end{enumerate}
+  First, the local smoothing routine is called for smoothing the curve until the appearance of a critical vertex.
+  Upon the appearance of a critical vertex, the reflection routine for critical vertices is called.
+  After this, the smoothing continues until either another critical vertex appears, in which case the reflection routine for critical vertices is called again, or the abortion criterion is reached (when the curve has converged).
 
-  The main algorithm only switches between reflection and local smoothing.
-  The abort criterion was chosen in the same way as lawonn and martinez.
+  % After the definition of all primitives, the main smoothing algorithm mainly uses the
 
-  For open curves, iterate through the turn compression and apply unfolding of triangle fans.
-  For closed curves, ignore the first turn as it might also contain turns from the end.
-  When reaching the end, check whether the first turn belongs to the last.
+  % The main algorithm only switches between reflection and local smoothing.
+  % The abort criterion was chosen in the same way as lawonn and martinez.
 
-  Each turn unfolding might lead to a critical vertex.
-  Mark the turn.
-  After applying turn unfolding, check for marked vertices
+  % For open curves, iterate through the turn compression and apply unfolding of triangle fans.
+  % For closed curves, ignore the first turn as it might also contain turns from the end.
+  % When reaching the end, check whether the first turn belongs to the last.
 
-  As we are constantly changing the number of control points of triangles in the face strip, a queue-based approach seems to be most fitting.
+  % Each turn unfolding might lead to a critical vertex.
+  % Mark the turn.
+  % After applying turn unfolding, check for marked vertices
+
+  % As we are constantly changing the number of control points of triangles in the face strip, a queue-based approach seems to be most fitting.
 
   \paragraph{Smoothing via Desired Geodesic Curvatures}\hfill\\
-  I introduce the desired curvature stencil.
-  This allows to smooth such that they keep very close to their original form.
+  The application of the curvature-based unfolding primitive additionally requires the initial curve to provide desired geodesic curvature values for each of its control points.
+  For this, I will expand the strategy of \textcite{lawonn2014} by a distance-based stencil for adjacent curvature values that can be applied multiple times to average out noise in the curvature values.
+  Reducing the noise of desired curvatures should overall lead to a smoother curve and a more robust behavior of the smoothing algorithm.
 
-  \inputCodeBlock[title = Desired Curvature Stencil]{code/desired-curvature-stencil.hpp}
+  At first, all desired geodesic curvature values will be set to the current control point's discrete geodesic curvature.
+  The desired geodesic curvature of the first and last control point will be set to zero.
+  Let $x$ be the current control point in the interior of the surface mesh curve with desired geodesic curvature $κ_x$.
+  Furthermore, let $p$ and $q$ be the previous and next control points with desired geodesic curvature $κ_p$ and $κ_q$, respectively.
+  In this case, the new desired geodesic curvature $κ'_x$ of $x$ after the application of one curvature stencil is given by the following expression.
+  % Should $p$ or $q$ be the first or last control points of the curve, I set their desired geodesic curvatures to be zero.
+  \[
+    κ'_x = \frac{1}{2}\roundBrackets{κ_x + \frac{r_2 κ_p + r_1 κ_q}{r_1 + r_2}}
+    \separate
+    r_1 = \norm{x - p}
+    \separate
+    r_2 = \norm{q - x}
+  \]
+  After multiple applications of the curvature stencil, I still use the scaling strategy of \textcite{lawonn2014} which chooses a fixed parameter scale $λ\in[0,1]$ by which all desired geodesic curvatures are uniformly multiplied with.
+
+  % I introduce the desired curvature stencil.
+  % This allows to smooth such that they keep very close to their original form.
+  % \inputCodeBlock[title = Desired Curvature Stencil]{code/desired-curvature-stencil.hpp}
 
 
 % subsection smoothing_of_surface_mesh_curves (end)
