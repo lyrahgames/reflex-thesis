@@ -23,8 +23,12 @@
 
       \textbf{Logic} & \\
       $\exists \ldots : \ldots$ & There exists $\ldots$, such that $\ldots$ \\
+      $\forall \ldots : \ldots$ & For all $\ldots$, it is true that $\ldots$ \\
       $a\define b$ & $a$ is defined by $b$. \\
+      $A \wedge B$ & Proposition $A$ and proposition $B$ is true. \\
+      $A \vee B$ & Proposition $A$ or proposition $B$ is true. \\
 
+      \\
       \hline
 
       \textbf{Set Theory} & \\
@@ -38,56 +42,78 @@
       $A\times B$ & Cartesian Product --- $\set{(x,y)}{x\in A,y\in B}$ for sets $A$ and $B$ \\
       $A^n$ & $n$-fold Cartesian Product of Set $A$ \\
       $\emptyset$ & Empty set --- $\set{}{}$. \\
-      $\# A$ & Number of Elements in the Set $A$ \\
-      $\mathscr{P}(A)$ & Power Set of Set $A$ \\
+      % $\# A$ & Number of Elements in the Set $A$ \\
+      % $\mathscr{P}(A)$ & Power Set of Set $A$ \\
 
-      \hline
+      $A/\sim$ & Quotient Space of Equivalence Classes with Respect to Equivalence Relation $\sim$ \\
 
-      \textbf{Special Sets} & \\
-      $\setNatural$ & Set of Natural Numbers \\
-      $\setNatural_0$ & $\setNatural \cup \set{0}{}$ \\
-      $\mathds{P}$ & Set of Prime Numbers \\
-      $\setInteger$ & Set of Integers \\
-      $\setInteger_n$ & Set of Integers Modulo $n$ \\
-      $\mathds{F}_m$ & Finite Field with $m\in\mathds{P}$ Elements \\
-      $\mathds{F}^{p\times q}_m$ & Set of $p\times q$-Matrices over Finite Field $\mathds{F}_m$ \\
-      $\mathds{F}_2$ & Finite Field of Bits \\
-      $\mathds{F}_2^n$ & Set of $n$-bit Words \\
-      $\setReal$ & Set of Real Numbers \\
-      $\setReal^n$ & Set of $n$-dimensional Real Vectors \\
-      $\mathscr{S}^2$ & Set of Directions --- $\set{x\in\setReal^3}{\norm{x} = 1}$ \\
+      $\bigsqcup_{x\in A} \mathscr{B}(x)$ & Disjoint Union of Sets $\mathscr{B}(x)$ for all Elements $x$ of Set $A$ --- $\set{(x,\mathscr{B}(x))}{x\in A}$ \\
 
-      \hline
-
-      \textbf{Functions} & \\
-      $\function{f}{X}{Y}$ & $f$ is a function with domain $X$ and range $Y$. \\
-      $\identity_X$ & Identity Function over the Set $X$ \\
-      $f\circ g$ & Composition of Functions $f$ and $g$ \\
-      $f^{-1}$ & Inverse Image of Function $f$ \\
-      $f^n$ & $n$-fold Composition of Function $f$ \\
-
-
-      \hline
-
-      \textbf{Bit Arithmetic} & \\
-      $x_{n-1}\ldots x_{1}x_{0}$ & $n$-bit Word $x$ of Set $\mathds{F}_2^n$ \\
-      $x \leftarrow a$ & Left Shift of all Bits in $x$ by $a$ \\
-      $x \rightarrow a$ & Right Shift of all Bits in $x$ by $a$ \\
-      $x \circlearrowleft a$ & Circular Left Shift of all Bits in $x$ by $a$ \\
-      % $x \circleright a$ & Circular Right Shift of all Bits in $x$ by $a$ \\
-      $x \oplus y$ & Bit-Wise Addition of $x$ and $y$ \\
-      $x \odot y$ & Bit-Wise Multiplication of $x$ and $y$ \\
-      $x \ | \ y$ & Bit-Wise Or of $x$ and $y$ \\
-
+      $A^\circ$ & Interior of Set $A$ \\
+      $\partial A$ & Boundary of Set $A$ \\
 
       \\
       \hline
+      \textbf{Functions} & \\
+      $\function{f}{X}{Y}$ & $f$ is a function with domain $X$ and range $Y$. \\
+      $\mathscr{D}(f)$ & Domain of Definition of Function $f$ \\
+      $\identity_X$ & Identity Function over the Set $X$ \\
+      $f|_A$ & Restriction of Function $f$ to Set $A$ \\
+      $f\circ g$ & Composition of Functions $f$ and $g$ \\
+      $f^{-1}$ & Inverse Image of Function $f$ \\
+      $f^n$ & $n$-fold Composition of Function $f$ \\
+      $f'$ & First Derivative of Function $f$ \\
+      $f''$ & Second Derivative of Function $f$ \\
+      $\left.\frac{\partial}{\partial x}f(x)\right|_{x=x_0}$ & Partial Derivative of Function $f$ at Point $x_0$ \\
+      $\integral{a}{b}{f(x)}{x}$ & Integral of Function $f$ from $a$ to $b$ \\
+
+      \\
+      \hline
+      \textbf{Special Sets} & \\
+      $\setNatural$ & Set of Natural Numbers \\
+      $\setNatural_0$ & $\setNatural \cup \set{0}{}$ \\
+      $\setNatural_\infty$ & $\setNatural \cup \set{\infty}{}$ \\
+      % $\mathds{P}$ & Set of Prime Numbers \\
+      % $\setInteger$ & Set of Integers \\
+      % $\setInteger_n$ & Set of Integers Modulo $n$ \\
+      % $\mathds{F}_m$ & Finite Field with $m\in\mathds{P}$ Elements \\
+      % $\mathds{F}^{p\times q}_m$ & Set of $p\times q$-Matrices over Finite Field $\mathds{F}_m$ \\
+      % $\mathds{F}_2$ & Finite Field of Bits \\
+      % $\mathds{F}_2^n$ & Set of $n$-bit Words \\
+      $\setReal$ & Set of Real Numbers \\
+      $\setReal^n$ & Set of $n$-dimensional Real Vectors \\
+      % $\mathscr{S}^2$ & Set of Directions --- $\set{x\in\setReal^3}{\norm{x} = 1}$ \\
+      $[a,b]$ & $\set{x\in\setReal}{a\leq x \leq b}$ \\
+      $(a,b)$ & $\set{x\in\setReal}{a < x < b}$ \\
+      $[a,b)$ & $\set{x\in\setReal}{a\leq x < b}$ \\
+      $\mathds{H}$ & Half Space --- $[0,\infty)$ \\
+      $\mathds{H}^n$ & $n$-dimensional Half Space --- $\mathds{H}\times\setReal^{n-1}$ \\
+      $\mathds{T}^1[a,b]$ & One-Dimensional Topological Torus over $[a,b]$ \\
+      $\mathrm{C}^\infty(X,Y)$ & Space of Infinitely Differentiable Functions from Set $X$ to Set $Y$ \\
+      $U_r(x)$ & Open Ball Around Point $x$ with Radius $r$ \\
+
+
+
+      % \textbf{Bit Arithmetic} & \\
+      % $x_{n-1}\ldots x_{1}x_{0}$ & $n$-bit Word $x$ of Set $\mathds{F}_2^n$ \\
+      % $x \leftarrow a$ & Left Shift of all Bits in $x$ by $a$ \\
+      % $x \rightarrow a$ & Right Shift of all Bits in $x$ by $a$ \\
+      % $x \circlearrowleft a$ & Circular Left Shift of all Bits in $x$ by $a$ \\
+      % % $x \circleright a$ & Circular Right Shift of all Bits in $x$ by $a$ \\
+      % $x \oplus y$ & Bit-Wise Addition of $x$ and $y$ \\
+      % $x \odot y$ & Bit-Wise Multiplication of $x$ and $y$ \\
+      % $x \ | \ y$ & Bit-Wise Or of $x$ and $y$ \\
+
+
+      % \\
+      % \hline
     \end{tabularx}
   % \end{table}
 
   % \begin{table}[H]
     % \scriptsize
     \newpage
+    \thispagestyle{sectionstyle}
     \noindent
     \begin{tabularx}{\textwidth}{p{0.2\textwidth}p{0.79\textwidth}}
       \hline
@@ -95,56 +121,91 @@
       \hline
       \hline
 
-      \textbf{Probability Theory} & \\
-      $\mathscr{B}(\setReal)$ & Borel σ-Algebra over $\setReal$ \\
-      $\roundBrackets{\Sigma,\mathscr{A}}$ & Measurable Space over $\Sigma$ with σ-Algebra $\mathscr{A}$ \\
-      $λ$ & Lebesgue Measure \\
-      $\integral{U}{}{f}{λ}$ & Lebesgue Integral of $f$ over $U$ \\
-      $\setIntegrable^2(U,λ)$ & Set of Square-Integrable Functions over the Set $U$ with Respect to the Lebesgue Measure λ \\
-      $\roundBrackets{\Omega,\mathscr{F},P}$ & Probability Space over $\Omega$ with σ-Algebra $\mathscr{A}$ and Probability Measure $P$ \\
-      $\integral{\Omega}{}{X}{P}$ & Integral of Random Variable $X$ with respect to Probability Space $\roundBrackets{\Omega,\mathscr{A},P}$ \\
-      $\integral{\Omega}{}{X(ω)}{P(ω)}$ & $\integral{\Omega}{}{X}{P}$ \\
-      $P_X$ & Distribution of Random Variable $X$ \\
-      $\expect X$ & Expectation Value of Random Variable $X$ \\
-      $\var X$ & Variance of Random Variable $X$ \\
-      $\stddev(X)$ & Standard Deviation of Random Variable $X$ \\
-      $\mathds{1}_A$ & Characteristic Function of Set $A$ \\
-      $δ_ω$ & Dirac Delta Distribution over $\mathscr{S}^2$ with respect to $ω\in\mathscr{S}^2$ \\
-      $\bigotimes_{n\in I} P_n$ & Product Measure of Measures $P_n$ Indexed by the Set $I$ \\
+      % \textbf{Probability Theory} & \\
+      % $\mathscr{B}(\setReal)$ & Borel σ-Algebra over $\setReal$ \\
+      % $\roundBrackets{\Sigma,\mathscr{A}}$ & Measurable Space over $\Sigma$ with σ-Algebra $\mathscr{A}$ \\
+      % $λ$ & Lebesgue Measure \\
+      % $\integral{U}{}{f}{λ}$ & Lebesgue Integral of $f$ over $U$ \\
+      % $\setIntegrable^2(U,λ)$ & Set of Square-Integrable Functions over the Set $U$ with Respect to the Lebesgue Measure λ \\
+      % $\roundBrackets{\Omega,\mathscr{F},P}$ & Probability Space over $\Omega$ with σ-Algebra $\mathscr{A}$ and Probability Measure $P$ \\
+      % $\integral{\Omega}{}{X}{P}$ & Integral of Random Variable $X$ with respect to Probability Space $\roundBrackets{\Omega,\mathscr{A},P}$ \\
+      % $\integral{\Omega}{}{X(ω)}{P(ω)}$ & $\integral{\Omega}{}{X}{P}$ \\
+      % $P_X$ & Distribution of Random Variable $X$ \\
+      % $\expect X$ & Expectation Value of Random Variable $X$ \\
+      % $\var X$ & Variance of Random Variable $X$ \\
+      % $\stddev(X)$ & Standard Deviation of Random Variable $X$ \\
+      % $\mathds{1}_A$ & Characteristic Function of Set $A$ \\
+      % $δ_ω$ & Dirac Delta Distribution over $\mathscr{S}^2$ with respect to $ω\in\mathscr{S}^2$ \\
+      % $\bigotimes_{n\in I} P_n$ & Product Measure of Measures $P_n$ Indexed by the Set $I$ \\
 
-      \hline
-
-      \textbf{Miscellaneous} & \\
-      $(x_n)_{n\in I}$ & Sequence of Values $x_n$ with Index Set $I$ \\
-      $\absolute{x}$ & Absolute Value of $x$ \\
+      \textbf{Geometry} & \\
+      $\scalarProduct{x}{y}$ & Scalar Product of Vectors $x$ and $y$ \\
       $\norm{x}$ & Norm of Vector $x$ \\
-      $x \mod y$ & $x$ Modulo $y$ \\
-      $\mathrm{gcd}(ρ,k)$ & Greatest Common Divisor of ρ and k \\
-      $\mathrm{max}(x,y)$ & Maximum of $x$ and $y$ \\
-      $\lim_{n\to\infty} x_n$ & Limit of Sequence $(x_n)_{n\in\setNatural}$ \\
-      $\sum_{k=1}^n x_k$ & Sum over Values $x_k$ for $k\in\setNatural$ with $k\leq n$ \\
-      $\dim X$ & Dimension of $X$ \\
-      $\ceilBrackets{x}$ & Ceiling Function \\
-      $\scalarProduct{x}{y}$ & Scalar Product \\
-      $[a,b]$ & $\set{x\in\setReal}{a\leq x \leq b}$ \\
-      $(a,b)$ & $\set{x\in\setReal}{a < x < b}$ \\
-      $[a,b)$ & $\set{x\in\setReal}{a\leq x < b}$ \\
+      $P_V(x)$ & Projection of Vector $x$ into Vector Space $V$ \\
+      $\overline{AB}$ & Line Segment in Euclidean Space with Vertices $A$ and $B$ \\
+      $\overrightarrow{AB}$ & Directed Edge in Euclidean Space with Origin $A$ and Destination $B$ \\
+      $\sphericalangle(x,y)$ & Angle between Vectors $x$ and $y$ --- $\arccos\frac{\scalarProduct{x}{y}}{\norm{x}\norm{y}}$ \\
+      $\sphericalangle(A,B,C)$ & Angle at Point $B$ from Point $A$ to Point $C$ --- $\sphericalangle\roundBrackets{\overrightarrow{BA}, \overrightarrow{BC}}$ \\
+      $R^\mathrm{T}$ & Transposed Matrix of Matrix $R$ \\
 
+      \\
       \hline
+      \textbf{Manifolds} & \\
+      $\mathrm{T}_p M$ & Tangential Space of Manifold $M$ at Point $p\in M$ \\
+      $\mathrm{T}M$ & Tangent Bundle of Manifold $M$ \\
+      $\mathrm{N}_p M$ & Normal Space of Submanifold $M$ at Point $p\in M$ \\
+      $\mathrm{T}N$ & Normal Bundle of Submanifold $M$ \\
+      $\mathrm{d}F(p)$ & Differential of Smooth Map $F$ from Manifold $M$ to Manifold $N$ at Point $p\in M$ \\
 
+      \\
+      \hline
+      \textbf{Curves} & \\
+      $L(γ)$ & Length of a Curve γ \\
+      $s_γ$ & Arc Length of a Curve γ \\
+      $κ(γ)$ & Curvature of a Regular Curve γ \\
+      $\bar{κ}_\mathrm{g}(M,γ)$ & Geodesic Curvature of a Curve embedded in the Riemannian Submanifold $M$ \\
+      $\bar{κ}_\mathrm{n}(M,γ)$ & Normal Curvature of a Curve embedded in the Riemannian Submanifold $M$ \\
+      $κ_\mathrm{g}(M,γ)$ & Oriented Geodesic Curvature of a Curve embedded in the 2D oriented Riemannian Submanifold $M$ \\
+      $κ_\mathrm{n}(M,γ)$ & Oriented Normal Curvature of a Curve embedded in the 2D oriented Riemannian Submanifold $M$ \\
 
+      \\
+      \hline
+      \textbf{Polyhedral Surfaces} & \\
+      $\mathscr{V}(S)$ & Set of Vertices of Polyhedral Surface $S$ \\
+      $\mathscr{E}(S)$ & Set of Topological Edges of Polyhedral Surface $S$ \\
+      $\mathscr{E}(ω(S))$ & Set of Directed Edges of Polyhedral Surface $S$ with Orientation $ω$ \\
+      $\mathscr{F}(S)$ & Set of Topological Faces of Polyhedral Surface $S$ \\
+      $\mathscr{M}(S)$ & Topological Surface Mesh of Polyhedral Surface $S$ \\
+      $ϑ_S(v)$ & Total Vertex Angle of Vertex $v$ in Polyhedral Surface $S$ \\
+      $K_S(x)$ & Total Gauss Curvature of Interior Point $x$ in Polyhedral Surface $S$ \\
+      $κ_S(γ)(x)$ & Oriented Discrete Geodesic Curvature of Curve γ at Control Point $x$ in Polyhedral Surface $S$ \\
+
+      \\
+      \hline
+      \textbf{Miscellaneous} & \\
+      $\absolute{x}$ & Absolute Value of $x$ \\
+      $(x_n)_{n\in I}$ & Sequence of Values $x_n$ with Index Set $I$ \\
+      % $x \mod y$ & $x$ Modulo $y$ \\
+      % $\mathrm{gcd}(ρ,k)$ & Greatest Common Divisor of ρ and k \\
+      % $\mathrm{max}(x,y)$ & Maximum of $x$ and $y$ \\
+      % $\lim_{n\to\infty} x_n$ & Limit of Sequence $(x_n)_{n\in\setNatural}$ \\
+      $\sum_{k=1}^n x_k$ & Sum over Values $x_k$ for $k\in\setNatural$ with $k\leq n$ \\
+      % $\dim X$ & Dimension of $X$ \\
+      % $\ceilBrackets{x}$ & Ceiling Function \\
+
+      \\
+      \hline
       \textbf{Constants} & \\
       $\infty$ & Infinity \\
       $π$ & $3.1415926535\ldots$ --- Pi \\
 
-      \hline
-
-      \textbf{Units} & \\
-      $1\appendUnit{B}$ & $1\appendUnit{Byte} = 8\appendUnit{bit}$ \\
-      $1\appendUnit{GiB}$ & $2^{30}\appendUnit{B}$ \\
-      $1\appendUnit{s}$ & $1\appendUnit{Seconds}$ \\
-      $1\appendUnit{min}$ & $1\appendUnit{Minutes} = 60\appendUnit{s}$ \\
-      $1\appendUnit{GHz}$ & $1\appendUnit{Gigahertz} = 10^9\appendUnit{Hertz}$ \\
+      % \hline
+      % \textbf{Units} & \\
+      % $1\appendUnit{B}$ & $1\appendUnit{Byte} = 8\appendUnit{bit}$ \\
+      % $1\appendUnit{GiB}$ & $2^{30}\appendUnit{B}$ \\
+      % $1\appendUnit{s}$ & $1\appendUnit{Seconds}$ \\
+      % $1\appendUnit{min}$ & $1\appendUnit{Minutes} = 60\appendUnit{s}$ \\
+      % $1\appendUnit{GHz}$ & $1\appendUnit{Gigahertz} = 10^9\appendUnit{Hertz}$ \\
 
       \\
       \hline
